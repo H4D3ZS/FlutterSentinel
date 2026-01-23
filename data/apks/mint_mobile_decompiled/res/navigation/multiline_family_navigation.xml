@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:label="multiline_family_navigation" android:id="@id/multiline_family_navigation" app:startDestination="@id/createFamilyFragment"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:label="CreateFamilyFragment" android:name="com.ultramobile.mint.fragments.multiline.CreateFamilyFragment" android:id="@id/createFamilyFragment">
+        <action android:id="@id/action_addFamilyMemberFragment" app:destination="@id/familyDescriptionFragment" />
+        <action android:id="@id/action_primaryDashboardFragment" app:destination="@id/primaryDashboardFragment" />
+        <action android:id="@id/action_secondaryDashboardFragment" app:destination="@id/secondaryDashboardFragment" />
+        <action android:id="@id/action_familyInvitationFragment" app:destination="@id/familyInvitationFragment" />
+        <action android:id="@id/action_checkoutSecondaryRequestFragment" app:destination="@id/checkoutSecondaryRequestFragment" />
+    </fragment>
+    <fragment android:label="FamilyDescriptionFragment" android:name="com.ultramobile.mint.fragments.multiline.FamilyDescriptionFragment" android:id="@id/familyDescriptionFragment">
+        <action android:id="@id/action_addFamilyMemberFragment" app:destination="@id/addFamilyMemberFragment" />
+    </fragment>
+    <fragment android:label="AddFamilyMemberFragment" android:name="com.ultramobile.mint.fragments.multiline.AddFamilyMemberFragment" android:id="@id/addFamilyMemberFragment">
+        <action android:id="@id/action_processInvitationFragment" app:destination="@id/invitedFamilyMemberFragment" />
+        <action android:id="@id/action_setAutoRechargeFragment" app:destination="@id/setAutoRechargeFragment" />
+    </fragment>
+    <fragment android:label="InvitedFamilyMemberFragment" android:name="com.ultramobile.mint.fragments.multiline.InvitedFamilyMemberFragment" android:id="@id/invitedFamilyMemberFragment" />
+    <fragment android:label="MultilineTermsAndConditionsFragment" android:name="com.ultramobile.mint.fragments.multiline.MultilineTermsAndConditionsFragment" android:id="@id/multilineTermsAndConditionsFragment" />
+    <fragment android:label="SetAutoRechargeFragment" android:name="com.ultramobile.mint.fragments.multiline.payment.SetAutoRechargeFragment" android:id="@id/setAutoRechargeFragment">
+        <action android:id="@id/action_settingsPaymentFragment" app:destination="@id/settingsPaymentMethodSelectionFragment" />
+        <action android:id="@id/action_processInvitationFragment" app:destination="@id/invitedFamilyMemberFragment" />
+    </fragment>
+    <fragment android:label="SettingsPaymentMethodSelectionFragment" android:name="com.ultramobile.mint.fragments.payment.SettingsPaymentMethodSelectionFragment" android:id="@id/settingsPaymentMethodSelectionFragment">
+        <action android:id="@id/action_settingsPaymentFragment" app:destination="@id/settingsPaymentFragment" />
+    </fragment>
+    <fragment android:label="SettingsPaymentFragment" android:name="com.ultramobile.mint.fragments.payment.SettingsPaymentFragment" android:id="@id/settingsPaymentFragment" />
+    <fragment android:label="PrimaryDashboardFragment" android:name="com.ultramobile.mint.fragments.multiline.dashboard.primary.PrimaryDashboardFragment" android:id="@id/primaryDashboardFragment">
+        <action android:id="@id/action_primaryInvitedFamilyFragment" app:destination="@id/primaryInvitedFamilyFragment" />
+        <action android:id="@id/action_primaryExpiredFamilyFragment" app:destination="@id/primaryExpiredFamilyFragment" />
+        <action android:id="@id/action_addFamilyMemberFragment" app:destination="@id/addFamilyMemberFragment" />
+        <action android:id="@id/action_familyMemberFragment" app:destination="@id/familyMemberFragment" />
+        <action android:id="@id/action_checkoutSecondaryRequestFragment" app:destination="@id/checkoutSecondaryRequestFragment" />
+        <action android:id="@id/action_openFamilySettingsFragment" app:destination="@id/familySettingsFragment" />
+        <action android:id="@id/action_reviewPrimaryInvitationFragment" app:destination="@id/reviewPrimaryInvitationFragment" />
+    </fragment>
+    <fragment android:label="PrimaryInvitedMemberFragment" android:name="com.ultramobile.mint.fragments.multiline.invitation.primary.PrimaryInvitedFamilyMemberFragment" android:id="@id/primaryInvitedFamilyFragment" />
+    <fragment android:label="PrimaryExpiredMemberFragment" android:name="com.ultramobile.mint.fragments.multiline.invitation.primary.PrimaryExpiredFamilyFragment" android:id="@id/primaryExpiredFamilyFragment">
+        <action android:id="@id/action_invitedFamilyMemberFragment" app:destination="@id/invitedFamilyMemberFragment" />
+    </fragment>
+    <fragment android:label="FamilyMemberFragment" android:name="com.ultramobile.mint.fragments.multiline.members.FamilyMemberFragment" android:id="@id/familyMemberFragment">
+        <action android:id="@id/action_checkoutSecondaryRechargeFragment" app:destination="@id/checkoutSecondaryRechargeFragment" />
+        <action android:id="@id/action_manageFamilyPlanFragment" app:destination="@id/manageFamilyPlanFragment" />
+        <action android:id="@id/action_addTopUpFragment" app:destination="@id/addTopUpFragment">
+            <argument android:name="type" app:argType="integer" />
+        </action>
+        <action android:id="@id/action_showHowCanadaRoamingWorksFragment" app:destination="@id/infoHowCanadaRoamingWorksFragment" />
+        <action android:id="@id/action_familyMemberFragment_to_familyMemberDetailFragment" app:destination="@id/familyMemberDetailFragment" />
+    </fragment>
+    <fragment android:label="familyMemberDetailFragment" android:name="com.ultramobile.mint.fragments.multiline.members.FamilyMemberDetailFragment" android:id="@id/familyMemberDetailFragment">
+        <action android:id="@id/action_familyMemberDetailFragment_to_familyMemberRequestHistoryFragment" app:destination="@id/familyMemberRequestHistoryFragment" />
+        <action android:id="@id/action_familyMemberDetailFragment_to_familyMemberEditNameFragment" app:destination="@id/familyMemberFragmentEditName" />
+    </fragment>
+    <fragment android:label="FamilyInvitationFragment" android:name="com.ultramobile.mint.fragments.multiline.FamilyInvitationFragment" android:id="@id/familyInvitationFragment">
+        <action android:id="@id/action_familyAcceptingFragment" app:destination="@id/familyAcceptingFragment" />
+    </fragment>
+    <fragment android:label="FamilyAcceptingFragment" android:name="com.ultramobile.mint.fragments.multiline.FamilyAcceptingFragment" android:id="@id/familyAcceptingFragment">
+        <action android:id="@id/action_familyAcceptSuccessFragment" app:destination="@id/familyAcceptSuccessFragment" />
+    </fragment>
+    <fragment android:label="FamilyAcceptSuccessFragment" android:name="com.ultramobile.mint.fragments.multiline.FamilyAcceptSuccessFragment" android:id="@id/familyAcceptSuccessFragment" />
+    <fragment android:label="CheckoutSecondaryRequestFragment" android:name="com.ultramobile.mint.fragments.multiline.request.CheckoutRequestAsPrimaryFragment" android:id="@id/checkoutSecondaryRequestFragment">
+        <action android:id="@id/action_settingsPaymentFragment" app:destination="@id/settingsPaymentMethodSelectionFragment" />
+        <action android:id="@id/action_secondaryRequestSuccessFragment" app:destination="@id/secondaryRequestSuccessFragment" />
+    </fragment>
+    <fragment android:label="SecondaryRequestSuccessFragment" android:name="com.ultramobile.mint.fragments.multiline.request.SecondaryRequestSuccessFragment" android:id="@id/secondaryRequestSuccessFragment" />
+    <fragment android:label="CheckoutSecondaryRechargeFragment" android:name="com.ultramobile.mint.fragments.multiline.recharge.CheckoutSecondaryRechargeFragment" android:id="@id/checkoutSecondaryRechargeFragment">
+        <action android:id="@id/action_settingsPaymentFragment" app:destination="@id/settingsPaymentMethodSelectionFragment" />
+    </fragment>
+    <fragment android:label="ManageFamilyPlanFragment" android:name="com.ultramobile.mint.fragments.multiline.planmanagement.ManageFamilyPlanFragment" android:id="@id/manageFamilyPlanFragment">
+        <action android:id="@id/action_manageFamilyPlanPurchaseFragment" app:destination="@id/confirmFamilyPlanChangeBBLFragment" />
+    </fragment>
+    <fragment android:label="ManageFamilyPlanFragment" android:name="com.ultramobile.mint.fragments.multiline.planmanagement.ConfirmFamilyPlanChangeBBLFragment" android:id="@id/confirmFamilyPlanChangeBBLFragment">
+        <action android:id="@id/action_manageFamilyPlanPurchaseFragment" app:destination="@id/manageFamilyPlanPurchaseFragment" />
+    </fragment>
+    <fragment android:label="FamilyMemberRequestHistoryFragment" android:name="com.ultramobile.mint.fragments.multiline.members.FamilyMemberRequestHistoryFragment" android:id="@id/familyMemberRequestHistoryFragment" />
+    <fragment android:label="FamilyMemberFragmentEditName" android:name="com.ultramobile.mint.fragments.multiline.members.FamilyMemberFragmentEditName" android:id="@id/familyMemberFragmentEditName" />
+    <fragment android:label="AddTopUpFragment" android:name="com.ultramobile.mint.fragments.multiline.addonmanagement.MultilineAddTopUpFragment" android:id="@id/addTopUpFragment">
+        <argument android:name="type" android:defaultValue="1" app:argType="integer" />
+        <action android:id="@id/action_confirmTopUpFragment" app:destination="@id/confirmTopUpFragment" />
+    </fragment>
+    <fragment android:label="ConfirmPlanFragment" android:name="com.ultramobile.mint.fragments.multiline.addonmanagement.MultilineTopUpPurchaseFragment" android:id="@id/confirmTopUpFragment">
+        <argument android:name="type" app:argType="integer" />
+        <action android:id="@id/action_successTopUpFragment" app:destination="@id/secondaryTopUpSuccessFragment" />
+        <action android:id="@id/action_settingsPaymentFragment" app:destination="@id/settingsPaymentMethodSelectionFragment" />
+    </fragment>
+    <fragment android:label="SecondaryRequestSuccessFragment" android:name="com.ultramobile.mint.fragments.multiline.addonmanagement.MultilineTopUpSuccessFragment" android:id="@id/secondaryTopUpSuccessFragment" />
+    <fragment android:label="SecondaryDashboardFragment" android:name="com.ultramobile.mint.fragments.multiline.dashboard.secondary.SecondaryDashboardFragment" android:id="@id/secondaryDashboardFragment">
+        <action android:id="@id/action_checkoutRequestAsSecondaryFragment" app:destination="@id/checkoutRequestAsSecondaryFragment" />
+        <action android:id="@id/action_secondaryRequestHistoryFragment" app:destination="@id/secondaryRequestHistoryFragment" />
+        <action android:id="@id/action_acceptPrimaryInvitationFragment" app:destination="@id/acceptPrimaryInvitationFragment" />
+    </fragment>
+    <fragment android:label="ManageFamilyPlanPurchaseFragment" android:name="com.ultramobile.mint.fragments.multiline.planmanagement.ManageFamilyPlanPurchaseFragment" android:id="@id/manageFamilyPlanPurchaseFragment">
+        <action android:id="@id/action_settingsPaymentFragment" app:destination="@id/settingsPaymentMethodSelectionFragment" />
+        <action android:id="@id/action_manageFamilyPlanPurchaseSuccessFragment" app:destination="@id/manageFamilyPlanPurchaseSuccessFragment" />
+    </fragment>
+    <fragment android:label="ManageFamilyPlanPurchaseSuccessFragment" android:name="com.ultramobile.mint.fragments.multiline.planmanagement.ManageFamilyPlanPurchaseSuccessFragment" android:id="@id/manageFamilyPlanPurchaseSuccessFragment" />
+    <fragment android:label="CheckoutRequestAsSecondaryFragment" android:name="com.ultramobile.mint.fragments.multiline.request.CheckoutRequestAsSecondaryFragment" android:id="@id/checkoutRequestAsSecondaryFragment" />
+    <fragment android:label="SecondaryRequestHistoryFragment" android:name="com.ultramobile.mint.fragments.multiline.dashboard.secondary.SecondaryRequestHistoryFragment" android:id="@id/secondaryRequestHistoryFragment">
+        <action android:id="@id/action_checkoutRequestAsSecondaryFragment" app:destination="@id/checkoutRequestAsSecondaryFragment" />
+    </fragment>
+    <fragment android:label="AcceptPrimaryInvitationFragment" android:name="com.ultramobile.mint.fragments.multiline.changeprimary.AcceptPrimaryInvitationFragment" android:id="@id/acceptPrimaryInvitationFragment">
+        <action android:id="@id/action_secondaryAutoRechargeFragment" app:destination="@id/secondaryAutoRechargeFragment" />
+        <action android:id="@id/action_successPrimaryInvitationFragment" app:destination="@id/successPrimaryInvitationFragment" />
+    </fragment>
+    <fragment android:label="SecondaryAutoRechargeFragment" android:name="com.ultramobile.mint.fragments.multiline.changeprimary.SecondaryAutoRechargeFragment" android:id="@id/secondaryAutoRechargeFragment">
+        <action android:id="@id/action_settingsPaymentFragment" app:destination="@id/settingsPaymentMethodSelectionFragment" />
+        <action android:id="@id/action_successPrimaryInvitationFragment" app:destination="@id/successPrimaryInvitationFragment" />
+    </fragment>
+    <fragment android:label="SuccessPrimaryInvitationFragment" android:name="com.ultramobile.mint.fragments.multiline.changeprimary.SuccessPrimaryInvitationFragment" android:id="@id/successPrimaryInvitationFragment" />
+    <fragment android:label="ReviewPrimaryInvitationFragment" android:name="com.ultramobile.mint.fragments.multiline.changeprimary.ReviewPrimaryInvitationFragment" android:id="@id/reviewPrimaryInvitationFragment" />
+    <fragment android:label="SendPrimaryInvitationFragment" android:name="com.ultramobile.mint.fragments.multiline.changeprimary.SendPrimaryInvitationFragment" android:id="@id/sendPrimaryInvitationFragment">
+        <action android:id="@id/action_reviewPrimaryInvitationFragment" app:destination="@id/reviewPrimaryInvitationFragment" />
+    </fragment>
+    <fragment android:label="SelectNewPrimaryFragment" android:name="com.ultramobile.mint.fragments.multiline.changeprimary.SelectNewPrimaryFragment" android:id="@id/selectNewPrimaryFragment">
+        <action android:id="@id/action_sendPrimaryInvitationFragment" app:destination="@id/sendPrimaryInvitationFragment" />
+    </fragment>
+    <fragment android:label="FamilySettingsFragment" android:name="com.ultramobile.mint.fragments.multiline.FamilySettingsFragment" android:id="@id/familySettingsFragment">
+        <action android:id="@id/action_openSelectNewPrimaryFragment" app:destination="@id/selectNewPrimaryFragment" />
+    </fragment>
+    <fragment android:label="HowCanadaRoamingWorksFragment" android:name="com.ultramobile.mint.fragments.settings.canada.InfoHowCanadaRoamingWorksFragment" android:id="@id/infoHowCanadaRoamingWorksFragment" />
+</navigation>

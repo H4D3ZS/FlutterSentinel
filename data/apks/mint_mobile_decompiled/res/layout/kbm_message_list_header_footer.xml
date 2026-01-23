@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView android:gravity="center" android:id="@id/info_broadcast" android:paddingTop="10.0dip" android:paddingBottom="4.0dip" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/com.kbm.info_broadcast_message" />
+    <ProgressBar android:id="@id/load_more_progressbar" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:indeterminate="false" />
+</LinearLayout>

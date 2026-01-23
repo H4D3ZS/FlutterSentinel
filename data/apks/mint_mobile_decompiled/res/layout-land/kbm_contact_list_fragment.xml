@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListView android:id="@android:id/list" android:layout_width="fill_parent" android:layout_height="fill_parent" style="@style/ContactListView" />
+    <LinearLayout android:gravity="center" android:orientation="vertical" android:id="@android:id/empty" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <TextView android:textAppearance="?android:textAppearanceLarge" android:gravity="center" android:id="@id/result" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/com.kbm.no_contacts" android:fontFamily="sans-serif-light" />
+        <Button android:textAppearance="?android:textAppearanceLarge" android:gravity="center" android:id="@id/actionButton" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/com.kbm.invite" android:fontFamily="sans-serif-light" />
+    </LinearLayout>
+</FrameLayout>

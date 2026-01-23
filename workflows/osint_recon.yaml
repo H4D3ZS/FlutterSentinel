@@ -1,0 +1,21 @@
+name: "OSINT Reconnaissance"
+description: "Full OSINT workflow with SigInt"
+version: "1.0"
+
+targets:
+  - all
+
+modules:
+  - name: sigint
+    enabled: true
+    timeout: 900  # 15 minutes for OSINT
+
+notifications:
+  on_complete: true
+  on_findings: true
+  min_severity: "medium"
+
+output:
+  format: "json"
+  save_to_db: true
+  generate_report: true

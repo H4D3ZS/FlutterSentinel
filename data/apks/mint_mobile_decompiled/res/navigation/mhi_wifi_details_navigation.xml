@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:label="mhi_wifi_details_navigation" android:id="@id/mhi_wifi_details_navigation" app:startDestination="@id/mhiLoadingConnectionFragment"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:label="MhiLoadingConnectionFragment" android:name="com.ultramobile.mint.fragments.mhi.adminpass.MhiLoadingConnectionFragment" android:id="@id/mhiLoadingConnectionFragment">
+        <action android:id="@id/action_notConnectedToNetwork" app:destination="@id/wifiManualConnectionInstructionsFragment" app:popUpTo="@id/mhiLoadingConnectionFragment" app:popUpToInclusive="true" />
+        <action android:id="@id/action_connectedToNetwork" app:destination="@id/updateWifiSettingsFragment" app:popUpTo="@id/mhiLoadingConnectionFragment" app:popUpToInclusive="true" />
+    </fragment>
+    <fragment android:label="Connect to Wifi Manually" android:name="com.ultramobile.mint.fragments.mhi.adminpass.MhiManualConnectionInstructionsFragment" android:id="@id/wifiManualConnectionInstructionsFragment" />
+    <fragment android:label="Change Your WiFi Details" android:name="com.ultramobile.mint.fragments.mhi.wifi_details.MhiUpdateWifiSettingsFragment" android:id="@id/updateWifiSettingsFragment">
+        <action android:id="@id/action_mhiEnterAdminPassword" app:destination="@id/mhiEnterAdminPasswordFragment" app:popUpTo="@id/updateWifiSettingsFragment" app:popUpToInclusive="true" />
+    </fragment>
+    <fragment android:label="Enter admin password" android:name="com.ultramobile.mint.fragments.mhi.wifi_details.MhiEnterAdminPasswordFragment" android:id="@id/mhiEnterAdminPasswordFragment">
+        <action android:id="@id/action_updateWifiSettingsFragment" app:destination="@id/updateWifiSettingsFragment" app:popUpTo="@id/mhiEnterAdminPasswordFragment" app:popUpToInclusive="true" />
+    </fragment>
+</navigation>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:label="mhi_admin_pass_navigation" android:id="@id/mhi_admin_pass_navigation" app:startDestination="@id/mhiLoadingConnectionFragment"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:label="MhiLoadingConnectionFragment" android:name="com.ultramobile.mint.fragments.mhi.adminpass.MhiLoadingConnectionFragment" android:id="@id/mhiLoadingConnectionFragment">
+        <action android:id="@id/action_notConnectedToNetwork" app:destination="@id/wifiManualConnectionInstructionsFragment" app:popUpTo="@id/mhiLoadingConnectionFragment" app:popUpToInclusive="true" />
+        <action android:id="@id/action_connectedToNetwork" app:destination="@id/changeAdminPasswordFragment" app:popUpTo="@id/mhiLoadingConnectionFragment" app:popUpToInclusive="true" />
+    </fragment>
+    <fragment android:label="Connect to Wifi Manually" android:name="com.ultramobile.mint.fragments.mhi.adminpass.MhiManualConnectionInstructionsFragment" android:id="@id/wifiManualConnectionInstructionsFragment" />
+    <fragment android:label="Change Your Admin Password" android:name="com.ultramobile.mint.fragments.mhi.adminpass.MhiUpdateAdminPassFragment" android:id="@id/changeAdminPasswordFragment">
+        <action android:id="@id/action_resetGatewayPinFragment" app:destination="@id/resetGatewayPinFragment" />
+    </fragment>
+    <fragment android:label="Change Your Admin Password" android:name="com.ultramobile.mint.fragments.mhi.adminpass.MhiResetGatewayPinFragment" android:id="@id/resetGatewayPinFragment">
+        <action android:id="@id/action_resetGatewayPiasswordFragment" app:destination="@id/resetGatewayPasswordFragment" app:popUpTo="@id/changeAdminPasswordFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="Change Your Admin Password" android:name="com.ultramobile.mint.fragments.mhi.adminpass.MhiResetAdminPassFragment" android:id="@id/resetGatewayPasswordFragment" />
+</navigation>

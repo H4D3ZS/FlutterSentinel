@@ -1,0 +1,35 @@
+{
+  "successful_bypasses": [
+    {
+      "technique": "Account Enumeration",
+      "result": {
+        "success": true,
+        "data": [
+          {
+            "number": "+15551234567",
+            "status": "Unknown: 403"
+          },
+          {
+            "number": "+15559876543",
+            "status": "Unknown: 403"
+          },
+          {
+            "number": "+15555555555",
+            "status": "Unknown: 403"
+          }
+        ]
+      }
+    }
+  ],
+  "failed_attempts": [
+    "Mobile-Specific Headers",
+    "API Versioning",
+    "HTTP Method Fuzzing",
+    "Cookie-Based Auth",
+    "Parameter Pollution",
+    "Legacy Endpoints",
+    "Direct Data Access",
+    "X-Forwarded-For Spoofing",
+    "GraphQL Introspection"
+  ]
+}

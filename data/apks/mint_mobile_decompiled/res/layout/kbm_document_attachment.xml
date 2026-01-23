@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="horizontal" android:id="@id/attachment_doc_layout" android:background="@android:color/transparent" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:weightSum="3.0" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <RelativeLayout android:id="@id/download_doc_layout" android:focusable="true" android:focusableInTouchMode="true" android:layout_width="70.0dip" android:layout_height="70.0dip">
+        <ImageView android:id="@id/brand_messenger_download_image" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/kbm_download_doc" android:layout_centerInParent="true" android:contentDescription="@string/com.kbm.download_doc_content_description" />
+    </RelativeLayout>
+    <RelativeLayout android:id="@id/retry_doc_layout" android:focusable="true" android:focusableInTouchMode="true" android:layout_width="70.0dip" android:layout_height="70.0dip">
+        <ImageView android:id="@id/brand_messenger_retry_image" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/kbm_upload_doc" android:layout_centerHorizontal="true" android:layout_centerVertical="true" android:contentDescription="@string/com.kbm.retry_upload_file_content_description" />
+        <TextView android:textSize="10.0sp" android:textColor="@color/white" android:id="@id/textView" android:focusable="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/com.kbm.attachment_retry" android:layout_below="@id/brand_messenger_retry_image" android:layout_centerHorizontal="true" android:layout_centerVertical="true" />
+    </RelativeLayout>
+    <RelativeLayout android:id="@id/brand_messenger_doc_download_progress_rl" android:visibility="gone" android:layout_width="70.0dip" android:layout_height="70.0dip">
+        <ImageView android:id="@id/download_cancel_icon" android:focusable="true" android:focusableInTouchMode="true" android:layout_width="wrap_content" android:layout_height="40.0dip" android:src="@null" android:layout_centerInParent="true" android:contentDescription="@string/com.kbm.cancel_downloading" />
+        <ProgressBar android:id="@id/brand_messenger_doc_download_progress" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="50.0dip" android:indeterminate="true" android:layout_centerInParent="true" android:indeterminateTint="@color/black" />
+    </RelativeLayout>
+    <RelativeLayout android:id="@id/doc_downloaded_layout" android:focusable="true" android:focusableInTouchMode="true" android:layout_width="70.0dip" android:layout_height="70.0dip" android:contentDescription="@string/com.kbm.downloaded_file_content_description">
+        <ImageView android:id="@id/doc_downloaded_icon" android:padding="8.0dip" android:focusable="false" android:focusableInTouchMode="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/kbm_file" android:layout_centerInParent="true" android:contentDescription="@string/com.kbm.downloaded_file_content_description" />
+    </RelativeLayout>
+    <LinearLayout android:orientation="vertical" android:id="@id/doc_name" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <TextView android:textSize="15.0sp" android:textColor="@color/white" android:id="@id/brand_messenger_doc_file_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:maxLines="5" android:layout_marginStart="4.0dip" android:layout_marginEnd="10.0dip" />
+        <TextView android:textSize="15.0sp" android:textColor="@color/white" android:id="@id/brand_messenger_doc_file_size" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:maxLines="1" android:layout_marginStart="4.0dip" android:layout_marginEnd="10.0dip" />
+    </LinearLayout>
+</LinearLayout>

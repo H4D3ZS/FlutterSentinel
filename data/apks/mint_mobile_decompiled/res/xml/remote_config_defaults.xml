@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>
+    <entry>
+        <key>esim_animated_intro</key>
+        <value>true</value>
+    </entry>
+    <entry>
+        <key>free_trial_interstitial</key>
+        <value>true</value>
+    </entry>
+    <entry>
+        <key>mint_trial_button</key>
+        <value>false</value>
+    </entry>
+    <entry>
+        <key>firebase_experiment_id</key>
+        <value>baseline</value>
+    </entry>
+</defaultsMap>

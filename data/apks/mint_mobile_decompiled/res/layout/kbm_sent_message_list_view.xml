@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:gravity="end" android:orientation="horizontal" android:id="@id/messageLayout" android:longClickable="true" android:layout_width="wrap_content" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:gravity="end|center" android:orientation="vertical" android:id="@id/messageTextLayout" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="@dimen/kbm_sent_msg_top_margin" android:layout_marginBottom="@dimen/kbm_sent_msg_bottom_margin" android:minWidth="32.0dip" android:minHeight="@dimen/kbm_avatar_width" android:layout_alignParentRight="true" android:layout_marginStart="@dimen/kbm_sent_msg_start_margin" android:layout_marginEnd="@dimen/kbm_sent_msg_end_margin" android:layout_alignParentEnd="true" android:elevation="1.0dip" style="?kbmUIConversationSentMessageStyle"
+      xmlns:android="http://schemas.android.com/apk/res/android">
+        <include layout="@layout/kbm_attachment_preview_layout" />
+        <include layout="@layout/kbm_audio_view" />
+        <TextView android:textSize="16.0sp" android:textColor="@color/white" android:id="@id/attached_file" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_margin="8.0dip" android:drawablePadding="8.0dip" android:textDirection="locale" android:textAlignment="gravity" app:drawableStartCompat="@null" />
+        <include layout="@layout/kbm_url_message_view" />
+        <include layout="@layout/kbm_chat_location_view" />
+        <include layout="@layout/kbm_document_attachment" />
+        <TextView android:textColorLink="?kbmUiConversationSentMessageLinkColor" android:id="@id/message" android:focusable="true" android:focusableInTouchMode="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="" android:textDirection="locale" style="?kbmUiConversationSentMessageTextStyle" />
+        <RelativeLayout android:id="@id/dropdown_spinner_root" android:padding="8.0dip" android:focusable="false" android:focusableInTouchMode="false" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <Spinner android:id="@id/dropdown_message_spinner" android:background="@drawable/kbm_spinner_border" android:layout_width="fill_parent" android:layout_height="wrap_content" android:spinnerMode="dropdown" android:paddingEnd="16.0dip" />
+            <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/kbm_spinner_arrow" android:layout_centerVertical="true" android:layout_marginEnd="16.0dip" android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+        <TextView android:textSize="12.0sp" android:textColor="@color/message_details_text_color" android:id="@id/selfDestruct" android:paddingLeft="2.0dip" android:paddingRight="8.0dip" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2.0dip" android:text="@string/com.kbm.self_destruct" android:paddingStart="2.0dip" android:paddingEnd="8.0dip" />
+    </LinearLayout>
+    <include layout="@layout/kbm_rich_message_sender_layout" />
+    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/timeContainer" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="@dimen/kbm_time_top_margin" android:layout_marginBottom="@dimen/kbm_time_bottom_margin" android:layout_below="@id/alRichMessageView" android:layout_marginStart="@dimen/kbm_time_start_margin" android:layout_marginEnd="@dimen/kbm_time_end_margin" android:layout_alignParentEnd="true"
+      xmlns:android="http://schemas.android.com/apk/res/android">
+        <TextView android:id="@id/createdAtTime" android:text="@string/com.kbm.created_at_time" style="?kbmUiConversationSentMessageTimeAndStatusIconStyle" />
+        <ImageView android:gravity="center_vertical" android:id="@id/status" android:layout_width="@dimen/kbm_status_icon_width" android:layout_height="fill_parent" android:layout_marginStart="@dimen/kbm_status_icon_start_margin" android:layout_marginEnd="@dimen/kbm_sent_msg_end_margin" />
+    </LinearLayout>
+    <ImageView android:id="@id/download_media" android:focusableInTouchMode="true" android:visibility="gone" android:layout_width="22.0dip" android:layout_height="22.0dip" android:src="@drawable/kbm_download_icon" android:layout_centerInParent="true" android:contentDescription="@string/com.kbm.download_doc_content_description" android:layout_marginStart="50.0dip" android:layout_marginEnd="8.0dip" android:layout_toStartOf="@id/messageTextLayout" />
+</RelativeLayout>

@@ -1,0 +1,25 @@
+name: "Deep Audit"
+description: "Comprehensive security audit"
+version: "1.0"
+
+targets:
+  - all
+
+modules:
+  - name: source_code
+    enabled: true
+    timeout: 600
+  
+  - name: apk
+    enabled: true
+    timeout: 120
+
+notifications:
+  on_complete: true
+  on_findings: true
+  min_severity: "medium"
+
+output:
+  format: "json"
+  save_to_db: true
+  generate_report: true

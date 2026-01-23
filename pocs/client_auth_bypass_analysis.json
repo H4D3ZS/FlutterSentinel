@@ -1,0 +1,16 @@
+{
+  "file": "com/ultramobile/mint/util/FoxHelpManager.smali",
+  "method": "presentChat",
+  "vulnerability": "Client-Side Authentication Check",
+  "code_flow": {
+    "line_195": "invoke-static {p0}, Lcom/brandmessenger/core/ui/BrandMessengerManager;->isAnonymousUserExpired(Landroid/content/Context;)Z",
+    "line_203": "if-nez v0, :cond_0  # If NOT expired",
+    "line_211": "const-string v1, \"^^BrandMessengerManager isAuthenticated = true - before\"",
+    "line_236": "invoke-virtual {p0, v0}, Landroid/app/Activity;->runOnUiThread(Ljava/lang/Runnable;)V",
+    "line_254": "invoke-static {p0, v0}, Lcom/brandmessenger/core/ui/BrandMessengerManager;->loginAnonymousUser"
+  },
+  "analysis": "\nThe code flow shows:\n1. Check if anonymous user is expired (line 195)\n2. If NOT expired -> proceed to show messenger (line 211-236)\n3. If expired -> login anonymous user again (line 254)\n\nISSUE: The authentication check is done CLIENT-SIDE\n- isAnonymousUserExpired() is called on the Android device\n- No server-side verification before showing messenger\n- Could be bypassed by modifying APK to always return false\n",
+  "attack_scenario": "\n1. Decompile APK\n2. Modify BrandMessengerManager.isAnonymousUserExpired() to always return false\n3. Recompile and sign APK\n4. Install on device\n5. Access live chat/support without proper authentication\n",
+  "impact": "LOW to MEDIUM",
+  "severity_justification": "\n- Allows access to live chat support without authentication\n- Does NOT provide access to account data\n- Does NOT allow account takeover\n- Mainly affects customer support system\n- Could be used for spam/abuse of support\n"
+}

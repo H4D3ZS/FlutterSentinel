@@ -1,0 +1,187 @@
+{
+  "carriers": [
+    {
+      "name": "T-Mobile",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": true
+    },
+    {
+      "name": "Verizon",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": true
+    },
+    {
+      "name": "AT&T",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": true
+    },
+    {
+      "name": "Sprint",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": true
+    },
+    {
+      "name": "MetroPCS",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": true
+    },
+    {
+      "name": "Cricket",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": true
+    },
+    {
+      "name": "Altice",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "Boost Mobile",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "Family Mobile",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "Google Fi",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "H2O",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "Lycamobile",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "Pure Talk",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "Red Pocket",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "Republic",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "Simple Mobile",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "Spectrum",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "Ting",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "Tracfone",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "U.S. Cellular",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "Ultra Mobile",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "US Mobile",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "Virgin",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "Visible",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "Xfinity Mobile",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    },
+    {
+      "name": "Other",
+      "description": "",
+      "phoneNumber": null,
+      "image": "",
+      "promoted": false
+    }
+  ]
+
+}

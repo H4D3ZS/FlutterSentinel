@@ -1,0 +1,14 @@
+.class public final Lcom/amplitude/R;
+.super Ljava/lang/Object;
+
+
+# annotations
+.annotation system Ldalvik/annotation/MemberClasses;
+    value = {
+        Lcom/amplitude/R$color;,
+        Lcom/amplitude/R$drawable;,
+        Lcom/amplitude/R$id;,
+        Lcom/amplitude/R$layout;,
+        Lcom/amplitude/R$string;
+    }
+.end annotation

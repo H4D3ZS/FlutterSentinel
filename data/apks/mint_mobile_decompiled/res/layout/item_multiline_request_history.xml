@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:gravity="center" android:orientation="vertical" android:id="@id/cellLayout" android:layout_width="fill_parent" android:layout_height="78.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/familyMemberLayout" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <LinearLayout android:gravity="center_vertical" android:orientation="vertical" android:layout_width="0.0dip" android:layout_height="fill_parent" android:layout_marginTop="@dimen/common_subtitle_margin_top" android:layout_marginBottom="@dimen/common_gutter_size" android:layout_weight="7.0">
+            <androidx.appcompat.widget.AppCompatTextView android:textSize="12.0sp" android:textColor="@color/text_medium_gray_80_percent" android:id="@id/requestDateText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Date" android:fontFamily="@font/proximanova_regular" />
+            <androidx.appcompat.widget.AppCompatTextView android:textSize="14.0sp" android:textColor="@color/text_dark_gray" android:id="@id/requestInfoText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Info" android:fontFamily="@font/proximanova_bold" />
+            <androidx.appcompat.widget.AppCompatTextView android:textSize="14.0sp" android:textColor="@color/text_medium_gray" android:id="@id/requestStatusText" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Status" android:fontFamily="@font/proximanova_regular" />
+        </LinearLayout>
+        <androidx.appcompat.widget.AppCompatTextView android:textSize="16.0sp" android:textColor="@color/mintGreen" android:id="@id/retryButton" android:padding="@dimen/common_inner_margin" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:drawableEnd="@drawable/ic_continue_arrow_24px" android:fontFamily="@font/proximanova_bold" />
+    </LinearLayout>
+</FrameLayout>

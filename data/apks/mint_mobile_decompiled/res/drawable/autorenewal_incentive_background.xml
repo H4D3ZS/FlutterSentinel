@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape android:shape="rectangle"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:topLeftRadius="@dimen/carrier_double_check_card_radius" android:topRightRadius="@dimen/carrier_double_check_card_radius" />
+    <solid android:color="@android:color/white" />
+    <gradient android:startColor="@color/auto_renewal_incentive_gradient_color_start" android:endColor="@color/auto_renewal_incentive_gradient_color_end" android:angle="-90.0" />
+</shape>

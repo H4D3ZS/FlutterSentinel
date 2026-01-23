@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="horizontal" android:id="@id/itemLayout" android:paddingTop="4.0dip" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:animateLayoutChanges="true" android:layout_marginStart="@dimen/common_inner_margin"
+      xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+        <androidx.appcompat.widget.AppCompatTextView android:textSize="10.0sp" android:textColor="@color/text_medium_gray" android:id="@id/taxName" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" android:fontFamily="@font/proximanova_regular" android:textAlignment="viewStart" />
+        <androidx.appcompat.widget.AppCompatTextView android:textSize="10.0sp" android:textColor="@color/text_medium_gray" android:id="@id/taxValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="$0.00" android:fontFamily="@font/proximanova_regular" android:textAlignment="viewStart" android:layout_marginStart="@dimen/common_gutter_size" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout android:id="@id/coordinateBottomSheet" android:fitsSystemWindows="true" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <FrameLayout android:id="@id/section_order_sim_wrapper" android:background="@color/colorPrimary" android:visibility="invisible" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <androidx.fragment.app.FragmentContainerView android:name="androidx.navigation.fragment.NavHostFragment" android:id="@id/section_order_sim" android:layout_width="fill_parent" android:layout_height="fill_parent" app:defaultNavHost="false" app:navGraph="@navigation/order_sim_navigation" />
+    </FrameLayout>
+    <FrameLayout android:id="@id/section_order_esim_wrapper" android:background="@color/colorPrimary" android:visibility="invisible" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <androidx.fragment.app.FragmentContainerView android:name="androidx.navigation.fragment.NavHostFragment" android:id="@id/section_order_esim" android:layout_width="fill_parent" android:layout_height="fill_parent" app:defaultNavHost="false" app:navGraph="@navigation/esim_trial_navigation" />
+    </FrameLayout>
+    <FrameLayout android:id="@id/section_target_esim_wrapper" android:background="@color/colorPrimary" android:visibility="invisible" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <androidx.fragment.app.FragmentContainerView android:name="androidx.navigation.fragment.NavHostFragment" android:id="@id/section_target_esim" android:layout_width="fill_parent" android:layout_height="fill_parent" app:defaultNavHost="false" app:navGraph="@navigation/esim_target_navigation" />
+    </FrameLayout>
+    <FrameLayout android:id="@id/section_campussims_esim_wrapper" android:background="@color/colorPrimary" android:visibility="invisible" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <androidx.fragment.app.FragmentContainerView android:name="androidx.navigation.fragment.NavHostFragment" android:id="@id/section_campussims_esim" android:layout_width="fill_parent" android:layout_height="fill_parent" app:defaultNavHost="false" app:navGraph="@navigation/esim_campussims_navigation" />
+    </FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

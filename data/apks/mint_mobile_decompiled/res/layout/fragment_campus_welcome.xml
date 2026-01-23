@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:paddingStart="@dimen/common_edge_margin" android:paddingEnd="@dimen/common_edge_margin">
+        <LinearLayout android:gravity="bottom" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+            <androidx.appcompat.widget.AppCompatImageView android:paddingTop="@dimen/common_gutter_size" android:paddingBottom="@dimen/common_edge_margin" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@null" />
+            <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:paddingBottom="@dimen/common_gutter_size" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <androidx.appcompat.widget.AppCompatTextView android:textSize="@dimen/campus_welcome_text_size" android:textColor="@color/White" android:id="@id/campusWelcomeNotUS" android:background="@drawable/campus_button_selected" android:padding="4.0dip" android:focusable="true" android:clickable="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Not in the U.S. yet" android:fontFamily="@font/proximanova_regular" android:paddingStart="8.0dip" android:paddingEnd="8.0dip" />
+                <androidx.appcompat.widget.AppCompatTextView android:textSize="@dimen/campus_welcome_text_size" android:textColor="@color/mintGreen" android:id="@id/campusWelcomeUS" android:background="@drawable/campus_button_unselected" android:padding="4.0dip" android:focusable="true" android:clickable="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Arrived in U.S." android:fontFamily="@font/proximanova_regular" android:paddingStart="8.0dip" android:paddingEnd="8.0dip" android:layout_marginStart="@dimen/common_gutter_size" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:gravity="center_vertical" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="3.0">
+            <androidx.appcompat.widget.AppCompatTextView android:textSize="@dimen/campus_welcome_title_size" android:textColor="@color/text_dark_gray" android:id="@id/campusWelcomeTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:layout_marginBottom="8.0dip" android:text="Before you arrive in the U.S." android:fontFamily="@font/proximanova_bold" />
+            <androidx.appcompat.widget.AppCompatTextView android:textSize="@dimen/campus_welcome_text_size" android:textColor="@color/text_medium_gray" android:id="@id/campusWelcomeText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sign up and buy a plan before you arrive. You’ll get your U.S. phone number immediately. That way when you get to the U.S. you can start using your mobile phone service." android:fontFamily="@font/proximanova_regular" />
+            <LinearLayout android:gravity="bottom" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <androidx.appcompat.widget.AppCompatImageView android:layout_gravity="bottom" android:id="@id/campusWelcomeImage" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@null" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:gravity="center_vertical" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+            <androidx.appcompat.widget.AppCompatButton android:id="@id/campusWelcomeButton" android:background="@drawable/default_positive_button_background" android:layout_width="fill_parent" android:layout_height="@dimen/common_button_height" android:text="Sign me up" android:textAllCaps="false" style="@style/DefaultButtonStyle" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

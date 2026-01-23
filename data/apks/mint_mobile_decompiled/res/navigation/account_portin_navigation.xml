@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/account_portin_navigation" app:startDestination="@id/singleSimPortInDashboardFragment"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:label="SingleSimPortSuccessFragment" android:name="com.ultramobile.mint.fragments.dashboard.port.SingleSimPortSuccessFragment" android:id="@id/singleSimPortSuccessFragment" />
+    <fragment android:label="OrangePortInDashboardFragment" android:name="com.ultramobile.mint.fragments.dashboard.port.SingleSimPortTrialDashboardFragment" android:id="@id/singleSimPortInDashboardFragment">
+        <action android:id="@id/action_portSuccessFragment" app:destination="@id/singleSimPortSuccessFragment" />
+        <action android:id="@id/action_portResolutionRequiredFragment" app:destination="@id/singleSimResolutionRequiredFragment" />
+        <action android:id="@id/action_portErrorFragment" app:destination="@id/singleSimErrorFragment" />
+        <action android:id="@id/action_portDetailsFragment" app:destination="@id/singleSimPortDetailsFragment" />
+        <action android:id="@id/action_singleSimCanceledFragment" app:destination="@id/singleSimCanceledFragment" />
+    </fragment>
+    <fragment android:label="OrangePortInDashboardFragment" android:name="com.ultramobile.mint.fragments.dashboard.port.SingleSimPortDetailsFragment" android:id="@id/singleSimPortDetailsFragment" />
+    <fragment android:label="OrangePortErrorFragment" android:name="com.ultramobile.mint.fragments.dashboard.port.SingleSimPortErrorFragment" android:id="@id/singleSimErrorFragment">
+        <action android:id="@id/action_trialTransferNumberFragment" app:destination="@id/orangeCarrierDetailsFragment" />
+        <action android:id="@id/action_trialPortInProcessFragment" app:destination="@id/singleSimPortInDashboardFragment" />
+    </fragment>
+    <fragment android:label="TrialPortResolutionRequiredFragment" android:name="com.ultramobile.mint.fragments.dashboard.port.SingleSimPortResolutionFragment" android:id="@id/singleSimResolutionRequiredFragment">
+        <action android:id="@id/action_trialTransferNumberFragment" app:destination="@id/orangeCarrierDetailsFragment" />
+    </fragment>
+    <fragment android:label="TrialCanceledFragment" android:name="com.ultramobile.mint.fragments.dashboard.port.SingleSimPortCancelFragment" android:id="@id/singleSimCanceledFragment">
+        <action android:id="@id/action_trialTransferNumberFragment" app:destination="@id/orangeCarrierDoubleCheckFragment" />
+    </fragment>
+    <fragment android:label="OrangeCarrierSelectionFragment" android:name="com.ultramobile.mint.fragments.dashboard.port.update.UpdateCarrierSelectionFragment" android:id="@id/orangeCarrierSelectionFragment">
+        <action android:id="@id/action_orangeCarrierSearchFragment" app:destination="@id/orangeCarrierSearchFragment" />
+        <action android:id="@id/action_orangeCarrierDetailsFragment" app:destination="@id/orangeCarrierDetailsFragment" />
+    </fragment>
+    <fragment android:label="OrangeCarrierSearchFragment" android:name="com.ultramobile.mint.fragments.dashboard.port.update.UpdateCarrierSearchFragment" android:id="@id/orangeCarrierSearchFragment">
+        <action android:id="@id/action_orangeCarrierDetailsFragment" app:destination="@id/orangeCarrierDetailsFragment" />
+    </fragment>
+    <fragment android:label="OrangeCarrierDetailsFragment" android:name="com.ultramobile.mint.fragments.dashboard.port.update.UpdateCarrierDetailsFragment" android:id="@id/orangeCarrierDetailsFragment">
+        <action android:id="@id/action_orangeCarrierDoubleCheckFragment" app:destination="@id/orangeCarrierDoubleCheckFragment" />
+    </fragment>
+    <fragment android:label="OrangeCarrierDoubleCheckFragment" android:name="com.ultramobile.mint.fragments.dashboard.port.update.UpdateCarrierDoubleCheckFragment" android:id="@id/orangeCarrierDoubleCheckFragment">
+        <action android:id="@id/action_orangeCarrierDetailsFragment" app:destination="@id/orangeCarrierDetailsFragment" />
+        <action android:id="@id/action_orangeCarrierSelectionFragment" app:destination="@id/orangeCarrierSelectionFragment" />
+        <action android:id="@id/action_orangeTransferNumberFragment" app:destination="@id/orangeTransferNumberFragment" />
+        <action android:id="@id/action_updatePortInFragment" app:destination="@id/singleSimPortInDashboardFragment" />
+    </fragment>
+</navigation>

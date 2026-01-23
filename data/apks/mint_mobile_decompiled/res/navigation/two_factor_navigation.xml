@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:label="two_factor_navigation" android:id="@id/two_factor_navigation" app:startDestination="@id/twoFactorCodeFragment"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:label="2FAFragment" android:name="com.ultramobile.mint.fragments.login.LoginTwoFactorCodeConfirmationFragment" android:id="@id/twoFactorCodeFragment">
+        <action android:id="@id/action_twoFactorSuccessAnimation" app:destination="@id/twoFactorCodeSuccessAnimationFragment" app:popUpTo="@id/twoFactorCodeFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="ColorThemeFragment" android:name="com.ultramobile.mint.fragments.login.LoginTwoFactorSuccessAnimationFragment" android:id="@id/twoFactorCodeSuccessAnimationFragment" />
+</navigation>

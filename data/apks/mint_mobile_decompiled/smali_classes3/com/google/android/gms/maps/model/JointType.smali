@@ -1,0 +1,11 @@
+.class public final Lcom/google/android/gms/maps/model/JointType;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+
+# static fields
+.field public static final BEVEL:I = 0x1
+
+.field public static final DEFAULT:I = 0x0
+
+.field public static final ROUND:I = 0x2

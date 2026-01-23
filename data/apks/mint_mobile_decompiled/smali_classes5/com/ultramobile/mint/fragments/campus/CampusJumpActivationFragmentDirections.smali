@@ -1,0 +1,205 @@
+.class public Lcom/ultramobile/mint/fragments/campus/CampusJumpActivationFragmentDirections;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+
+# direct methods
+.method public static actionActivationPurchaseFragment()Landroidx/navigation/NavDirections;
+    .locals 2
+    .annotation build Landroidx/annotation/CheckResult;
+    .end annotation
+
+    .annotation build Landroidx/annotation/NonNull;
+    .end annotation
+
+    .line 1
+    new-instance v0, Landroidx/navigation/ActionOnlyNavDirections;
+
+    .line 2
+    .line 3
+    sget v1, Lcom/ultramobile/mint/R$id;->action_activationPurchaseFragment:I
+
+    .line 4
+    .line 5
+    invoke-direct {v0, v1}, Landroidx/navigation/ActionOnlyNavDirections;-><init>(I)V
+
+    .line 6
+    .line 7
+    .line 8
+    return-object v0
+.end method
+
+.method public static actionAddPaymentFragment5()Landroidx/navigation/NavDirections;
+    .locals 2
+    .annotation build Landroidx/annotation/CheckResult;
+    .end annotation
+
+    .annotation build Landroidx/annotation/NonNull;
+    .end annotation
+
+    .line 1
+    new-instance v0, Landroidx/navigation/ActionOnlyNavDirections;
+
+    .line 2
+    .line 3
+    sget v1, Lcom/ultramobile/mint/R$id;->action_addPaymentFragment5:I
+
+    .line 4
+    .line 5
+    invoke-direct {v0, v1}, Landroidx/navigation/ActionOnlyNavDirections;-><init>(I)V
+
+    .line 6
+    .line 7
+    .line 8
+    return-object v0
+.end method
+
+.method public static actionCampusPlanSelectionFragment()Landroidx/navigation/NavDirections;
+    .locals 2
+    .annotation build Landroidx/annotation/CheckResult;
+    .end annotation
+
+    .annotation build Landroidx/annotation/NonNull;
+    .end annotation
+
+    .line 1
+    new-instance v0, Landroidx/navigation/ActionOnlyNavDirections;
+
+    .line 2
+    .line 3
+    sget v1, Lcom/ultramobile/mint/R$id;->action_campusPlanSelectionFragment:I
+
+    .line 4
+    .line 5
+    invoke-direct {v0, v1}, Landroidx/navigation/ActionOnlyNavDirections;-><init>(I)V
+
+    .line 6
+    .line 7
+    .line 8
+    return-object v0
+.end method
+
+.method public static actionCampusTrialFragment()Landroidx/navigation/NavDirections;
+    .locals 2
+    .annotation build Landroidx/annotation/CheckResult;
+    .end annotation
+
+    .annotation build Landroidx/annotation/NonNull;
+    .end annotation
+
+    .line 1
+    new-instance v0, Landroidx/navigation/ActionOnlyNavDirections;
+
+    .line 2
+    .line 3
+    sget v1, Lcom/ultramobile/mint/R$id;->action_campusTrialFragment:I
+
+    .line 4
+    .line 5
+    invoke-direct {v0, v1}, Landroidx/navigation/ActionOnlyNavDirections;-><init>(I)V
+
+    .line 6
+    .line 7
+    .line 8
+    return-object v0
+.end method
+
+.method public static actionCampusWelcomeFragment()Landroidx/navigation/NavDirections;
+    .locals 2
+    .annotation build Landroidx/annotation/CheckResult;
+    .end annotation
+
+    .annotation build Landroidx/annotation/NonNull;
+    .end annotation
+
+    .line 1
+    new-instance v0, Landroidx/navigation/ActionOnlyNavDirections;
+
+    .line 2
+    .line 3
+    sget v1, Lcom/ultramobile/mint/R$id;->action_campusWelcomeFragment:I
+
+    .line 4
+    .line 5
+    invoke-direct {v0, v1}, Landroidx/navigation/ActionOnlyNavDirections;-><init>(I)V
+
+    .line 6
+    .line 7
+    .line 8
+    return-object v0
+.end method
+
+.method public static actionCampusZipEntryFragment()Landroidx/navigation/NavDirections;
+    .locals 2
+    .annotation build Landroidx/annotation/CheckResult;
+    .end annotation
+
+    .annotation build Landroidx/annotation/NonNull;
+    .end annotation
+
+    .line 1
+    new-instance v0, Landroidx/navigation/ActionOnlyNavDirections;
+
+    .line 2
+    .line 3
+    sget v1, Lcom/ultramobile/mint/R$id;->action_campusZipEntryFragment:I
+
+    .line 4
+    .line 5
+    invoke-direct {v0, v1}, Landroidx/navigation/ActionOnlyNavDirections;-><init>(I)V
+
+    .line 6
+    .line 7
+    .line 8
+    return-object v0
+.end method
+
+.method public static actionCompatibilityIntroFragment()Landroidx/navigation/NavDirections;
+    .locals 2
+    .annotation build Landroidx/annotation/CheckResult;
+    .end annotation
+
+    .annotation build Landroidx/annotation/NonNull;
+    .end annotation
+
+    .line 1
+    new-instance v0, Landroidx/navigation/ActionOnlyNavDirections;
+
+    .line 2
+    .line 3
+    sget v1, Lcom/ultramobile/mint/R$id;->action_compatibilityIntroFragment:I
+
+    .line 4
+    .line 5
+    invoke-direct {v0, v1}, Landroidx/navigation/ActionOnlyNavDirections;-><init>(I)V
+
+    .line 6
+    .line 7
+    .line 8
+    return-object v0
+.end method
+
+.method public static actionPasswordActivationFragment()Landroidx/navigation/NavDirections;
+    .locals 2
+    .annotation build Landroidx/annotation/CheckResult;
+    .end annotation
+
+    .annotation build Landroidx/annotation/NonNull;
+    .end annotation
+
+    .line 1
+    new-instance v0, Landroidx/navigation/ActionOnlyNavDirections;
+
+    .line 2
+    .line 3
+    sget v1, Lcom/ultramobile/mint/R$id;->action_passwordActivationFragment:I
+
+    .line 4
+    .line 5
+    invoke-direct {v0, v1}, Landroidx/navigation/ActionOnlyNavDirections;-><init>(I)V
+
+    .line 6
+    .line 7
+    .line 8
+    return-object v0
+.end method

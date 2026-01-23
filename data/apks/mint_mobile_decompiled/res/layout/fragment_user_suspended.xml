@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:background="@drawable/gradient_dark_background" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:gravity="center|top" android:orientation="vertical" android:id="@id/root_success_linear" android:layout_width="0.0dip" android:layout_height="0.0dip" android:paddingStart="16.0dip" android:paddingEnd="16.0dip" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent">
+        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="3.0">
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="70.0dip">
+                <ImageView android:gravity="center" android:id="@id/imageView4" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_margin="13.0dip" android:src="@drawable/mint_logo_small" android:scaleType="fitCenter" android:contentDescription="@string/image_content_description" app:srcCompat="@drawable/mint_logo_small" />
+            </LinearLayout>
+            <LinearLayout android:gravity="center" android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <ImageView android:id="@id/imageView" android:layout_width="fill_parent" android:layout_height="80.0dip" app:srcCompat="@null" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:gravity="center" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="5.0">
+            <TextView android:textSize="15.0sp" android:textColor="@color/White" android:id="@id/maintenanceText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="Account type not supported" android:fontFamily="@font/proximanova_bold" android:textAlignment="center" android:layout_marginStart="8.0dip" android:layout_marginEnd="8.0dip" />
+            <TextView android:textSize="15.0sp" android:textColor="@color/White" android:id="@id/maintenanceText2" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:text="Support for your plan type coming soon" android:fontFamily="@font/proximanova_regular" android:textAlignment="center" android:layout_marginStart="8.0dip" android:layout_marginEnd="8.0dip" />
+            <androidx.appcompat.widget.AppCompatButton android:id="@id/button" android:layout_height="wrap_content" android:layout_marginTop="20.0dip" android:layout_marginBottom="40.0dip" android:text="Logout" android:drawablePadding="10.0dip" android:drawableEnd="@null" android:paddingStart="30.0dip" android:paddingEnd="30.0dip" style="@style/cta_button_style" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

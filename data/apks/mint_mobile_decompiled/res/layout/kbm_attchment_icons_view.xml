@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <LinearLayout android:orientation="vertical" android:id="@id/locationIcon" android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <TextView android:textSize="30.0sp" android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:text="" />
+            <TextView android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:text="Location" />
+        </LinearLayout>
+        <LinearLayout android:orientation="vertical" android:id="@id/cameraIcon" android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <TextView android:textSize="30.0sp" android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" />
+            <TextView android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:text="Camera" />
+        </LinearLayout>
+        <LinearLayout android:orientation="vertical" android:id="@id/fileIcon" android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <TextView android:textSize="30.0sp" android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" />
+            <TextView android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:text="File" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <LinearLayout android:orientation="vertical" android:id="@id/audioIcon" android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <TextView android:textSize="30.0sp" android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" />
+            <TextView android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:text="Audio" />
+        </LinearLayout>
+        <LinearLayout android:orientation="vertical" android:id="@id/videoIcon" android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <TextView android:textSize="30.0sp" android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" />
+            <TextView android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:text="Video" />
+        </LinearLayout>
+        <LinearLayout android:orientation="vertical" android:id="@id/contactIcon" android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <TextView android:textSize="30.0sp" android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" />
+            <TextView android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:text="Contact" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

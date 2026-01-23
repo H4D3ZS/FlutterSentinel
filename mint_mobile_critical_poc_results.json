@@ -1,0 +1,59 @@
+{
+  "jwt_analysis": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1M...",
+    "valid": true,
+    "decoded": {
+      "iat": 1507766824,
+      "nbf": 1507766824,
+      "exp": 1594080424,
+      "aud": "MintApp",
+      "iss": "ULTRA"
+    },
+    "expired": true
+  },
+  "ip_quality_score": {
+    "key": "k4SIcTwQiZGRbWApqtvP...",
+    "valid": false,
+    "accessible": false,
+    "data_retrieved": []
+  },
+  "branch_io": {
+    "key": "key_live_koP1JAQau1WK4fKP1STYnlmguzlzrqr3",
+    "valid": false,
+    "accessible": false
+  },
+  "amplitude": {
+    "key": "09231407cbe47ad146724642bd66c156",
+    "valid": true,
+    "can_send_events": true
+  },
+  "launchdarkly": {
+    "key": "mob-82856bdd-1e79-4d98-a55f-be43b733543b",
+    "valid": false,
+    "can_get_flags": false
+  },
+  "mint_api_jwt": {
+    "endpoints_tested": 18,
+    "accessible": [],
+    "protected": [
+      "https://mint-gateway.mintmobile.com/v1/mint/account",
+      "https://mint-gateway.mintmobile.com/v1/mint/user/profile",
+      "https://mint-gateway.mintmobile.com/v1/mint/orders",
+      "https://mint-gateway.mintmobile.com/v1/mint/plans",
+      "https://mint-gateway.mintmobile.com/v1/mint/balance",
+      "https://mint-gateway.mintmobile.com/v1/mint/payment/methods",
+      "https://mint-gateway.mintmobile.com/v2/mint/account",
+      "https://mint-gateway.mintmobile.com/v2/mint/user/profile",
+      "https://mint-gateway.mintmobile.com/v2/mint/orders",
+      "https://mint-gateway.mintmobile.com/v2/mint/plans",
+      "https://mint-gateway.mintmobile.com/v2/mint/balance",
+      "https://mint-gateway.mintmobile.com/v2/mint/payment/methods",
+      "https://mint-gateway.mintmobile.com/v3/mint/account",
+      "https://mint-gateway.mintmobile.com/v3/mint/user/profile",
+      "https://mint-gateway.mintmobile.com/v3/mint/orders",
+      "https://mint-gateway.mintmobile.com/v3/mint/plans",
+      "https://mint-gateway.mintmobile.com/v3/mint/balance",
+      "https://mint-gateway.mintmobile.com/v3/mint/payment/methods"
+    ]
+  }
+}

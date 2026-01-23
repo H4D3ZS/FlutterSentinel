@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple android:color="?android:colorControlHighlight"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/fun_fact_background_corner_radius" />
+            <gradient android:startColor="@color/mintGreen" android:endColor="@color/mintBlue" android:angle="270.0" />
+        </shape>
+    </item>
+</ripple>

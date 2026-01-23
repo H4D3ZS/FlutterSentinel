@@ -1,0 +1,19 @@
+.class public Landroidx/camera/core/AspectRatio;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+
+# annotations
+.annotation system Ldalvik/annotation/MemberClasses;
+    value = {
+        Landroidx/camera/core/AspectRatio$Ratio;
+    }
+.end annotation
+
+
+# static fields
+.field public static final RATIO_16_9:I = 0x1
+
+.field public static final RATIO_4_3:I = 0x0
+
+.field public static final RATIO_DEFAULT:I = -0x1

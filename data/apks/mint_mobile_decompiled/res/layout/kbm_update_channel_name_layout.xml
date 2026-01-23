@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.appcompat.widget.Toolbar android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" android:id="@id/my_toolbar" android:background="?colorPrimary" android:layout_width="fill_parent" android:layout_height="?actionBarSize" android:elevation="4.0dip" app:popupTheme="@style/ThemeOverlay.AppCompat.Light" app:subtitleTextAppearance="@style/ToolbarSubtitle" app:titleTextAppearance="@style/ToolbarTitle" />
+    <RelativeLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip">
+        <de.hdodenhof.circleimageview.CircleImageView android:id="@id/brand_messenger_group_profile" android:layout_width="150.0dip" android:layout_height="150.0dip" android:layout_marginTop="42.0dip" android:src="@null" android:layout_alignParentTop="true" android:layout_centerHorizontal="true" />
+        <de.hdodenhof.circleimageview.CircleImageView android:id="@id/brand_messenger_group_profile_camera" android:background="@color/brand_messenger_transparent_color" android:clickable="true" android:layout_width="60.0dip" android:layout_height="60.0dip" android:layout_alignRight="@id/brand_messenger_group_profile" android:layout_alignBottom="@id/brand_messenger_group_profile" android:layout_alignEnd="@id/brand_messenger_group_profile" />
+    </RelativeLayout>
+    <EditText android:layout_gravity="start" android:id="@id/newChannelName" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="156.0dip" android:hint="@string/com.kbm.new_channel_name_hint" android:lines="1" android:maxLength="255" android:layout_weight="8.0" android:layout_above="@id/linearLayout" android:layout_centerHorizontal="true" android:inputType="textAutoCorrect" android:textAlignment="viewStart" />
+    <LinearLayout android:gravity="center" android:layout_gravity="center_horizontal" android:orientation="horizontal" android:id="@id/linearLayout" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_alignParentBottom="true">
+        <Button android:id="@id/channelNameCancel" android:background="@color/white" android:layout_width="200.0dip" android:layout_height="wrap_content" android:text="@string/com.kbm.cancel" />
+        <Button android:id="@id/channelNameOk" android:background="@color/white" android:layout_width="200.0dip" android:layout_height="wrap_content" android:text="@string/com.kbm.ok_alert" />
+    </LinearLayout>
+    <LinearLayout android:layout_gravity="top" android:orientation="vertical" android:id="@id/footerAd" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+</RelativeLayout>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:icon="@drawable/tab_dashboard" android:id="@id/navigation_dashboard" android:title="@string/title_dashboard" />
+    <item android:icon="@drawable/tab_myplan" android:id="@id/navigation_plan" android:title="@string/title_plan" />
+    <item android:icon="@drawable/tab_support" android:id="@id/navigation_customize" android:title="@string/title_customize" />
+    <item android:icon="@drawable/tab_account" android:id="@id/navigation_settings" android:title="@string/title_menu" />
+</menu>

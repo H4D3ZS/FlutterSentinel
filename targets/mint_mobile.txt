@@ -1,0 +1,8 @@
+# Mint Mobile Bug Bounty Targets
+# Format: package_name,platform
+
+# Android
+com.uvnv.mintsim,android
+
+# iOS (bundle ID may vary - will auto-detect)
+com.ultramobile.mint,ios

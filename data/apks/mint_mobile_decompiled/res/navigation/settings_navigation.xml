@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:label="settings_navigation" android:id="@id/settings_navigation" app:startDestination="@id/settingsFragment"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <include app:graph="@navigation/top_up_navigation" />
+    <include app:graph="@navigation/multiline_family_navigation" />
+    <include app:graph="@navigation/order_replacement_sim_navigation" />
+    <include app:graph="@navigation/top_up_roaming_navigation" />
+    <include app:graph="@navigation/mintech_top_up_navigation" />
+    <include app:graph="@navigation/top_up_canada_navigation" />
+    <include app:graph="@navigation/mhi_set_up_navigation" />
+    <include app:graph="@navigation/mhi_admin_pass_navigation" />
+    <include app:graph="@navigation/mhi_wifi_details_navigation" />
+    <fragment android:label="SettingsFragment" android:name="com.ultramobile.mint.fragments.settings.SettingsFragment" android:id="@id/settingsFragment">
+        <action android:id="@id/action_DeviceProtectionFragment" app:destination="@id/deviceProtectionFragment" />
+        <action android:id="@id/action_shopNewDeviceFragment" app:destination="@id/shopNewDeviceFragment" />
+        <action android:id="@id/action_shopNewDeviceSuspendedUserFragment" app:destination="@id/shopNewDeviceSusendedUserFragment" />
+        <action android:id="@id/action_addPaymentFragment" app:destination="@id/editPaymentFragment" />
+        <action android:id="@id/action_privacyPolicy" app:destination="@id/privacyPolicyFragment" />
+        <action android:id="@id/action_editPersonalFragment" app:destination="@id/myPersonalDetailsFragment" />
+        <action android:id="@id/action_editWiFiCallFragment" app:destination="@id/editWiFiCallFragment" />
+        <action android:id="@id/action_intlCallHistoryFragment" app:destination="@id/intlCallHistoryFragment" />
+        <action android:id="@id/action_billingHistoryFragment" app:destination="@id/billingHistoryFragment" />
+        <action android:id="@id/action_editPasswordFragment" app:destination="@id/editPasswordFragment" />
+        <action android:id="@id/action_colorThemeFragment" app:destination="@id/colorThemeFragment" />
+        <action android:id="@id/action_addTopUpFragment" app:destination="@id/top_up_navigation">
+            <argument android:name="type" app:argType="integer" />
+        </action>
+        <action android:id="@id/action_addTopRoamingUpFragment" app:destination="@id/top_up_roaming_navigation">
+            <argument android:name="type" app:argType="integer" />
+        </action>
+        <action android:id="@id/action_addTopRoamingUpShortcutFragment" app:destination="@id/top_up_roaming_navigation" app:popUpTo="@id/settingsFragment" app:popUpToInclusive="false">
+            <argument android:name="type" app:argType="integer" />
+        </action>
+        <action android:id="@id/action_addTopUpCanadaFragment" app:destination="@id/top_up_canada_navigation">
+            <argument android:name="type" app:argType="integer" />
+        </action>
+        <action android:id="@id/action_addMinTechTopUpFragment" app:destination="@id/mintech_top_up_navigation">
+            <argument android:name="type" app:argType="integer" />
+        </action>
+        <action android:id="@id/action_referralWebViewFragment" app:destination="@id/referralDashboardFragment" />
+        <action android:id="@id/action_rafWebView" app:destination="@id/referralWebViewFragment" />
+        <action android:id="@id/action_openMintFamily" app:destination="@id/multiline_family_navigation" />
+        <action android:id="@id/action_openMintFamilyDirect" app:destination="@id/multiline_family_navigation" app:popUpTo="@id/settingsFragment" app:popUpToInclusive="true" />
+        <action android:id="@id/action_order_new_sim_navigation" app:destination="@id/order_new_sim_navigation" />
+        <action android:id="@id/action_to_replacementSimActivationFragment" app:destination="@id/activateNewSimFragment" />
+        <action android:id="@id/action_changeDeviceFragment" app:destination="@id/changeDeviceFragment" />
+        <action android:id="@id/action_changeDeviceSelectionFragment" app:destination="@id/orderChangeDeviceSelectionFragment" />
+        <action android:id="@id/action_replacementSelection" app:destination="@id/orderSimReplacementSelectionFragment" />
+        <action android:id="@id/action_promoPreferences" app:destination="@id/promoPreferencesFragment" />
+        <action android:id="@id/action_twoFactorAuthentication" app:destination="@id/twoFactorControlFragment" />
+        <action android:id="@id/action_openContentCard" app:destination="@id/contentCardFragment" />
+        <action android:id="@id/action_notAvailableFragment" app:destination="@id/functionalityNotAvailableFragment" />
+        <action android:id="@id/action_rafInterstitialFragment" app:destination="@id/rafInterstitialFragment" />
+        <action android:id="@id/action_numberLockDashboardFragment" app:destination="@id/NumberLockDashboardFragment" />
+        <action android:id="@id/action_numberLockDisableBottomSheet" app:destination="@id/NumberLockDisableBottomSheetFragment" />
+        <action android:id="@id/action_mhiGatewayReplacementFragment" app:destination="@id/mhiGatewayReplacementFragment" />
+        <action android:id="@id/action_mhiDeviceManagement" app:destination="@id/mhiDeviceManagement" />
+        <action android:id="@id/action_mhi_set_up_navigation" app:destination="@id/mhi_set_up_navigation" />
+        <action android:id="@id/action_mhi_updateAdminPassword" app:destination="@id/mhi_admin_pass_navigation" />
+        <action android:id="@id/action_mhi_updateWifiSettings" app:destination="@id/mhi_wifi_details_navigation" />
+    </fragment>
+    <fragment android:label="DevicePurchaseFragment" android:name="com.ultramobile.mint.fragments.settings.device_purchase.DevicePurchaseWebFragment" android:id="@id/shopNewDeviceFragment" />
+    <fragment android:label="DeviceProtectionSuspendedUserFragment" android:name="com.ultramobile.mint.fragments.settings.device_purchase.DevicePurchaseSuspendedFragment" android:id="@id/shopNewDeviceSusendedUserFragment" />
+    <fragment android:label="DeviceProtectionFragment" android:name="com.ultramobile.mint.fragments.settings.DeviceProtectionFragment" android:id="@id/deviceProtectionFragment">
+        <action android:id="@id/action_confirmTopUpFragment" app:destination="@id/confirmTopUpFragment">
+            <argument android:name="type" app:argType="integer" />
+        </action>
+        <action android:id="@id/action_brandSelectionFragment" app:destination="@id/deviceProtectionBrandSelectionFragment">
+            <argument android:name="type" app:argType="integer" />
+        </action>
+    </fragment>
+    <fragment android:label="DeviceProtectionBrandSelectionFragment" android:name="com.ultramobile.mint.fragments.settings.DeviceProtectionBrandSelectionFragment" android:id="@id/deviceProtectionBrandSelectionFragment">
+        <action android:id="@id/action_confirmTopUpFragment" app:destination="@id/confirmTopUpFragment">
+            <argument android:name="type" app:argType="integer" />
+        </action>
+    </fragment>
+    <fragment android:label="SettingsPaymentMethodSelectionFragment" android:name="com.ultramobile.mint.fragments.payment.SettingsPaymentMethodSelectionFragment" android:id="@id/settingsPaymentMethodSelectionFragment">
+        <action android:id="@id/action_settingsPaymentFragment" app:destination="@id/addPaymentFragment3" />
+    </fragment>
+    <fragment android:label="AddPaymentFragment" android:name="com.ultramobile.mint.fragments.payment.SettingsPaymentFragment" android:id="@id/addPaymentFragment3" />
+    <fragment android:label="PrivacyPolicyFragment" android:name="com.ultramobile.mint.fragments.settings.PrivacyPolicyFragment" android:id="@id/privacyPolicyFragment" />
+    <fragment android:label="EditPersonalFragment" android:name="com.ultramobile.mint.fragments.settings.MyPersonalDetailsFragment" android:id="@id/myPersonalDetailsFragment">
+        <action android:id="@id/action_AddressFragment" app:destination="@id/addressFragment" />
+        <action android:id="@id/action_editPersonalFragment" app:destination="@id/editPersonalFragment" />
+        <action android:id="@id/action_updateUserNameFragment" app:destination="@id/updateUserNameFragment" />
+    </fragment>
+    <fragment android:label="UpdateUserNameFragment" android:name="com.ultramobile.mint.fragments.mhi.settings.MHIUpdateUserNameFragment" android:id="@id/updateUserNameFragment" />
+    <fragment android:label="AddressFragment" android:name="com.ultramobile.mint.fragments.settings.AddressFragment" android:id="@id/addressFragment">
+        <argument android:name="address" android:defaultValue="@null" app:argType="com.ultramobile.mint.model.ShippingAddress" app:nullable="true" />
+        <action android:id="@id/action_AddressVerificationFragment" app:destination="@id/addressVerificationFragment" />
+    </fragment>
+    <fragment android:label="DeliveryAddressVerificationFragment" android:name="com.ultramobile.mint.fragments.settings.AddressVerificationFragment" android:id="@id/addressVerificationFragment" />
+    <fragment android:label="EditPersonalFragment" android:name="com.ultramobile.mint.fragments.settings.EditPersonalFragment" android:id="@id/editPersonalFragment">
+        <action android:id="@id/action_emailVerificationFragment" app:destination="@id/emailVerificationFragment" app:popUpTo="@id/twoFactorControlFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_updateEmailSmsVerification" app:destination="@id/twoFactorSmsFragment" />
+    </fragment>
+    <fragment android:label="EditWiFiCallFragment" android:name="com.ultramobile.mint.fragments.settings.EditWiFiCallFragment" android:id="@id/editWiFiCallFragment">
+        <action android:id="@id/action_editWiFiCallFragment_to_wiFiCallingAddressVerificationFragment" app:destination="@id/wiFiCallingAddressVerificationFragment" />
+    </fragment>
+    <fragment android:label="wiFiCallingAddressVerificationFragment" android:name="com.ultramobile.mint.fragments.settings.WiFiCallingAddressVerificationFragment" android:id="@id/wiFiCallingAddressVerificationFragment" />
+    <fragment android:label="EditPasswordFragment" android:name="com.ultramobile.mint.fragments.settings.EditPasswordFragment" android:id="@id/editPasswordFragment">
+        <action android:id="@id/action_updatePasswordSmsVerification" app:destination="@id/twoFactorSmsFragment" />
+    </fragment>
+    <fragment android:label="IntlCallHistoryFragment" android:name="com.ultramobile.mint.fragments.settings.call_history.IntlCallHistoryFragment" android:id="@id/intlCallHistoryFragment" />
+    <fragment android:label="BillingHistoryFragment" android:name="com.ultramobile.mint.fragments.settings.billing_history.BillingHistoryFragment" android:id="@id/billingHistoryFragment">
+        <action android:id="@id/action_filterBillingHistory" app:destination="@id/billingFilteringSelectionFragment" />
+    </fragment>
+    <fragment android:label="EditPaymentFragment" android:name="com.ultramobile.mint.fragments.settings.EditPaymentFragment" android:id="@id/editPaymentFragment">
+        <action android:id="@id/action_addPaymentFragment3" app:destination="@id/settingsPaymentMethodSelectionFragment" />
+    </fragment>
+    <fragment android:label="RafDashbooardFragment" android:name="com.ultramobile.mint.fragments.settings.raf.RafDashboardFragment" android:id="@id/referralDashboardFragment">
+        <action android:id="@id/action_rafWebView" app:destination="@id/referralWebViewFragment" />
+    </fragment>
+    <fragment android:label="ReferralWebViewFragment" android:name="com.ultramobile.mint.fragments.settings.ReferralWebViewFragment" android:id="@id/referralWebViewFragment" />
+    <fragment android:label="ActivateNewSimFragment" android:name="com.ultramobile.mint.fragments.settings.replacesim.ActivateNewSimFragment" android:id="@id/activateNewSimFragment">
+        <action android:id="@id/action_activateNewSimSmsVerification" app:destination="@id/twoFactorSmsFragment" />
+    </fragment>
+    <fragment android:label="ChangeDeviceFragment" android:name="com.ultramobile.mint.fragments.settings.replacesim.ChangeDeviceFragment" android:id="@id/changeDeviceFragment">
+        <action android:id="@id/action_showDescriptionFragment" app:destination="@id/changeDeviceESIMDescriptionFragment" />
+        <action android:id="@id/action_orderNewEsimFragment" app:destination="@id/confirmESIMPurchaseFragment" />
+        <action android:id="@id/action_changeDeviceSelectionFragment" app:destination="@id/orderChangeDeviceSelectionFragment" />
+    </fragment>
+    <fragment android:label="EditPromotionsFragment" android:name="com.ultramobile.mint.fragments.settings.CommunicationPreferencesFragment" android:id="@id/promoPreferencesFragment">
+        <action android:id="@id/action_updateEmailFragment" app:destination="@id/editPersonalFragment" />
+    </fragment>
+    <fragment android:label="ChangeDeviceFragment" android:name="com.ultramobile.mint.fragments.settings.replacesim.ChangeDeviceESIMDescriptionFragment" android:id="@id/changeDeviceESIMDescriptionFragment" />
+    <fragment android:label="ChangeDeviceFragment" android:name="com.ultramobile.mint.fragments.settings.replacesim.OrderSimReplacementSelectionFragment" android:id="@id/orderSimReplacementSelectionFragment">
+        <action android:id="@id/action_showDescriptionFragment" app:destination="@id/changeDeviceESIMDescriptionFragment" />
+        <action android:id="@id/action_orderNewEsimFragment" app:destination="@id/confirmESIMPurchaseFragment" />
+        <action android:id="@id/action_order_new_sim_navigation" app:destination="@id/order_new_sim_navigation" />
+    </fragment>
+    <fragment android:label="ChangeDeviceFragment" android:name="com.ultramobile.mint.fragments.settings.replacesim.ChangeDeviceReplacementSelectionFragment" android:id="@id/orderChangeDeviceSelectionFragment">
+        <action android:id="@id/action_showDescriptionFragment" app:destination="@id/changeDeviceESIMDescriptionFragment" />
+        <action android:id="@id/action_orderNewEsimFragment" app:destination="@id/confirmESIMPurchaseFragment" />
+        <action android:id="@id/action_order_new_sim_navigation" app:destination="@id/order_new_sim_navigation" />
+    </fragment>
+    <fragment android:label="ChangeDeviceFragment" android:name="com.ultramobile.mint.fragments.settings.replacesim.ConfirmESIMPurchaseFragment" android:id="@id/confirmESIMPurchaseFragment">
+        <action android:id="@id/action_orderReplacementESimProcessFragment" app:destination="@id/orderReplacementESimProcessFragment" />
+        <action android:id="@id/action_addPaymentMethodFragment" app:destination="@id/settingsPaymentMethodSelectionFragment" />
+    </fragment>
+    <fragment android:label="Order Replacement ESim Process" android:name="com.ultramobile.mint.fragments.settings.replacesim.OrderReplacementESimProcessFragment" android:id="@id/orderReplacementESimProcessFragment">
+        <action android:id="@id/action_orderReplacementESimPCompleteFragment" app:destination="@id/orderReplacementESimCompleteFragment" app:popUpTo="@id/settingsFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_orderReplacementESimVerificationFragment" app:destination="@id/changeESIMReplacementVerificationFragment" app:popUpTo="@id/confirmESIMPurchaseFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="Order Replacement ESim Verification" android:name="com.ultramobile.mint.fragments.settings.replacesim.ChangeESIMReplacementVerificationFragment" android:id="@id/changeESIMReplacementVerificationFragment">
+        <action android:id="@id/action_orderReplacementESimProcessFragment" app:destination="@id/orderReplacementESimProcessFragment" app:popUpTo="@id/confirmESIMPurchaseFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="Order Replacement ESim Complete" android:name="com.ultramobile.mint.fragments.settings.replacesim.OrderReplacementEsimCompleteFragment" android:id="@id/orderReplacementESimCompleteFragment">
+        <action android:id="@id/action_openInstallOptionSelectionFragment" app:destination="@id/selectEsimInstallationOptionFragment" />
+    </fragment>
+    <fragment android:label="Select Install Option" android:name="com.ultramobile.mint.fragments.settings.replacesim.SelectEsimInstallationOptionFragment" android:id="@id/selectEsimInstallationOptionFragment">
+        <action android:id="@id/action_selectManualInstallFragment" app:destination="@id/esimInstructionsManualQRCodeFragment" />
+        <action android:id="@id/action_selectScanInstallFragment" app:destination="@id/esimInstructionsScanQRCodeFragment" />
+    </fragment>
+    <fragment android:label="eSIM Manual Install" android:name="com.ultramobile.mint.fragments.settings.replacesim.EsimInstructionsManualQRCodeFragment" android:id="@id/esimInstructionsManualQRCodeFragment" />
+    <fragment android:label="eSIM QR Scan" android:name="com.ultramobile.mint.fragments.settings.replacesim.EsimInstructionsScanQRCodeFragment" android:id="@id/esimInstructionsScanQRCodeFragment" />
+    <fragment android:label="ColorThemeFragment" android:name="com.ultramobile.mint.fragments.settings.ColorThemeSelectionFragment" android:id="@id/colorThemeFragment" />
+    <fragment android:label="ColorThemeFragment" android:name="com.ultramobile.mint.fragments.settings.twofactor.TwoFactorControlFragment" android:id="@id/twoFactorControlFragment">
+        <action android:id="@id/action_twoFactorSmsConfirmation" app:destination="@id/twoFactorSmsFragment" app:popUpTo="@id/settingsFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_verifyEmailFragment" app:destination="@id/editPersonalFragment" />
+    </fragment>
+    <fragment android:label="TwoFactorSMSConfirmationFragment" android:name="com.ultramobile.mint.fragments.settings.twofactor.TwoFactorSMSConfirmationFragment" android:id="@id/twoFactorSmsFragment">
+        <argument android:name="caller" android:defaultValue="@null" app:argType="com.ultramobile.mint.fragments.settings.twofactor.OtpVerification" app:nullable="true" />
+        <action android:id="@id/action_twoFactorQRCode" app:destination="@id/twoFactorQRCodeFragment" app:popUpTo="@id/settingsFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_emailVerificationFragment" app:destination="@id/emailVerificationFragment" app:popUpTo="@id/twoFactorControlFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_numberLockDashboardFragment" app:destination="@id/NumberLockDashboardFragment" />
+        <action android:id="@id/action_numberLockOptionsError" app:destination="@id/SelectSmsEmailVerificationFragment" />
+    </fragment>
+    <fragment android:label="ColorThemeFragment" android:name="com.ultramobile.mint.fragments.settings.twofactor.TwoFactorQRCodeFragment" android:id="@id/twoFactorQRCodeFragment">
+        <action android:id="@id/action_twoFactorCodeConfirmation" app:destination="@id/twoFactorCodeConfirmationFragment" />
+    </fragment>
+    <fragment android:label="ColorThemeFragment" android:name="com.ultramobile.mint.fragments.settings.twofactor.TwoFactorCodeConfirmationFragment" android:id="@id/twoFactorCodeConfirmationFragment">
+        <action android:id="@id/action_twoFactorSuccessAnimation" app:destination="@id/twoFactorCodeSuccessAnimationFragment" app:popUpTo="@id/settingsFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="ColorThemeFragment" android:name="com.ultramobile.mint.fragments.settings.twofactor.TwoFactorSuccessAnimationFragment" android:id="@id/twoFactorCodeSuccessAnimationFragment" />
+    <fragment android:label="EmailVerificationFragment" android:name="com.ultramobile.mint.fragments.settings.EmailVerificationFragment" android:id="@id/emailVerificationFragment">
+        <action android:id="@id/action_editPersonalFragment" app:destination="@id/editPersonalFragment" />
+        <action android:id="@id/action_emailVerificationResultFragment" app:destination="@id/emailVerificationResultFragment" />
+    </fragment>
+    <fragment android:label="EmailVerificationResultFragment" android:name="com.ultramobile.mint.fragments.settings.EmailVerificationResultFragment" android:id="@id/emailVerificationResultFragment">
+        <action android:id="@id/action_emailVerificationFragment" app:destination="@id/emailVerificationFragment" app:popUpTo="@id/twoFactorControlFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_popBack" app:destination="@id/twoFactorControlFragment" app:popUpTo="@id/twoFactorControlFragment" app:popUpToInclusive="true" />
+    </fragment>
+    <fragment android:label="Message Center" android:name="com.ultramobile.mint.fragments.settings.newsfeed.MintNewsFeedFragment" android:id="@id/contentCardFragment" />
+    <fragment android:label="ConfirmPlanFragment" android:name="com.ultramobile.mint.fragments.customize.PurchaseFragment" android:id="@id/confirmTopUpFragment">
+        <argument android:name="type" app:argType="integer" />
+        <action android:id="@id/action_addPaymentFragment2" app:destination="@id/topUpPaymentMethodSelectionFragment" />
+    </fragment>
+    <argument android:name="type" app:argType="integer" />
+    <fragment android:label="TopUpPaymentMethodSelectionFragment" android:name="com.ultramobile.mint.fragments.payment.TopUpPaymentMethodSelectionFragment" android:id="@id/topUpPaymentMethodSelectionFragment">
+        <argument android:name="type" app:argType="integer" />
+        <action android:id="@id/action_addPaymentFragment" app:destination="@id/addPaymentFragment" />
+    </fragment>
+    <fragment android:label="AddPaymentFragment" android:name="com.ultramobile.mint.fragments.payment.TopUpAddPaymentFragment" android:id="@id/addPaymentFragment">
+        <argument android:name="type" app:argType="integer" />
+        <action android:id="@id/action_confirmTopUpFragment" app:destination="@id/confirmTopUpFragment" app:popUpTo="@id/topUpPaymentMethodSelectionFragment" app:popUpToInclusive="true" />
+    </fragment>
+    <fragment android:label="FunctionalityNotAccessibleFragment" android:name="com.ultramobile.mint.fragments.settings.FunctionalityNotAccessibleFragment" android:id="@id/functionalityNotAvailableFragment" />
+    <fragment android:label="RafInterstitialFragment" android:name="com.ultramobile.mint.fragments.settings.raf.RafInterstitialFragment" android:id="@id/rafInterstitialFragment">
+        <action android:id="@id/action_referralDashboardFragment" app:destination="@id/referralDashboardFragment" />
+    </fragment>
+    <fragment android:label="BillingFilteringSelectionFragment" android:name="com.ultramobile.mint.fragments.settings.billing_history.BillingFilteringSelectionFragment" android:id="@id/billingFilteringSelectionFragment" />
+    <fragment android:label="NumberLockDashboardFragment" android:name="com.ultramobile.mint.fragments.settings.number_lock.NumberLockDashboardFragment" android:id="@id/NumberLockDashboardFragment">
+        <action android:id="@id/action_selectSmsEmailVerification" app:destination="@id/SelectSmsEmailVerificationFragment" />
+    </fragment>
+    <fragment android:label="NumberLockDisableBottomSheetFragment" android:name="com.ultramobile.mint.fragments.settings.number_lock.NumberLockDisabledBottomSheetFragment" android:id="@id/NumberLockDisableBottomSheetFragment">
+        <action android:id="@id/action_numberLockDashboardFragment" app:destination="@id/NumberLockDashboardFragment" />
+    </fragment>
+    <fragment android:label="SelectSmsEmailVerificationFragment" android:name="com.ultramobile.mint.fragments.settings.SelectSmsEmailVerificationFragment" android:id="@id/SelectSmsEmailVerificationFragment">
+        <action android:id="@id/action_numberLockVerificationKids" app:destination="@id/twoFactorSmsFragment" app:popUpTo="@id/NumberLockDashboardFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_numberLockVerification" app:destination="@id/twoFactorSmsFragment" />
+    </fragment>
+    <fragment android:label="MhiGatewayReplacementFragment" android:name="com.ultramobile.mint.mhi.MhiGatewayReplacementFragment" android:id="@id/mhiGatewayReplacementFragment" />
+    <fragment android:label="MHIDeviceManagementFragment" android:name="com.ultramobile.mint.fragments.settings.MHIDeviceManagementFragment" android:id="@id/mhiDeviceManagement">
+        <action android:id="@id/action_mhiWifiManagement" app:destination="@id/mhiWifiManagement" />
+    </fragment>
+    <fragment android:label="MHIDeviceManagementFragment" android:name="com.ultramobile.mint.fragments.settings.MHIScanWiFiFragment" android:id="@id/mhiWifiManagement" />
+</navigation>

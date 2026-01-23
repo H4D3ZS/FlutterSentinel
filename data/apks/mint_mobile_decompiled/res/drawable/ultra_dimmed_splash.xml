@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:gravity="fill" android:drawable="@drawable/gradient_dark_background" />
+    <item android:gravity="center" android:drawable="@drawable/mint_fox_sit_front" />
+    <item android:gravity="center" android:drawable="@drawable/mint_mobile_logo" android:top="130.0dip" />
+    <item android:gravity="fill" android:drawable="@drawable/login_transparent" />
+</layer-list>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:orientation="horizontal" android:id="@id/conversation_list_row_container" android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:gravity="center" android:orientation="horizontal" android:id="@id/message_unread" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_alignParentRight="true" android:layout_centerInParent="true">
+        <TextView android:id="@id/unread_messages_count" android:layout_width="18.0dip" android:layout_height="18.0dip" style="@style/KBM_Style_ConversationListUnreadMessageCountStyle" />
+        <ImageView android:layout_gravity="center" android:layout_width="20.0dip" android:layout_height="20.0dip" android:src="@drawable/kbm_chevron" android:scaleType="center" />
+    </LinearLayout>
+    <LinearLayout android:orientation="vertical" android:id="@id/name_time" android:paddingBottom="1.0dip" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_toLeftOf="@id/message_unread" android:layout_alignParentLeft="true">
+        <TextView android:id="@id/conversation_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="" android:textIsSelectable="false" android:textDirection="locale" android:textAlignment="gravity" style="@style/KBM_Style_ConversationListRowTitleStyle" />
+        <TextView android:id="@id/message" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/com.kbm.message" android:textDirection="locale" android:textAlignment="gravity" style="@style/KBM_Style_ConversationListRowSubtitleStyle" />
+        <LinearLayout android:orientation="horizontal" android:id="@id/typing_indicator_container" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" style="@style/KBM_Style_ConversationListTypingIndicatorContainer" />
+    </LinearLayout>
+</RelativeLayout>

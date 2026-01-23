@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:gravity="fill" android:drawable="@drawable/initial_screen_background_drawable" />
+    <item android:gravity="fill_horizontal|center" android:height="58.0dip" android:drawable="@drawable/ic_mintlogo_app_logo" />
+</layer-list>

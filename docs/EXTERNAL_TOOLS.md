@@ -52,6 +52,24 @@ qark --apk app.apk --report-type html
 **Use Case**: Complement FlutterSentinel's static analysis  
 **Note**: May overlap with existing features
 
+### APKLeaks
+**Purpose**: Comprehensive APK scanning with JADX  
+**Use Case**: Deep decompilation and pattern matching  
+**Installation**:
+```bash
+git clone https://github.com/dwisiswant0/apkleaks
+cd apkleaks
+pip install -r requirements.txt
+sudo apt install jadx
+```
+
+**Usage**:
+```bash
+python3 apkleaks.py -f app.apk -o results.json
+```
+
+**Integration**: Use APKLeaks for comprehensive scans, FlutterSentinel for automated exploitation
+
 ---
 
 ## 🔧 Binary Analysis Tools

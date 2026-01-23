@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:id="@id/esim_campussims_navigation" app:startDestination="@id/esimCampusSimsJumpActivationFragment"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:label="EsimCampusSimsJumpActivationFragment" android:name="com.ultramobile.mint.fragments.esim_campussims.tutorial.EsimCampusSimsJumpActivationFragment" android:id="@id/esimCampusSimsJumpActivationFragment">
+        <action android:id="@id/actionShowStep1" app:destination="@id/esimCampusSimsStepsGuideFragment" />
+        <action android:id="@id/actionShowStep2" app:destination="@id/esimCampusSimsStep2Fragment" />
+        <action android:id="@id/actionShowStep3" app:destination="@id/esimCampusSimsStep3Fragment" />
+        <action android:id="@id/actionShowStep5" app:destination="@id/esimCampusSimsStep5Fragment" />
+        <action android:id="@id/actionShowActivationProcess" app:destination="@id/esimCampusSimsOrderProcessFragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsStepsGuideFragment" android:name="com.ultramobile.mint.fragments.esim_campussims.tutorial.EsimCampusSimsStepsGuideFragment" android:id="@id/esimCampusSimsStepsGuideFragment">
+        <action android:id="@id/action_esimCampusSimsStepsGuideFragment_to_zipEsimCampusSimsFragment" app:destination="@id/zipEsimCampusSimsFragment" />
+    </fragment>
+    <fragment android:label="ZipEsimCampusSimsFragment" android:name="com.ultramobile.mint.fragments.esim_campussims.zip.ZipEsimCampusSimsFragment" android:id="@id/zipEsimCampusSimsFragment">
+        <action android:id="@id/action_zipEsimCampusSimsFragment_to_esimCampusSimsCompatibilityResultFragment" app:destination="@id/esimCampusSimsCompatibilityResultFragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsCompatibilityResultFragment" android:name="com.ultramobile.mint.fragments.esim_campussims.compatibility.EsimCampusSimsCompatibilityResultFragment" android:id="@id/esimCampusSimsCompatibilityResultFragment">
+        <action android:id="@id/action_esimCampusSimsCompatibilityResultFragment_to_esimCampusSimsPlanSelectionFragment" app:destination="@id/esimCampusSimsPlanSelectionFragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsPlanSelectionFragment" android:name="com.ultramobile.mint.fragments.esim_campussims.plan_selector.EsimCampusSimsPlanSelectionFragment" android:id="@id/esimCampusSimsPlanSelectionFragment">
+        <action android:id="@id/action_esimCampusSimsPlanSelectionFragment_to_esimCampusSimsPersonalActivationFragment" app:destination="@id/esimCampusSimsPersonalActivationFragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsPersonalActivationFragment" android:name="com.ultramobile.mint.fragments.esim_campussims.personal.EsimCampusSimsPersonalActivationFragment" android:id="@id/esimCampusSimsPersonalActivationFragment">
+        <action android:id="@id/action_esimCampusSimsPersonalActivationFragment_to_esimCampusSimsPaymentMethodSelectionFragment" app:destination="@id/esimCampusSimsPaymentMethodSelectionFragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsPaymentMethodSelectionFragment" android:name="com.ultramobile.mint.fragments.esim_campussims.purchase.EsimCampusSimsPaymentMethodSelectionFragment" android:id="@id/esimCampusSimsPaymentMethodSelectionFragment">
+        <action android:id="@id/action_esimCampusSimsPaymentMethodSelectionFragment_to_esimCampusSimsAddPaymentFragment" app:destination="@id/esimCampusSimsAddPaymentFragment" />
+        <action android:id="@id/action_esimCampusSimsPaymentMethodSelectionFragment_to_esimCampusSimsPurchaseFragment" app:destination="@id/esimCampusSimsPurchaseFragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsAddPaymentFragment" android:name="com.ultramobile.mint.fragments.payment.EsimCampusSimsAddPaymentFragment" android:id="@id/esimCampusSimsAddPaymentFragment">
+        <action android:id="@id/action_esimCampusSimsAddPaymentFragment_to_esimCampusSimsPurchaseFragment" app:destination="@id/esimCampusSimsPurchaseFragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsPurchaseFragment" android:name="com.ultramobile.mint.fragments.esim_campussims.purchase.EsimCampusSimsPurchaseFragment" android:id="@id/esimCampusSimsPurchaseFragment">
+        <action android:id="@id/action_esimCampusSimsPurchaseFragment_to_esimCampusSimsOrderProcessFragment" app:destination="@id/esimCampusSimsOrderProcessFragment" />
+        <action android:id="@id/action_esimCampusSimsPurchaseFragment_to_esimCampusSimsPlanSelection2Fragment" app:destination="@id/esimCampusSimsPlanSelection2Fragment" />
+        <action android:id="@id/action_esimCampusSimsPurchaseFragment_to_esimCampusSimsAddPaymentFragment" app:destination="@id/esimCampusSimsAddPaymentFragment" />
+        <action android:id="@id/action_esimCampusSimsPurchaseFragment_to_esimCampusSimsPaymentMethodSelectionFragment" app:destination="@id/esimCampusSimsPaymentMethodSelectionFragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsPlanSelection2Fragment" android:name="com.ultramobile.mint.fragments.esim_campussims.plan_selector.EsimCampusSimsPlanSelection2Fragment" android:id="@id/esimCampusSimsPlanSelection2Fragment">
+        <action android:id="@id/action_esimCampusSimsPlanSelection2Fragment_to_esimCampusSimsPurchaseFragment" app:destination="@id/esimCampusSimsPurchaseFragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsOrderProcessFragment" android:name="com.ultramobile.mint.fragments.esim_campussims.process.EsimCampusSimsOrderProcessFragment" android:id="@id/esimCampusSimsOrderProcessFragment">
+        <action android:id="@id/action_esimCampusSimsOrderProcessFragment_to_esimCampusSimsStep2Fragment" app:destination="@id/esimCampusSimsStep2Fragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsStep2Fragment" android:name="com.ultramobile.mint.fragments.esim_campussims.tutorial.EsimCampusSimsStep2Fragment" android:id="@id/esimCampusSimsStep2Fragment">
+        <action android:id="@id/action_esimCampusSimsStep2Fragment_to_esimCampusSimsSuccessFragment" app:destination="@id/selectInstallationOptionFragment" />
+    </fragment>
+    <fragment android:label="Select Installation Fragment" android:name="com.ultramobile.mint.fragments.esim_trial.process.SelectEsimInstallationOptionFragment" android:id="@id/selectInstallationOptionFragment">
+        <action android:id="@id/action_manualInstallationFragment" app:destination="@id/manualInstallationFragment" />
+        <action android:id="@id/action_scanInstallationFragment" app:destination="@id/scanInstallationFragment" />
+    </fragment>
+    <fragment android:label="Manual Installation Fragment" android:name="com.ultramobile.mint.fragments.esim_trial.process.EsimInstructionsManualQRCodeFragment" android:id="@id/manualInstallationFragment">
+        <action android:id="@id/action_successFragment" app:destination="@id/esimCampusSimsSuccessFragment" />
+    </fragment>
+    <fragment android:label="Scan Installation Fragment" android:name="com.ultramobile.mint.fragments.esim_trial.process.EsimInstructionsScanQRCodeFragment" android:id="@id/scanInstallationFragment">
+        <action android:id="@id/action_successFragment" app:destination="@id/esimCampusSimsSuccessFragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsSuccessFragment" android:name="com.ultramobile.mint.fragments.esim_campussims.process.EsimCampusSimsSuccessFragment" android:id="@id/esimCampusSimsSuccessFragment">
+        <action android:id="@id/action_esimCampusSimsSuccessFragment_to_esimCampusSimsStep3Fragment" app:destination="@id/esimCampusSimsStep3Fragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsStep3Fragment" android:name="com.ultramobile.mint.fragments.esim_campussims.tutorial.EsimCampusSimsStep3Fragment" android:id="@id/esimCampusSimsStep3Fragment">
+        <action android:id="@id/action_esimCampusSimsStep3Fragment_to_esimCampusSimsAreYouInUnitedStatesFragment" app:destination="@id/esimCampusSimsAreYouInUnitedStatesFragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsAreYouInUnitedStatesFragment" android:name="com.ultramobile.mint.fragments.esim_campussims.zip.EsimCampusSimsAreYouInUnitedStatesFragment" android:id="@id/esimCampusSimsAreYouInUnitedStatesFragment">
+        <action android:id="@id/action_esimCampusSimsAreYouInUnitedStatesFragment_to_esimCampusSimsStep4Fragment" app:destination="@id/esimCampusSimsStep4Fragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsStep4Fragment" android:name="com.ultramobile.mint.fragments.esim_campussims.tutorial.EsimCampusSimsStep4Fragment" android:id="@id/esimCampusSimsStep4Fragment">
+        <action android:id="@id/action_esimCampusSimsStep4Fragment_to_esimCampusSimsOrderProcessFragment2" app:destination="@id/esimCampusSimsOrderProcessFragment2" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsOrderProcessFragment2" android:name="com.ultramobile.mint.fragments.esim_campussims.process.EsimCampusSimsOrderProcessFragment2" android:id="@id/esimCampusSimsOrderProcessFragment2">
+        <action android:id="@id/action_esimCampusSimsOrderProcessFragment2_to_esimCampusSimsCompletedAllStepsFragment" app:destination="@id/esimCampusSimsCompletedAllStepsFragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsCompletedAllStepsFragment" android:name="com.ultramobile.mint.fragments.esim_campussims.tutorial.EsimCampusSimsCompletedAllStepsFragment" android:id="@id/esimCampusSimsCompletedAllStepsFragment">
+        <action android:id="@id/action_esimCampusSimsCompletedAllStepsFragment_to_esimCampusSimsStep5Fragment" app:destination="@id/esimCampusSimsStep5Fragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsStep5Fragment" android:name="com.ultramobile.mint.fragments.esim_campussims.tutorial.EsimCampusSimsStep5Fragment" android:id="@id/esimCampusSimsStep5Fragment">
+        <action android:id="@id/action_esimCampusSimsStep5Fragment_to_esimCampusSimsPasswordFragment" app:destination="@id/esimCampusSimsPasswordFragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsPasswordFragment" android:name="com.ultramobile.mint.fragments.esim_campussims.process.EsimCampusSimsPasswordFragment" android:id="@id/esimCampusSimsPasswordFragment">
+        <action android:id="@id/action_esimCampusSimsPasswordFragment_to_esimCampusSimsPersonalActivation2Fragment" app:destination="@id/esimCampusSimsPersonalActivation2Fragment" />
+    </fragment>
+    <fragment android:label="EsimCampusSimsPersonalActivation2Fragment" android:name="com.ultramobile.mint.fragments.esim_campussims.personal.EsimCampusSimsPersonalActivation2Fragment" android:id="@id/esimCampusSimsPersonalActivation2Fragment">
+        <action android:id="@id/action_esimCampusSimsPersonalActivation2Fragment_to_esimCampusSimsPasswordFragment" app:destination="@id/esimCampusSimsPasswordFragment" />
+    </fragment>
+</navigation>

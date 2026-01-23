@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="com.kbm.HOURS">
+        <item quantity="other">%d hrs</item>
+        <item quantity="one">%d hr</item>
+    </plurals>
+    <plurals name="com.kbm.HOURS_AGO">
+        <item quantity="other">%d hrs ago</item>
+        <item quantity="one">%d hr ago</item>
+    </plurals>
+    <plurals name="com.kbm.MINUTES">
+        <item quantity="other">%d mins</item>
+        <item quantity="one">%d min</item>
+    </plurals>
+    <plurals name="com.kbm.MINUTES_AGO">
+        <item quantity="other">%d mins ago</item>
+        <item quantity="one">%d min ago</item>
+    </plurals>
+    <plurals name="com.kbm.UNREAD_TEMP_TEXT">
+        <item quantity="other">%d unread messages</item>
+        <item quantity="one">%d unread message</item>
+    </plurals>
+    <plurals name="com.kbm.audio_seekbar_content_description_minutes">
+        <item quantity="other">%1$d minutes and %2$d seconds elapsed</item>
+        <item quantity="one">%1$d minute and %2$d seconds elapsed</item>
+    </plurals>
+    <plurals name="com.kbm.audio_seekbar_content_description_seconds">
+        <item quantity="other">%1$d seconds elapsed</item>
+        <item quantity="one">%1$d second elapsed</item>
+    </plurals>
+    <plurals name="mtrl_badge_content_description">
+        <item quantity="other">%d new notifications</item>
+        <item quantity="one">%d new notification</item>
+    </plurals>
+    <plurals name="place_details_photo_count">
+        <item quantity="other">%1$d photos</item>
+        <item quantity="one">%1$d photo</item>
+    </plurals>
+    <plurals name="place_details_ratings_content_description">
+        <item quantity="other">%1$s stars</item>
+        <item quantity="one">%1$s star</item>
+    </plurals>
+    <plurals name="place_details_review_count_a11y_label">
+        <item quantity="other">%1$d reviews</item>
+        <item quantity="one">%1$d review</item>
+    </plurals>
+</resources>

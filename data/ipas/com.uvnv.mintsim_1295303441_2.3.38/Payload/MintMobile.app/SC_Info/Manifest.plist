@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SinfPaths</key>
+	<array>
+		<string>SC_Info/MintMobile.sinf</string>
+	</array>
+	<key>SinfReplicationPaths</key>
+	<array>
+		<string>Frameworks/AmplitudeCore.framework/SC_Info/AmplitudeCore.sinf</string>
+		<string>Frameworks/AmplitudeSwift.framework/SC_Info/AmplitudeSwift.sinf</string>
+		<string>Frameworks/AnalyticsConnector.framework/SC_Info/AnalyticsConnector.sinf</string>
+		<string>Frameworks/Braintree.framework/SC_Info/Braintree.sinf</string>
+		<string>Frameworks/BranchSDK.framework/SC_Info/BranchSDK.sinf</string>
+		<string>Frameworks/BrandMessengerCore.framework/SC_Info/BrandMessengerCore.sinf</string>
+		<string>Frameworks/BrandMessengerUI.framework/SC_Info/BrandMessengerUI.sinf</string>
+		<string>Frameworks/DataCompression.framework/SC_Info/DataCompression.sinf</string>
+		<string>Frameworks/FBLPromises.framework/SC_Info/FBLPromises.sinf</string>
+		<string>Frameworks/FirebaseABTesting.framework/SC_Info/FirebaseABTesting.sinf</string>
+		<string>Frameworks/FirebaseCore.framework/SC_Info/FirebaseCore.sinf</string>
+		<string>Frameworks/FirebaseCoreExtension.framework/SC_Info/FirebaseCoreExtension.sinf</string>
+		<string>Frameworks/FirebaseCoreInternal.framework/SC_Info/FirebaseCoreInternal.sinf</string>
+		<string>Frameworks/FirebaseCrashlytics.framework/SC_Info/FirebaseCrashlytics.sinf</string>
+		<string>Frameworks/FirebaseInstallations.framework/SC_Info/FirebaseInstallations.sinf</string>
+		<string>Frameworks/FirebaseRemoteConfig.framework/SC_Info/FirebaseRemoteConfig.sinf</string>
+		<string>Frameworks/FirebaseRemoteConfigInterop.framework/SC_Info/FirebaseRemoteConfigInterop.sinf</string>
+		<string>Frameworks/FirebaseSessions.framework/SC_Info/FirebaseSessions.sinf</string>
+		<string>Frameworks/FirebaseSharedSwift.framework/SC_Info/FirebaseSharedSwift.sinf</string>
+		<string>Frameworks/GoogleDataTransport.framework/SC_Info/GoogleDataTransport.sinf</string>
+		<string>Frameworks/GoogleUtilities.framework/SC_Info/GoogleUtilities.sinf</string>
+		<string>Frameworks/IPQualityScore.framework/SC_Info/IPQualityScore.sinf</string>
+		<string>Frameworks/Kingfisher.framework/SC_Info/Kingfisher.sinf</string>
+		<string>Frameworks/LDSwiftEventSource.framework/SC_Info/LDSwiftEventSource.sinf</string>
+		<string>Frameworks/LaunchDarkly.framework/SC_Info/LaunchDarkly.sinf</string>
+		<string>Frameworks/Lottie.framework/SC_Info/Lottie.sinf</string>
+		<string>Frameworks/MintSDK.framework/SC_Info/MintSDK.sinf</string>
+		<string>Frameworks/Promises.framework/SC_Info/Promises.sinf</string>
+		<string>Frameworks/QueueITLibrary.framework/SC_Info/QueueITLibrary.sinf</string>
+		<string>Frameworks/Reachability.framework/SC_Info/Reachability.sinf</string>
+		<string>Frameworks/RichMessageKit.framework/SC_Info/RichMessageKit.sinf</string>
+		<string>Frameworks/RswiftResources.framework/SC_Info/RswiftResources.sinf</string>
+		<string>Frameworks/SDWebImage.framework/SC_Info/SDWebImage.sinf</string>
+		<string>Frameworks/Sentry.framework/SC_Info/Sentry.sinf</string>
+		<string>Frameworks/TMXProfiling.framework/SC_Info/TMXProfiling.sinf</string>
+		<string>Frameworks/TMXProfilingConnections.framework/SC_Info/TMXProfilingConnections.sinf</string>
+		<string>Frameworks/UserLeapKit.framework/SC_Info/UserLeapKit.sinf</string>
+		<string>Frameworks/nanopb.framework/SC_Info/nanopb.sinf</string>
+		<string>PlugIns/Mint Mobile.appex/SC_Info/Mint Mobile.sinf</string>
+		<string>SC_Info/MintMobile.sinf</string>
+	</array>
+</dict>
+</plist>

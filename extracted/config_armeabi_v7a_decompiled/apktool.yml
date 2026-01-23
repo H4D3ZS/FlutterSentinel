@@ -1,0 +1,8 @@
+version: 2.12.1
+apkFileName: config.armeabi_v7a.apk
+versionInfo:
+  versionCode: 372
+sparseResources: true
+compactEntries: true
+doNotCompress:
+- so

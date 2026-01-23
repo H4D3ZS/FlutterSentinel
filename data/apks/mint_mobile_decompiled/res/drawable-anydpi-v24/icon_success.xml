@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector android:height="24.0dip" android:width="24.0dip" android:viewportWidth="24.0" android:viewportHeight="24.0"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="@color/popup_toast_checkmark_color" android:pathData="M6.804,0H17.208C21.276,0 24,2.856 24,7.104V16.908C24,21.144 21.276,24 17.208,24H6.804C2.736,24 0,21.144 0,16.908V7.104C0,2.856 2.736,0 6.804,0ZM9.965,15.685C10.157,15.895 10.41,16 10.663,16C10.915,16 11.167,15.895 11.36,15.685L16.711,9.84C17.097,9.419 17.097,8.737 16.711,8.316C16.325,7.895 15.702,7.895 15.316,8.316L10.663,13.399L8.684,11.238C8.298,10.817 7.675,10.818 7.289,11.239C6.904,11.659 6.904,12.341 7.289,12.763L9.965,15.685Z" android:fillType="evenOdd" />
+</vector>

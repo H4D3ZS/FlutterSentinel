@@ -1,286 +1,263 @@
-# 🛡️ FlutterSentinel
+# Flutter Bounty Hunter (FBH) v3.0
 
-<div align="center">
+> **🚀 Automated Mobile Security Platform for Bug Bounty Hunting**
 
-![FlutterSentinel Logo](logo.png)
+A professional-grade mobile application security testing framework with **integrated MobSF engine**, **dual-platform automation** (Android/iOS), and a **modern web dashboard** for managing multiple bug bounty targets.
 
-**Always Watching for Vulnerabilities**
-
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
-[![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS-green.svg)]()
-[![Status](https://img.shields.io/badge/Status-Production%20Ready-success.svg)]()
-
-*Advanced automated mobile security testing toolkit for bug bounty hunters*
-
-[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Capabilities](#-capabilities) • [Documentation](#-documentation)
-
-</div>
+[![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS-blue)](https://github.com)
+[![Python](https://img.shields.io/badge/Python-3.14%2B-green)](https://www.python.org/)
+[![MobSF](https://img.shields.io/badge/MobSF-Integrated-orange)](https://github.com/MobSF/Mobile-Security-Framework-MobSF)
 
 ---
 
-## 🎯 Overview
+## 🎯 What's New in v3.0
 
-**FlutterSentinel** is a comprehensive, AI-powered mobile application security testing framework designed for bug bounty hunters and security researchers. With **25 specialized modules** and **130+ automated techniques**, FlutterSentinel discovers vulnerabilities that traditional tools miss.
+### **Automated Mobile App Pipeline**
+- ✅ **Dual Platform Support**: Android (APK) and iOS (IPA) automation
+- ✅ **Smart URL Parsing**: Paste any Google Play or App Store URL
+- ✅ **Automatic Downloads**: One-click APK/IPA acquisition
+- ✅ **Auto-Scanning**: Immediate MobSF security analysis
+- ✅ **Web Dashboard**: Dark-themed, multi-target interface
+- ✅ **Background Processing**: Non-blocking downloads and scans
 
-### 🚨 Why FlutterSentinel?
-
-✅ **Automated Discovery** - Find vulnerabilities automatically  
-✅ **AI-Powered Analysis** - Intelligent pattern matching and risk assessment  
-✅ **100% Working PoCs** - Generate validated proof-of-concept exploits  
-✅ **Bug Bounty Ready** - Professional reports for HackerOne/Bugcrowd  
-
----
-
-## ✨ Features
-
-### 🔍 Static Analysis (SAST)
-- **Binary Analysis** - Deep APK/IPA inspection
-- **Secret Scanner** - 45+ patterns for API keys, tokens, credentials
-- **Secret Validator** - Live API testing (Google, AWS, Stripe, etc.)
-- **JADX Integration** - Automated decompilation
-- **WebView Analyzer** - JavaScript bridge, UXSS detection
-- **Crypto Analyzer** - Weak algorithms, hardcoded keys
-- **Mobile Vuln Scanner** - Exported components, debuggable apps
-
-### ⚡ Dynamic Analysis (DAST)
-- **Frida Integration** - Runtime hooking and instrumentation
-- **SSL Pinning Bypass** - Android & iOS
-- **reFlutter** - Flutter app patching and analysis
-- **mitmproxy** - Network traffic interception
-- **Drozer** - Android attack surface scanning
-
-### 🎯 Exploitation
-- **Deep Link Fuzzer** - XSS, SQLi, path traversal, open redirect
-- **Business Logic Detector** - Price manipulation, race conditions, IDOR
-- **API Fuzzer** - OWASP API Security Top 10
-- **Exploit Chain Builder** - Multi-step attack workflows
-
-### 🤖 AI-Powered Analysis
-- **VulnForge Engine** - Automated exploitation pipeline
-- **Sentinel Intelligence** - AI decision engine with confidence scoring
-- **Auto PoC Generation** - Syntax-validated exploit code
-- **Risk Assessment** - CVSS scoring and severity analysis
-
-### 📊 Automation
-- **Automated Fuzzing** - AFL++ integration
-- **PoC Validation** - Ensures exploits work before submission
-- **Report Generation** - HackerOne/Bugcrowd formatted
-- **Batch Processing** - Analyze multiple apps simultaneously
+### **MobSF Integration**
+- 🔧 **Embedded Django App**: Custom FBH dashboard within MobSF
+- 📊 **Vulnerability Analytics**: Interactive Chart.js visualizations
+- 🎯 **Multi-Target Tracking**: Manage all your bug bounty apps
+- 🤖 **AI Agent Foundation**: Ready for autonomous hunting
 
 ---
 
-## 🎓 Capabilities
+## 🌟 Key Features
 
-### Vulnerability Types Detected
-
-| Category | Techniques | Severity |
-|----------|------------|----------|
-| **Hardcoded Secrets** | API keys, tokens, credentials | Critical - High |
-| **WebView Vulnerabilities** | JavaScript bridge, UXSS, file access | High - Medium |
-| **Cryptographic Issues** | Weak algorithms, hardcoded keys | Critical - High |
-| **Mobile-Specific** | Exported components, debuggable apps | High - Medium |
-| **Deep Link Attacks** | XSS, SQLi, open redirect | Medium - Low |
-| **Business Logic** | Price manipulation, race conditions | High - Medium |
-| **API Security** | BOLA, BFLA, mass assignment | High - Medium |
-| **Data Leakage** | Logs, backups, insecure storage | Medium - Low |
-
-### Real-World Impact
-
-FlutterSentinel has been used to discover:
-- 🔴 **Critical vulnerabilities** (CVSS 9.0+) - Memory corruption, RCE
-- 🟠 **High severity issues** (CVSS 7.0-8.9) - Hardcoded secrets, auth bypass
-- 🟡 **Medium severity bugs** (CVSS 4.0-6.9) - XSS, IDOR, data exposure
-
-*Note: Specific findings are disclosed responsibly through bug bounty programs*
-
----
-
-## 📦 Installation
-
-### Prerequisites
-```bash
-# Python 3.8+
-python3 --version
-
-# Optional tools (for full functionality)
-brew install jadx         # Android decompilation
-pip3 install frida-tools  # Runtime hooking
-brew install mitmproxy    # Network analysis
+### **Automated Security Pipeline**
+```
+Paste App Store URL → Extract Package → Download Binary → MobSF Scan → Dashboard Results
 ```
 
-### Quick Install
-```bash
-# Clone repository
-git clone https://github.com/H4D3ZS/FlutterSentinel.git
-cd FlutterSentinel
+**Android:**  
+`https://play.google.com/store/apps/details?id=com.example.app` → APK Download → MobSF Scan
 
+**iOS:**  
+`https://apps.apple.com/us/app/example/id1234567890` → IPA Download → MobSF Scan
+
+### **Web Dashboard** (`http://localhost:8000/fbh/`)
+- 📱 Multi-Target Overview
+- 📊 Global Statistics  
+- 📈 Vulnerability Trends
+- 🎯 Platform Selection (Android/iOS)
+- 🤖 AI Agents (Coming Soon)
+
+### **CLI Interface** (Still Available)
+- 🔍 MobSF Scanner
+- 🔐 JWT Analyzer
+- 🔗 DeepLink Scanner
+- 🌐 SigInt OSINT
+- 📄 Report Generation
+
+---
+
+## 🚀 Quick Start
+
+### Installation
+
+```bash
 # Install dependencies
 pip3 install -r requirements.txt
 
-# Verify installation
-python3 toolkit.py --help
+# Setup MobSF
+cd MOBSF && ./setup.sh && cd ..
+
+# Install download tools
+pip3 install gplaycli          # Android
+brew install ipatool            # iOS
+ipatool auth login             # Apple ID
 ```
 
----
+### Start Platform
 
-## 🚀 Usage
-
-### Basic Analysis
 ```bash
-# Analyze APK
-python3 toolkit.py analyze app.apk
-
-# Analyze IPA
-python3 toolkit.py analyze app.ipa
-
-# Full analysis with all modules
-python3 toolkit.py full app.apk
+cd MOBSF
+python3 -m poetry run gunicorn -b 0.0.0.0:8000 'mobsf.MobSF.wsgi:application' --workers=1 --timeout=3600 --daemon
 ```
 
-### Advanced Features
+### Access Dashboard
+
+**http://localhost:8000/fbh/**
+
+---
+
+## 💡 Usage
+
+### Web Interface (Recommended)
+
+1. Click **"Add Target"**
+2. Select **Android** or **iOS**
+3. Paste **App Store URL**
+4. Name your target
+5. Enable **Auto-Download & Scan**
+6. Click **"Create"**
+
+System automatically downloads and scans!
+
+### CLI Interface
+
 ```bash
-# VulnForge - Automated exploitation
-python3 test_vulnforge.py
+# Add target
+./fbh.sh target add myapp com.example.app android
 
-# AI-powered scanning
-python3 test_ai_scanner.py
+# Run MobSF scan
+./fbh.sh scan run myapp --module mobsf
 
-# Sentinel Intelligence
-python3 test_sentinel_intelligence.py
+# Generate report
+./fbh.sh report generate myapp --format markdown
 
-# Deep link fuzzing
-python3 -m exploits.deeplink_fuzzer
-```
-
-### Python API
-```python
-from vulnforge.engine import VulnForge
-
-# Initialize
-forge = VulnForge("app.apk", platform="android")
-
-# Run complete pipeline
-results = forge.run_full_pipeline()
-
-# Get validated PoCs
-for vuln in results['vulnerabilities']:
-    if vuln['poc_validated']:
-        print(f"PoC: {vuln['vuln_id']}_poc.py")
-        print(f"Report: {vuln['vuln_id']}_report.md")
+# View stats
+./fbh.sh scan stats
 ```
 
 ---
 
-## 📊 Architecture
+## 📊 Dashboard Features
 
-### Modules Overview
+### Main Dashboard
+- Visual target cards
+- Global findings count
+- Critical issue tracking
+- Platform badges
 
-| Category | Modules | Description |
-|----------|---------|-------------|
-| **Static Analysis** | 10 | Binary inspection, secret scanning, code analysis |
-| **Dynamic Analysis** | 5 | Runtime testing, network interception, hooking |
-| **Exploitation** | 3 | Fuzzing, exploit generation, chain building |
-| **Automation** | 3 | PoC validation, report generation, batch processing |
-| **Intelligence** | 4 | AI analysis, pattern matching, risk assessment |
-| **Total** | **25** | **130+ automated techniques** |
+### Trends Page
+- Severity distribution charts
+- Target comparison
+- Interactive Chart.js graphs
 
----
-
-## 🛠️ Technology Stack
-
-- **Language**: Python 3.8+
-- **Static Analysis**: JADX, APKTool, strings
-- **Dynamic Analysis**: Frida, reFlutter, mitmproxy, Drozer
-- **Fuzzing**: AFL++, LibFuzzer
-- **AI/ML**: Pattern matching, confidence scoring, risk assessment
-- **Reporting**: Markdown, JSON, CSV
+### AI Agents (Foundation)
+- Pattern recognition (planned)
+- Exploit generation (planned)
+- Risk assessment (planned)
 
 ---
 
-## 📖 Documentation
+## 🔧 Available Scanners
 
-- [Installation Guide](docs/installation.md)
-- [Usage Examples](docs/usage.md)
-- [API Reference](docs/api.md)
-- [External Tools Guide](docs/EXTERNAL_TOOLS.md) - Recommended complementary tools
-- [Contributing Guide](CONTRIBUTING.md)
+| Scanner | Type | Platform |
+|---------|------|----------|
+| MobSF | Professional | Android/iOS |
+| JWT | Network | Both |
+| DeepLink | Dynamic | Mobile |
+| Quick | Static | All |
+| Source Code | Static | All |
+| SigInt | OSINT | Web |
+
+---
+
+## 📁 Project Structure
+
+```
+flutter_bounty_hunter/
+├── MOBSF/                    # MobSF installation
+│   └── mobsf/FBH/            # Custom Django app
+│       ├── views.py          # API & dashboard
+│       ├── urls.py           # Routing
+│       └── templates/fbh/    # Dark UI
+├── fbh/                      # Core framework
+│   ├── core/                 # Target, scanner, workflow
+│   └── modules/              # Security scanners
+├── tools/
+│   ├── apk_downloader.py     # Android automation
+│   └── ipa_downloader.py     # iOS automation
+├── targets/                  # Target workspaces
+├── fbh.sh                    # CLI wrapper
+└── QUICKSTART_V3.md         # Full guide
+```
+
+---
+
+## 📚 Documentation
+
+- **[QUICKSTART_V3.md](QUICKSTART_V3.md)** - Complete v3.0 guide
+- **[FEATURES.md](FEATURES.md)** - Feature list
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history
+- **[CHEATSHEET.md](CHEATSHEET.md)** - CLI commands
+
+---
+
+## 🎯 Typical Workflow
+
+### Discovery
+Add targets from bug bounty programs via web UI
+
+### Scanning
+Automatic download + MobSF scan
+
+### Analysis
+Review findings in dashboard
+
+### Manual Testing
+```bash
+cd targets/<target_name>
+# Deep dive into findings
+```
+
+### Reporting
+```bash
+./fbh.sh report generate <target> --format markdown
+```
+
+---
+
+## 🔌 API Endpoints
+
+```bash
+# List targets
+curl http://localhost:8000/fbh/api/targets/
+
+# Create target
+curl -X POST http://localhost:8000/fbh/api/targets/ \
+  -H "Content-Type: application/json" \
+  -d '{"name":"myapp","package":"com.example.app","platform":"android"}'
+
+# Get findings
+curl http://localhost:8000/fbh/api/findings/?target=myapp
+```
+
+---
+
+## 🐛 Troubleshooting
+
+**MobSF won't start:**
+```bash
+lsof -ti:8000 | xargs kill -9
+cd MOBSF && ./run.sh
+```
+
+**APK download fails:**
+```bash
+pip3 install gplaycli
+```
+
+**IPA download fails:**
+```bash
+ipatool auth login
+```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) first.
-
-```bash
-# Fork the repo
-git clone https://github.com/yourusername/FlutterSentinel.git
-
-# Create feature branch
-git checkout -b feature/amazing-feature
-
-# Commit changes
-git commit -m "Add amazing feature"
-
-# Push and create PR
-git push origin feature/amazing-feature
-```
+Bug bounty hunters, security researchers, and developers welcome!
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - For authorized security testing only
 
 ---
 
-## ⚠️ Disclaimer
+**Version**: 3.0.0  
+**Status**: Production Ready  
+**Author**: Security Researcher  
+**Platform**: macOS, Linux
 
-**FlutterSentinel is for authorized security testing only.**
-
-### Authorized Use
-- ✅ Bug bounty programs with valid scope
-- ✅ Authorized penetration testing engagements
-- ✅ Security research with explicit permission
-- ✅ Educational purposes in controlled environments
-
-### Prohibited Use
-- ❌ Unauthorized access to systems or applications
-- ❌ Testing without explicit permission
-- ❌ Malicious or illegal activities
-- ❌ Violating terms of service
-
-**By using this tool, you agree to:**
-1. Only test applications you have permission to test
-2. Follow responsible disclosure practices
-3. Comply with all applicable laws and regulations
-4. Use findings ethically and professionally
-
-**The developers assume no liability for misuse of this tool.**
-
----
-
-## 🙏 Acknowledgments
-
-- Built on research from OWASP Mobile Security Testing Guide
-- Inspired by the mobile security research community
-- Thanks to all contributors and bug bounty hunters worldwide
-
----
-
-## 📞 Contact
-
-- **GitHub Issues**: [Report bugs or request features](https://github.com/yourusername/FlutterSentinel/issues)
-- **Discussions**: [Join the community](https://github.com/yourusername/FlutterSentinel/discussions)
-
----
-
-<div align="center">
-
-**FlutterSentinel** - Always Watching for Vulnerabilities 👁️
-
-Made with ❤️ by security researchers, for security researchers
-
-⭐ Star this repo if you find it useful!
-
-</div>
+🎯 **Happy Hunting!**

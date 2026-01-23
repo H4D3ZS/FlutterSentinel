@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape android:shape="rectangle"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="@dimen/edit_text_container_default_border_radius" />
+    <solid android:color="@color/White" />
+    <stroke android:color="@color/animated_border_default_deactivated_border_color" />
+</shape>

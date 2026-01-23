@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:label="campus_navigation" android:id="@id/campus_navigation" app:startDestination="@id/campusJumpActivationFragment"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:label="CampusJumpActivationFragment" android:name="com.ultramobile.mint.fragments.campus.CampusJumpActivationFragment" android:id="@id/campusJumpActivationFragment">
+        <action android:id="@id/action_campusWelcomeFragment" app:destination="@id/campusWelcomeFragment" app:popUpTo="@id/campusJumpActivationFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_campusPlanSelectionFragment" app:destination="@id/campusPlanSelectionFragment" app:popUpTo="@id/campusJumpActivationFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_campusZipEntryFragment" app:destination="@id/campusZipEntryFragment" app:popUpTo="@id/campusJumpActivationFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_addPaymentFragment5" app:destination="@id/paymentMethodSelectionFragment" />
+        <action android:id="@id/action_activationPurchaseFragment" app:destination="@id/activationPurchaseFragment" />
+        <action android:id="@id/action_campusTrialFragment" app:destination="@id/campusTrialFragment" />
+        <action android:id="@id/action_passwordActivationFragment" app:destination="@id/passwordActivationFragment" app:popUpTo="@id/campusJumpActivationFragment" app:popUpToInclusive="true" />
+        <action android:id="@id/action_compatibilityIntroFragment" app:destination="@id/compatibilityIntroFragment" app:popUpTo="@id/campusJumpActivationFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="CampusWelcomeFragment" android:name="com.ultramobile.mint.fragments.campus.CampusWelcomeFragment" android:id="@id/campusWelcomeFragment">
+        <action android:id="@id/action_campusPlanSelectionFragment" app:destination="@id/campusPlanSelectionFragment" app:popUpTo="@id/campusJumpActivationFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="CampusPlanSelectionFragment" android:name="com.ultramobile.mint.fragments.campus.CampusPlanSelectionFragment" android:id="@id/campusPlanSelectionFragment">
+        <action android:id="@id/action_campusZipEntryFragment" app:destination="@id/campusZipEntryFragment" />
+        <action android:id="@id/action_compatibilityIntroFragment" app:destination="@id/compatibilityIntroFragment" />
+    </fragment>
+    <fragment android:label="CampusZipEntryFragment" android:name="com.ultramobile.mint.fragments.campus.CampusZipEntryFragment" android:id="@id/campusZipEntryFragment">
+        <action android:id="@id/action_activationPurchaseOverviewFragment" app:destination="@id/personalActivationFragment2" />
+    </fragment>
+    <fragment android:label="PersonalActivationFragment" android:name="com.ultramobile.mint.fragments.activation.personal.PersonalActivationFragment" android:id="@id/personalActivationFragment2">
+        <action android:id="@id/action_orangePortInProcessFragment" app:destination="@id/paymentMethodSelectionFragment" />
+        <action android:id="@id/action_passwordActivationFragment" app:destination="@id/passwordActivationFragment" />
+    </fragment>
+    <fragment android:label="PaymentMethodSelectionFragment" android:name="com.ultramobile.mint.fragments.payment.ActivationPaymentMethodSelectionFragment" android:id="@id/paymentMethodSelectionFragment">
+        <action android:id="@id/action_addPaymentFragment" app:destination="@id/addPaymentFragment5" />
+        <action android:id="@id/action_confirmPlanFragment" app:destination="@id/activationPurchaseFragment" />
+    </fragment>
+    <fragment android:label="AddPaymentFragment" android:name="com.ultramobile.mint.fragments.payment.AddPaymentFragment" android:id="@id/addPaymentFragment5">
+        <action android:id="@id/action_confirmPlanFragment" app:destination="@id/activationPurchaseFragment" />
+    </fragment>
+    <fragment android:label="ActivationPurchaseFragment" android:name="com.ultramobile.mint.fragments.campus.purchase.CampusActivationPurchaseFragment" android:id="@id/activationPurchaseFragment">
+        <action android:id="@id/action_campusPlanSelectionFragment" app:destination="@id/campusPlanSelectionFragment" app:popUpTo="@id/activationPurchaseFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_updatePaymentFragment5" app:destination="@id/paymentMethodSelectionFragment" />
+        <action android:id="@id/action_campusProcessActivationFragment" app:destination="@id/campusProcessActivationFragment" />
+    </fragment>
+    <fragment android:label="CampusProcessActivationFragment" android:name="com.ultramobile.mint.fragments.campus.CampusProcessActivationFragment" android:id="@id/campusProcessActivationFragment">
+        <action android:id="@id/action_campusTrialFragment" app:destination="@id/campusTrialFragment" />
+    </fragment>
+    <fragment android:label="CampusTrialFragment" android:name="com.ultramobile.mint.fragments.campus.CampusTrialFragment" android:id="@id/campusTrialFragment">
+        <action android:id="@id/action_passwordActivationFragment" app:destination="@id/passwordActivationFragment" />
+        <action android:id="@id/action_campusRafFragment" app:destination="@id/campusTrialRafFragment" />
+    </fragment>
+    <fragment android:label="CampusRafFragment" android:name="com.ultramobile.mint.fragments.campus.CampusReferralWebViewFragment" android:id="@id/campusTrialRafFragment" />
+    <fragment android:label="PasswordActivationFragment" android:name="com.ultramobile.mint.fragments.activation.personal.PasswordActivationFragment" android:id="@id/passwordActivationFragment">
+        <action android:id="@id/action_setDataActivationFragment" app:destination="@id/simInsertionTutorialFragment" app:popUpTo="@id/campusJumpActivationFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_personalActivationFragment" app:destination="@id/personalActivationFragment2" />
+    </fragment>
+    <fragment android:label="SimInsertionTutorialFragment" android:name="com.ultramobile.mint.fragments.activation.tutorial.SimInsertionTutorialFragment" android:id="@id/simInsertionTutorialFragment">
+        <action android:id="@id/action_setDataActivationFragment" app:destination="@id/setDataActivationFragment" app:popUpTo="@id/campusJumpActivationFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="SetDataActivationFragment" android:name="com.ultramobile.mint.fragments.activation.set_data.SetDataActivationFragment" android:id="@id/setDataActivationFragment">
+        <action android:id="@id/action_lightDashboardActivationFragment" app:destination="@id/lightDashboardActivationFragment" app:popUpTo="@id/campusJumpActivationFragment" app:popUpToInclusive="true" />
+    </fragment>
+    <fragment android:label="CompatibilityIntroFragment" android:name="com.ultramobile.mint.fragments.activation.compatibility.CompatibilityIntroFragment" android:id="@id/compatibilityIntroFragment">
+        <action android:id="@id/action_compatibilityDeviceSelectionFragment" app:destination="@id/compatibilityDeviceSelectionFragment" />
+        <action android:id="@id/action_processCompatibilityFragment" app:destination="@id/processDeviceCompatibilityFragment" />
+        <action android:id="@id/action_personalActivationFragment" app:destination="@id/campusZipEntryFragment" app:popUpTo="@id/campusJumpActivationFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="CompatibilityDeviceSelectionFragment" android:name="com.ultramobile.mint.fragments.activation.compatibility.CompatibilityDeviceInitialFragment" android:id="@id/compatibilityDeviceSelectionFragment">
+        <action android:id="@id/action_compatibilityDeviceIMEIFragment" app:destination="@id/compatibilityDeviceIMEIFragment" />
+        <action android:id="@id/action_compatibilityDeviceModelSelectionFragment" app:destination="@id/compatibilityDeviceModelSelectionFragment" />
+    </fragment>
+    <fragment android:label="CompatibilityDeviceIMEIFragment" android:name="com.ultramobile.mint.fragments.activation.compatibility.CompatibilityDeviceIMEIFragment" android:id="@id/compatibilityDeviceIMEIFragment">
+        <action android:id="@id/action_processCompatibilityFragment" app:destination="@id/processDeviceCompatibilityFragment" />
+        <action android:id="@id/action_processDeviceCompatibilityFragment" app:destination="@id/processDeviceCompatibilityFragment" />
+    </fragment>
+    <fragment android:label="CompatibilityDeviceModelSelectionFragment" android:name="com.ultramobile.mint.fragments.activation.compatibility.CompatibilityDeviceModelSelectionFragment" android:id="@id/compatibilityDeviceModelSelectionFragment">
+        <action android:id="@id/action_processCompatibilityFragment" app:destination="@id/processDeviceCompatibilityFragment" />
+        <action android:id="@id/action_compatibilityBrandSearchFragment" app:destination="@id/compatibilityBrandSearchFragment" />
+        <action android:id="@id/action_compatibilityModelSearchFragment" app:destination="@id/compatibilityModelSearchFragment" />
+        <action android:id="@id/action_processDeviceCompatibilityFragment" app:destination="@id/processDeviceCompatibilityFragment" />
+    </fragment>
+    <fragment android:label="CompatibilityBrandSearchFragment" android:name="com.ultramobile.mint.fragments.activation.compatibility.CompatibilityBrandSearchFragment" android:id="@id/compatibilityBrandSearchFragment" />
+    <fragment android:label="CompatibilityModelSearchFragment" android:name="com.ultramobile.mint.fragments.activation.compatibility.CompatibilityModelSearchFragment" android:id="@id/compatibilityModelSearchFragment" />
+    <fragment android:label="ProcessDeviceCompatibilityFragment" android:name="com.ultramobile.mint.fragments.activation.compatibility.ProcessDeviceCompatibilityFragment" android:id="@id/processDeviceCompatibilityFragment">
+        <action android:id="@id/action_personalActivationFragment" app:destination="@id/campusZipEntryFragment" app:popUpTo="@id/campusJumpActivationFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_compatibilityErrorResultFragment" app:destination="@id/compatibilityErrorResultFragment" app:popUpTo="@id/campusJumpActivationFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="CompatibilityErrorResultFragment" android:name="com.ultramobile.mint.fragments.activation.compatibility.CompatibilityErrorResultFragment" android:id="@id/compatibilityErrorResultFragment">
+        <action android:id="@id/action_personalActivationFragment" app:destination="@id/campusZipEntryFragment" app:popUpTo="@id/campusJumpActivationFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_compatibilityIntroFragment" app:destination="@id/compatibilityDeviceSelectionFragment" />
+    </fragment>
+</navigation>

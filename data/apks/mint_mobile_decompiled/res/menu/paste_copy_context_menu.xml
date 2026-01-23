@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@id/pasteMenuItem" android:title="@string/placeholder_edit_text_popup_menu_paste" />
+    <item android:id="@id/copyMenuItem" android:title="@string/placeholder_edit_text_popup_menu_copy" />
+</menu>

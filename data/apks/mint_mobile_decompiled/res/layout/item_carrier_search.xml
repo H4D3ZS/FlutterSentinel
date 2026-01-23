@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center" android:orientation="vertical" android:id="@id/cellLayout" android:layout_width="fill_parent" android:layout_height="54.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.appcompat.widget.AppCompatTextView android:textSize="14.0sp" android:textColor="@color/text_dark_gray" android:gravity="center_vertical" android:id="@id/carrierName" android:background="?selectableItemBackground" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_margin="@dimen/orange_carrier_select_cell_padding" android:drawableEnd="@null" android:fontFamily="@font/proximanova_bold" />
+</LinearLayout>

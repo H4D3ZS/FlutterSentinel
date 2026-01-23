@@ -1,0 +1,38 @@
+.class public final Lcom/google/android/libraries/places/internal/zzmj;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Lcom/google/android/libraries/places/internal/zzbep;
+
+
+# direct methods
+.method public static zza(Landroid/content/Context;)Lcom/google/android/datatransport/Transport;
+    .locals 0
+
+    .line 1
+    invoke-static {p0}, Lcom/google/android/libraries/places/internal/zzmu;->zza(Landroid/content/Context;)Lcom/google/android/datatransport/Transport;
+
+    .line 2
+    .line 3
+    .line 4
+    move-result-object p0
+
+    .line 5
+    invoke-static {p0}, Lcom/google/android/libraries/places/internal/zzber;->zza(Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 6
+    .line 7
+    .line 8
+    return-object p0
+.end method
+
+
+# virtual methods
+.method public final bridge synthetic zzb()Ljava/lang/Object;
+    .locals 1
+
+    const/4 v0, 0x0
+
+    throw v0
+.end method

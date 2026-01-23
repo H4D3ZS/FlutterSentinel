@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="drawable" name="attachCameraIconName">@null</item>
+    <item type="drawable" name="chatBackgroundDrawable">@android:color/transparent</item>
+    <item type="drawable" name="chatBackgroundImageName">@android:color/transparent</item>
+    <item type="drawable" name="com_appboy_push_large_notification_icon">@drawable/notification_fox</item>
+    <item type="drawable" name="com_appboy_push_small_notification_icon">@drawable/notification_fox</item>
+    <item type="drawable" name="contact_avatar">@drawable/kbm_contact_placeholder</item>
+    <item type="drawable" name="editTextBackgroundDrawable">@android:color/transparent</item>
+    <item type="drawable" name="editTextLayoutBackgroundDrawable">@android:color/transparent</item>
+    <item type="drawable" name="header_drawable">@drawable/kbm_header_drawable</item>
+    <item type="drawable" name="kbm_attachment_option_camera_drawable">@drawable/kbm_send_photo_icon</item>
+    <item type="drawable" name="kbm_attachment_option_file_drawable">@drawable/kbm_attach_file_icon</item>
+    <item type="drawable" name="kbm_attachment_option_location_drawable">@drawable/kbm_send_location_icon</item>
+    <item type="drawable" name="kbm_back_icon_drawable">@drawable/kbm_custom_back</item>
+    <item type="drawable" name="kbm_webview_back_icon_drawable">@drawable/kbm_white_close_24</item>
+    <item type="drawable" name="material_ic_keyboard_arrow_next_black_24dp">@drawable/material_ic_keyboard_arrow_right_black_24dp</item>
+    <item type="drawable" name="material_ic_keyboard_arrow_previous_black_24dp">@drawable/material_ic_keyboard_arrow_left_black_24dp</item>
+    <item type="drawable" name="notification_template_icon_bg">#3333b5e5</item>
+    <item type="drawable" name="notification_template_icon_low_bg">#0cffffff</item>
+    <item type="drawable" name="pinned_header_drawable">@drawable/kbm_pinned_drawable</item>
+    <item type="drawable" name="richCardDrawable">@drawable/kbm_baseline_open_in_new_24</item>
+    <item type="drawable" name="richLinkButtonDrawable">@drawable/kbm_baseline_open_in_new_24</item>
+    <item type="drawable" name="sub_header_drawable">@drawable/kbm_sub_header_drawable</item>
+</resources>

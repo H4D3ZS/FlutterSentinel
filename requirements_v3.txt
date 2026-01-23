@@ -1,0 +1,28 @@
+# FBH v3.0 - Additional Dependencies
+
+# Flask API Server
+flask>=3.0.0
+flask-cors>=4.0.0
+flask-socketio>=5.3.0
+python-socketio>=5.11.0
+
+# Background Tasks
+celery>=5.3.0
+redis>=5.0.0
+
+# Web Dashboard
+gunicorn>=21.2.0
+
+# MobSF Integration
+# (MobSF has its own dependencies)
+
+# AI/ML (for future AI agents)
+openai>=1.0.0
+langchain>=0.1.0
+chromadb>=0.4.0
+
+# Existing dependencies
+click>=8.1.0
+requests>=2.31.0
+pyjwt>=2.8.0
+pyyaml>=6.0

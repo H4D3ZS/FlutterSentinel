@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:label="mhi_set_up_navigation" android:id="@id/mhi_set_up_navigation" app:startDestination="@id/isYourDeviceSetupFragment" xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <fragment android:label="isYourDeviceSetupFragment" android:name="com.ultramobile.mint.fragments.mhi.setup.MHIIsYourGatewaySetupFragment" android:id="@id/isYourDeviceSetupFragment">
+        <action android:id="@id/action_scanQRCodeIllustrationFragment" app:destination="@id/scanQRCodeIllustrationFragment" />
+        <action android:id="@id/action_placementVideoFragment" app:destination="@id/placementVideoFragment" />
+    </fragment>
+    <fragment android:label="Placement Video" android:name="com.ultramobile.mint.fragments.mhi.setup.MHIPlacementVideoFragment" android:id="@id/placementVideoFragment">
+        <argument android:name="type" app:argType="integer" />
+        <action android:id="@id/action_scanQRCodeIllustrationFragment" app:destination="@id/scanQRCodeIllustrationFragment" />
+        <action android:id="@id/action_idealLocationFragment" app:destination="@id/idealLocationFragment" />
+        <action android:id="@id/action_setupCompleteFragment" app:destination="@id/setupCompleteFragment" />
+    </fragment>
+    <fragment android:label="Ideal Location" android:name="com.ultramobile.mint.fragments.mhi.setup.MHIIdealLocationFragment" android:id="@id/idealLocationFragment" />
+    <fragment android:label="Scan QR Code Illustration" android:name="com.ultramobile.mint.fragments.mhi.setup.MHIScanQRCodeIllustrationFragment" android:id="@id/scanQRCodeIllustrationFragment">
+        <action android:id="@id/action_scanQRCodeScannerFragment" app:destination="@id/scanQRCodeScannerFragment" />
+        <action android:id="@id/action_mhiEnterAdminPassword" app:destination="@id/mhiEnterAdminPasswordFragment" />
+    </fragment>
+    <fragment android:label="Scan QR Code Scanner" android:name="com.ultramobile.mint.fragments.mhi.setup.MHIScanQRCodeScannerFragment" android:id="@id/scanQRCodeScannerFragment">
+        <action android:id="@id/action_powerOnInitialization" app:destination="@id/wifiPermissionsFragment" />
+        <action android:id="@id/action_scanQRCodeFailedFragment" app:destination="@id/scanFailedFragment" />
+        <action android:id="@id/action_enterAdminDetailsManuallyFragment" app:destination="@id/enterAdminDetailsManuallyFragment" app:popUpTo="@id/scanQRCodeIllustrationFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="Enter admin password" android:name="com.ultramobile.mint.fragments.mhi.setup.MhiEnterAdminPasswordFragment" android:id="@id/mhiEnterAdminPasswordFragment">
+        <action android:id="@id/action_powerOnInitialization" app:destination="@id/mhiEnterWifiUsernameFragment" />
+    </fragment>
+    <fragment android:label="Enter network name" android:name="com.ultramobile.mint.fragments.mhi.setup.MhiEnterWifiUsernameFragment" android:id="@id/mhiEnterWifiUsernameFragment">
+        <action android:id="@id/action_mhiEnterWifiPassword" app:destination="@id/mhiEnterWifiPasswordFragment" />
+    </fragment>
+    <fragment android:label="Enter network password" android:name="com.ultramobile.mint.fragments.mhi.setup.MhiEnterWifiPasswordFragment" android:id="@id/mhiEnterWifiPasswordFragment">
+        <action android:id="@id/action_wifiPermissionsFragment" app:destination="@id/wifiPermissionsFragment" />
+    </fragment>
+    <fragment android:label="Start Powering on the device" android:name="com.ultramobile.mint.fragments.mhi.setup.MhiPowerOnInitializationFragment" android:id="@id/powerOnInitializationFragment">
+        <action android:id="@id/action_powerOnTimer" app:destination="@id/powerOnTimerFragment" />
+    </fragment>
+    <fragment android:label="Processing Powering on the device" android:name="com.ultramobile.mint.fragments.mhi.setup.MhiPowerOnTimerFragment" android:id="@id/powerOnTimerFragment">
+        <action android:id="@id/action_connectionScannedSuccessfulFragment" app:destination="@id/changeWifiNameFragment" app:popUpTo="@id/powerOnInitializationFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_connectionManualSuccessfulFragment" app:destination="@id/changeWifiNameFragment" app:popUpTo="@id/powerOnInitializationFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_connectionFailedFragment" app:destination="@id/gatewayConnectionErrorFragment" app:popUpTo="@id/powerOnInitializationFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_enterAdminDetailsManuallyFragment" app:destination="@id/mhiEnterAdminPasswordFragment" app:popUpTo="@id/scanQRCodeIllustrationFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_skipToChangePasswordFragment" app:destination="@id/changeAdminPasswordFragment" app:popUpTo="@id/scanQRCodeIllustrationFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="Ask for permissions" android:name="com.ultramobile.mint.fragments.mhi.setup.MhiWifiPermissionInitializationFragment" android:id="@id/wifiPermissionsFragment">
+        <action android:id="@id/action_successfullyConnectedFragment" app:destination="@id/powerOnInitializationFragment" />
+        <action android:id="@id/action_manualWifiConfigurationFragment" app:destination="@id/wifiManualConnectionInstructionsFragment" />
+    </fragment>
+    <fragment android:label="Enter Admin Details Manually" android:name="com.ultramobile.mint.fragments.mhi.setup.MHIEnterAdminDetailsManuallyFragment" android:id="@id/enterAdminDetailsManuallyFragment">
+        <action android:id="@id/action_mhiEnterAdminPassword" app:destination="@id/mhiEnterAdminPasswordFragment" />
+    </fragment>
+    <fragment android:label="Scan Failed" android:name="com.ultramobile.mint.fragments.mhi.setup.MHIScanFailedFragment" android:id="@id/scanFailedFragment">
+        <action android:id="@id/action_scanQRCodeScannerFragment" app:destination="@id/scanQRCodeScannerFragment" app:popUpTo="@id/scanQRCodeScannerFragment" app:popUpToInclusive="true" />
+        <action android:id="@id/action_mhiEnterAdminPassword" app:destination="@id/mhiEnterAdminPasswordFragment" />
+    </fragment>
+    <fragment android:label="Network Signal Strength" android:name="com.ultramobile.mint.fragments.mhi.setup.MHINetworkSignalStrengthFragment" android:id="@id/networkSignalStrengthFragment">
+        <action android:id="@id/action_placementVideoFragment" app:destination="@id/placementVideoFragment" />
+    </fragment>
+    <fragment android:label="Setup Complete" android:name="com.ultramobile.mint.fragments.mhi.setup.MHISetupCompleteFragment" android:id="@id/setupCompleteFragment" />
+    <fragment android:label="Change Your Wifi Name" android:name="com.ultramobile.mint.fragments.mhi.setup.MHIChangeYourWifiNameFragment" android:id="@id/changeWifiNameFragment">
+        <action android:id="@id/action_changeWifiPasswordFragment" app:destination="@id/changeWifiPasswordFragment" />
+    </fragment>
+    <fragment android:label="Change Your Wifi Password" android:name="com.ultramobile.mint.fragments.mhi.setup.MHIChangeYourWifiPasswordFragment" android:id="@id/changeWifiPasswordFragment">
+        <action android:id="@id/action_changeAdminPasswordFragment" app:destination="@id/changeAdminPasswordFragment" />
+        <action android:id="@id/action_RefreshConnectionFragment" app:destination="@id/wifiManualConnectionInstructionsFragment" app:popUpTo="@id/isYourDeviceSetupFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="Connect to Wifi Manually" android:name="com.ultramobile.mint.fragments.mhi.setup.MHIWiFiManualConnectionInstructionsFragment" android:id="@id/wifiManualConnectionInstructionsFragment">
+        <action android:id="@id/action_startSetupOverFragment" app:destination="@id/wifiPermissionsFragment" />
+        <action android:id="@id/action_startSetupOverCompletelyFragment" app:destination="@id/isYourDeviceSetupFragment" app:popUpTo="@id/isYourDeviceSetupFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="Change Your Admin Password" android:name="com.ultramobile.mint.fragments.mhi.setup.MHIChangeAdminPasswordFragment" android:id="@id/changeAdminPasswordFragment">
+        <action android:id="@id/action_networkSignalStrengthFragment" app:destination="@id/networkSignalStrengthFragment" />
+        <action android:id="@id/action_setupCompleteFragment" app:destination="@id/setupCompleteFragment" />
+    </fragment>
+    <fragment android:label="Trouble Connecting to Gateway" android:name="com.ultramobile.mint.fragments.mhi.setup.MHIGatewayConnectionErrorFragment" android:id="@id/gatewayConnectionErrorFragment">
+        <action android:id="@id/action_manualConnectionFragment" app:destination="@id/wifiManualConnectionInstructionsFragment" />
+        <action android:id="@id/action_powerOnTimer" app:destination="@id/powerOnTimerFragment" />
+    </fragment>
+    <fragment android:label="Restarting Gateway Error" android:name="com.ultramobile.mint.fragments.mhi.setup.MHIGatewayRestartErrorFragment" android:id="@id/gatewayRestartErrorFragment" />
+</navigation>

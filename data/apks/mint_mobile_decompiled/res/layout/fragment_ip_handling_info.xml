@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.appcompat.widget.LinearLayoutCompat android:gravity="center" android:orientation="vertical" android:background="@color/background_color_unfocused" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <ImageView android:id="@id/ivFoxAgent" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@null" />
+        <TextView android:textSize="29.0sp" android:textStyle="bold" android:textColor="@color/text_dark_gray" android:id="@id/tvTitle" android:paddingTop="32.0dip" android:paddingBottom="8.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/time_to_make_sure_it_s_you" android:fontFamily="@font/proximanova_regular" android:textAlignment="center" android:paddingStart="24.0dip" android:paddingEnd="24.0dip" android:textFontWeight="800" />
+        <TextView android:textSize="16.0sp" android:textStyle="bold" android:textColor="@color/text_light_gray" android:id="@id/tvSubtitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/we_sent_a_text_to_the_phone_number_" android:fontFamily="@font/proximanova_regular" android:textAlignment="center" android:paddingStart="24.0dip" android:paddingEnd="24.0dip" android:textFontWeight="800" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+    <FrameLayout android:fitsSystemWindows="true" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <LinearLayout android:gravity="center" android:layout_gravity="center|bottom" android:orientation="horizontal" android:id="@id/vwNeeHelp" android:background="@drawable/carrier_double_check_card_rounded_background" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="32.0dip" android:layout_marginStart="24.0dip" android:layout_marginEnd="24.0dip" android:elevation="10.0dip">
+            <TextView android:textSize="14.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Need help? Find answers here." android:fontFamily="@font/proximanova_regular" android:layout_marginStart="24.0dip" android:textFontWeight="700" />
+            <Space android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1.0" />
+            <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="3.0dip" android:layout_marginBottom="-3.0dip" android:src="@null" android:layout_marginEnd="14.0sp" />
+        </LinearLayout>
+    </FrameLayout>
+</FrameLayout>

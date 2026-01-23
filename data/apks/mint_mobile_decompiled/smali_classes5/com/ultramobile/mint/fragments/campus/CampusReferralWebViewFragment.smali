@@ -1,0 +1,1558 @@
+.class public final Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;
+.super Lcom/ultramobile/mint/baseFiles/MintBaseFragment;
+.source "SourceFile"
+
+
+# annotations
+.annotation runtime Lkotlin/Metadata;
+    d1 = {
+        "\u0000T\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0008\u0002\n\u0002\u0010\u000e\n\u0000\n\u0002\u0010\u0002\n\u0002\u0008\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0008\n\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0008\u0006\n\u0002\u0018\u0002\n\u0002\u0008\u0003\n\u0002\u0018\u0002\n\u0002\u0008\u0004\u0018\u00002\u00020\u0001B\u0007\u00a2\u0006\u0004\u0008\u0002\u0010\u0003J\u0017\u0010\u0007\u001a\u00020\u00062\u0006\u0010\u0005\u001a\u00020\u0004H\u0002\u00a2\u0006\u0004\u0008\u0007\u0010\u0008J-\u0010\u0010\u001a\u0004\u0018\u00010\u000f2\u0006\u0010\n\u001a\u00020\t2\u0008\u0010\u000c\u001a\u0004\u0018\u00010\u000b2\u0008\u0010\u000e\u001a\u0004\u0018\u00010\rH\u0016\u00a2\u0006\u0004\u0008\u0010\u0010\u0011J\u000f\u0010\u0012\u001a\u00020\u0006H\u0016\u00a2\u0006\u0004\u0008\u0012\u0010\u0003J!\u0010\u0014\u001a\u00020\u00062\u0006\u0010\u0013\u001a\u00020\u000f2\u0008\u0010\u000e\u001a\u0004\u0018\u00010\rH\u0016\u00a2\u0006\u0004\u0008\u0014\u0010\u0015J\u000f\u0010\u0016\u001a\u00020\u0006H\u0016\u00a2\u0006\u0004\u0008\u0016\u0010\u0003J\u000f\u0010\u0017\u001a\u00020\u0006H\u0016\u00a2\u0006\u0004\u0008\u0017\u0010\u0003J\u000f\u0010\u0018\u001a\u00020\u0006H\u0003\u00a2\u0006\u0004\u0008\u0018\u0010\u0003J\u000f\u0010\u0019\u001a\u00020\u0006H\u0002\u00a2\u0006\u0004\u0008\u0019\u0010\u0003R\u0018\u0010\u001d\u001a\u0004\u0018\u00010\u001a8\u0002@\u0002X\u0082\u000e\u00a2\u0006\u0006\n\u0004\u0008\u001b\u0010\u001cR\u0014\u0010!\u001a\u00020\u001e8BX\u0082\u0004\u00a2\u0006\u0006\u001a\u0004\u0008\u001f\u0010 R\u0014\u0010$\u001a\u00020\u001a8BX\u0082\u0004\u00a2\u0006\u0006\u001a\u0004\u0008\"\u0010#R\u0014\u0010(\u001a\u00020%8BX\u0082\u0004\u00a2\u0006\u0006\u001a\u0004\u0008&\u0010\'R\u0014\u0010,\u001a\u00020)8BX\u0082\u0004\u00a2\u0006\u0006\u001a\u0004\u0008*\u0010+\u00a8\u0006-"
+    }
+    d2 = {
+        "Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;",
+        "Lcom/ultramobile/mint/baseFiles/MintBaseFragment;",
+        "<init>",
+        "()V",
+        "",
+        "url",
+        "",
+        "p",
+        "(Ljava/lang/String;)V",
+        "Landroid/view/LayoutInflater;",
+        "inflater",
+        "Landroid/view/ViewGroup;",
+        "container",
+        "Landroid/os/Bundle;",
+        "savedInstanceState",
+        "Landroid/view/View;",
+        "onCreateView",
+        "(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;",
+        "onDestroyView",
+        "view",
+        "onViewCreated",
+        "(Landroid/view/View;Landroid/os/Bundle;)V",
+        "reloadData",
+        "onDestroy",
+        "q",
+        "u",
+        "Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;",
+        "e",
+        "Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;",
+        "_binding",
+        "Landroidx/appcompat/widget/AppCompatImageButton;",
+        "getBackButton",
+        "()Landroidx/appcompat/widget/AppCompatImageButton;",
+        "backButton",
+        "m",
+        "()Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;",
+        "binding",
+        "Landroid/webkit/WebView;",
+        "n",
+        "()Landroid/webkit/WebView;",
+        "referralBanner",
+        "Landroidx/swiperefreshlayout/widget/SwipeRefreshLayout;",
+        "o",
+        "()Landroidx/swiperefreshlayout/widget/SwipeRefreshLayout;",
+        "swiperefresh",
+        "app_ProdRelease"
+    }
+    k = 0x1
+    mv = {
+        0x2,
+        0x1,
+        0x0
+    }
+    xi = 0x30
+.end annotation
+
+.annotation build Lkotlin/jvm/internal/SourceDebugExtension;
+    value = {
+        "SMAP\nCampusReferralWebViewFragment.kt\nKotlin\n*S Kotlin\n*F\n+ 1 CampusReferralWebViewFragment.kt\ncom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment\n+ 2 _Collections.kt\nkotlin/collections/CollectionsKt___CollectionsKt\n+ 3 ArraysJVM.kt\nkotlin/collections/ArraysKt__ArraysJVMKt\n*L\n1#1,197:1\n739#2,9:198\n739#2,9:211\n37#3:207\n36#3,3:208\n37#3:220\n36#3,3:221\n*S KotlinDebug\n*F\n+ 1 CampusReferralWebViewFragment.kt\ncom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment\n*L\n168#1:198,9\n177#1:211,9\n168#1:207\n168#1:208,3\n177#1:220\n177#1:221,3\n*E\n"
+    }
+.end annotation
+
+
+# instance fields
+.field public e:Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;
+
+
+# direct methods
+.method public constructor <init>()V
+    .locals 0
+
+    .line 1
+    invoke-direct {p0}, Lcom/ultramobile/mint/baseFiles/MintBaseFragment;-><init>()V
+
+    .line 2
+    .line 3
+    .line 4
+    return-void
+.end method
+
+.method public static final synthetic access$handleSMSLink(Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;Ljava/lang/String;)V
+    .locals 0
+
+    .line 1
+    invoke-direct {p0, p1}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->p(Ljava/lang/String;)V
+
+    .line 2
+    .line 3
+    .line 4
+    return-void
+.end method
+
+.method public static final synthetic access$updateReferralValues(Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;)V
+    .locals 0
+
+    .line 1
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->u()V
+
+    .line 2
+    .line 3
+    .line 4
+    return-void
+.end method
+
+.method private final getBackButton()Landroidx/appcompat/widget/AppCompatImageButton;
+    .locals 2
+
+    .line 1
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->m()Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;
+
+    .line 2
+    .line 3
+    .line 4
+    move-result-object v0
+
+    .line 5
+    iget-object v0, v0, Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;->backButton:Landroidx/appcompat/widget/AppCompatImageButton;
+
+    .line 6
+    .line 7
+    const-string v1, "backButton"
+
+    .line 8
+    .line 9
+    invoke-static {v0, v1}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullExpressionValue(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 10
+    .line 11
+    .line 12
+    return-object v0
+.end method
+
+.method public static synthetic i(Ljava/lang/String;)V
+    .locals 0
+
+    .line 1
+    invoke-static {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->v(Ljava/lang/String;)V
+
+    return-void
+.end method
+
+.method public static synthetic j(Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;)V
+    .locals 0
+
+    .line 1
+    invoke-static {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->s(Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;)V
+
+    return-void
+.end method
+
+.method public static synthetic k(Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;Lcom/ultramobile/mint/viewmodels/settings/ReferralObject;)V
+    .locals 0
+
+    .line 1
+    invoke-static {p0, p1}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->r(Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;Lcom/ultramobile/mint/viewmodels/settings/ReferralObject;)V
+
+    return-void
+.end method
+
+.method public static synthetic l(Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;Landroid/view/View;)Lkotlin/Unit;
+    .locals 0
+
+    .line 1
+    invoke-static {p0, p1}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->t(Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;Landroid/view/View;)Lkotlin/Unit;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method private final p(Ljava/lang/String;)V
+    .locals 6
+
+    .line 1
+    new-instance v0, Landroid/content/Intent;
+
+    .line 2
+    .line 3
+    const-string v1, "android.intent.action.SENDTO"
+
+    .line 4
+    .line 5
+    invoke-direct {v0, v1}, Landroid/content/Intent;-><init>(Ljava/lang/String;)V
+
+    .line 6
+    .line 7
+    .line 8
+    new-instance v1, Lkotlin/text/Regex;
+
+    .line 9
+    .line 10
+    const-string v2, "[:?]"
+
+    .line 11
+    .line 12
+    invoke-direct {v1, v2}, Lkotlin/text/Regex;-><init>(Ljava/lang/String;)V
+
+    .line 13
+    .line 14
+    .line 15
+    const/4 v2, 0x0
+
+    .line 16
+    invoke-virtual {v1, p1, v2}, Lkotlin/text/Regex;->split(Ljava/lang/CharSequence;I)Ljava/util/List;
+
+    .line 17
+    .line 18
+    .line 19
+    move-result-object v1
+
+    .line 20
+    invoke-interface {v1}, Ljava/util/List;->isEmpty()Z
+
+    .line 21
+    .line 22
+    .line 23
+    move-result v3
+
+    .line 24
+    const/4 v4, 0x1
+
+    .line 25
+    if-nez v3, :cond_1
+
+    .line 26
+    .line 27
+    invoke-interface {v1}, Ljava/util/List;->size()I
+
+    .line 28
+    .line 29
+    .line 30
+    move-result v3
+
+    .line 31
+    invoke-interface {v1, v3}, Ljava/util/List;->listIterator(I)Ljava/util/ListIterator;
+
+    .line 32
+    .line 33
+    .line 34
+    move-result-object v3
+
+    .line 35
+    :goto_0
+    invoke-interface {v3}, Ljava/util/ListIterator;->hasPrevious()Z
+
+    .line 36
+    .line 37
+    .line 38
+    move-result v5
+
+    .line 39
+    if-eqz v5, :cond_1
+
+    .line 40
+    .line 41
+    invoke-interface {v3}, Ljava/util/ListIterator;->previous()Ljava/lang/Object;
+
+    .line 42
+    .line 43
+    .line 44
+    move-result-object v5
+
+    .line 45
+    check-cast v5, Ljava/lang/String;
+
+    .line 46
+    .line 47
+    invoke-interface {v5}, Ljava/lang/CharSequence;->length()I
+
+    .line 48
+    .line 49
+    .line 50
+    move-result v5
+
+    .line 51
+    if-nez v5, :cond_0
+
+    .line 52
+    .line 53
+    goto :goto_0
+
+    .line 54
+    :cond_0
+    check-cast v1, Ljava/lang/Iterable;
+
+    .line 55
+    .line 56
+    invoke-interface {v3}, Ljava/util/ListIterator;->nextIndex()I
+
+    .line 57
+    .line 58
+    .line 59
+    move-result v3
+
+    .line 60
+    add-int/2addr v3, v4
+
+    .line 61
+    invoke-static {v1, v3}, Lkotlin/collections/CollectionsKt___CollectionsKt;->take(Ljava/lang/Iterable;I)Ljava/util/List;
+
+    .line 62
+    .line 63
+    .line 64
+    move-result-object v1
+
+    .line 65
+    goto :goto_1
+
+    .line 66
+    :cond_1
+    invoke-static {}, Lkotlin/collections/CollectionsKt__CollectionsKt;->emptyList()Ljava/util/List;
+
+    .line 67
+    .line 68
+    .line 69
+    move-result-object v1
+
+    .line 70
+    :goto_1
+    check-cast v1, Ljava/util/Collection;
+
+    .line 71
+    .line 72
+    new-array v3, v2, [Ljava/lang/String;
+
+    .line 73
+    .line 74
+    invoke-interface {v1, v3}, Ljava/util/Collection;->toArray([Ljava/lang/Object;)[Ljava/lang/Object;
+
+    .line 75
+    .line 76
+    .line 77
+    move-result-object v1
+
+    .line 78
+    check-cast v1, [Ljava/lang/String;
+
+    .line 79
+    .line 80
+    aget-object v1, v1, v4
+
+    .line 81
+    .line 82
+    invoke-static {v1}, Landroid/text/TextUtils;->isEmpty(Ljava/lang/CharSequence;)Z
+
+    .line 83
+    .line 84
+    .line 85
+    move-result v3
+
+    .line 86
+    const-string v5, "smsto:"
+
+    .line 87
+    .line 88
+    if-nez v3, :cond_2
+
+    .line 89
+    .line 90
+    new-instance v3, Ljava/lang/StringBuilder;
+
+    .line 91
+    .line 92
+    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+
+    .line 93
+    .line 94
+    .line 95
+    invoke-virtual {v3, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 96
+    .line 97
+    .line 98
+    invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 99
+    .line 100
+    .line 101
+    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    .line 102
+    .line 103
+    .line 104
+    move-result-object v1
+
+    .line 105
+    invoke-static {v1}, Landroid/net/Uri;->parse(Ljava/lang/String;)Landroid/net/Uri;
+
+    .line 106
+    .line 107
+    .line 108
+    move-result-object v1
+
+    .line 109
+    invoke-virtual {v0, v1}, Landroid/content/Intent;->setData(Landroid/net/Uri;)Landroid/content/Intent;
+
+    .line 110
+    .line 111
+    .line 112
+    goto :goto_2
+
+    .line 113
+    :cond_2
+    invoke-static {v5}, Landroid/net/Uri;->parse(Ljava/lang/String;)Landroid/net/Uri;
+
+    .line 114
+    .line 115
+    .line 116
+    move-result-object v1
+
+    .line 117
+    invoke-virtual {v0, v1}, Landroid/content/Intent;->setData(Landroid/net/Uri;)Landroid/content/Intent;
+
+    .line 118
+    .line 119
+    .line 120
+    :goto_2
+    const/4 v1, 0x2
+
+    .line 121
+    const/4 v3, 0x0
+
+    .line 122
+    const-string v5, "body="
+
+    .line 123
+    .line 124
+    invoke-static {p1, v5, v2, v1, v3}, Lkotlin/text/StringsKt__StringsKt;->contains$default(Ljava/lang/CharSequence;Ljava/lang/CharSequence;ZILjava/lang/Object;)Z
+
+    .line 125
+    .line 126
+    .line 127
+    move-result v1
+
+    .line 128
+    if-eqz v1, :cond_5
+
+    .line 129
+    .line 130
+    new-instance v1, Lkotlin/text/Regex;
+
+    .line 131
+    .line 132
+    invoke-direct {v1, v5}, Lkotlin/text/Regex;-><init>(Ljava/lang/String;)V
+
+    .line 133
+    .line 134
+    .line 135
+    invoke-virtual {v1, p1, v2}, Lkotlin/text/Regex;->split(Ljava/lang/CharSequence;I)Ljava/util/List;
+
+    .line 136
+    .line 137
+    .line 138
+    move-result-object p1
+
+    .line 139
+    invoke-interface {p1}, Ljava/util/List;->isEmpty()Z
+
+    .line 140
+    .line 141
+    .line 142
+    move-result v1
+
+    .line 143
+    if-nez v1, :cond_4
+
+    .line 144
+    .line 145
+    invoke-interface {p1}, Ljava/util/List;->size()I
+
+    .line 146
+    .line 147
+    .line 148
+    move-result v1
+
+    .line 149
+    invoke-interface {p1, v1}, Ljava/util/List;->listIterator(I)Ljava/util/ListIterator;
+
+    .line 150
+    .line 151
+    .line 152
+    move-result-object v1
+
+    .line 153
+    :goto_3
+    invoke-interface {v1}, Ljava/util/ListIterator;->hasPrevious()Z
+
+    .line 154
+    .line 155
+    .line 156
+    move-result v3
+
+    .line 157
+    if-eqz v3, :cond_4
+
+    .line 158
+    .line 159
+    invoke-interface {v1}, Ljava/util/ListIterator;->previous()Ljava/lang/Object;
+
+    .line 160
+    .line 161
+    .line 162
+    move-result-object v3
+
+    .line 163
+    check-cast v3, Ljava/lang/String;
+
+    .line 164
+    .line 165
+    invoke-interface {v3}, Ljava/lang/CharSequence;->length()I
+
+    .line 166
+    .line 167
+    .line 168
+    move-result v3
+
+    .line 169
+    if-nez v3, :cond_3
+
+    .line 170
+    .line 171
+    goto :goto_3
+
+    .line 172
+    :cond_3
+    check-cast p1, Ljava/lang/Iterable;
+
+    .line 173
+    .line 174
+    invoke-interface {v1}, Ljava/util/ListIterator;->nextIndex()I
+
+    .line 175
+    .line 176
+    .line 177
+    move-result v1
+
+    .line 178
+    add-int/2addr v1, v4
+
+    .line 179
+    invoke-static {p1, v1}, Lkotlin/collections/CollectionsKt___CollectionsKt;->take(Ljava/lang/Iterable;I)Ljava/util/List;
+
+    .line 180
+    .line 181
+    .line 182
+    move-result-object p1
+
+    .line 183
+    goto :goto_4
+
+    .line 184
+    :cond_4
+    invoke-static {}, Lkotlin/collections/CollectionsKt__CollectionsKt;->emptyList()Ljava/util/List;
+
+    .line 185
+    .line 186
+    .line 187
+    move-result-object p1
+
+    .line 188
+    :goto_4
+    check-cast p1, Ljava/util/Collection;
+
+    .line 189
+    .line 190
+    new-array v1, v2, [Ljava/lang/String;
+
+    .line 191
+    .line 192
+    invoke-interface {p1, v1}, Ljava/util/Collection;->toArray([Ljava/lang/Object;)[Ljava/lang/Object;
+
+    .line 193
+    .line 194
+    .line 195
+    move-result-object p1
+
+    .line 196
+    check-cast p1, [Ljava/lang/String;
+
+    .line 197
+    .line 198
+    aget-object p1, p1, v4
+
+    .line 199
+    .line 200
+    :try_start_0
+    const-string v1, "UTF-8"
+
+    .line 201
+    .line 202
+    invoke-static {p1, v1}, Ljava/net/URLDecoder;->decode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    .line 203
+    .line 204
+    .line 205
+    move-result-object v1
+
+    .line 206
+    const-string v3, "decode(...)"
+
+    .line 207
+    .line 208
+    invoke-static {v1, v3}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullExpressionValue(Ljava/lang/Object;Ljava/lang/String;)V
+    :try_end_0
+    .catch Ljava/io/UnsupportedEncodingException; {:try_start_0 .. :try_end_0} :catch_0
+
+    .line 209
+    .line 210
+    .line 211
+    move-object p1, v1
+
+    .line 212
+    goto :goto_5
+
+    .line 213
+    :catch_0
+    move-exception v1
+
+    .line 214
+    invoke-virtual {v1}, Ljava/lang/Throwable;->printStackTrace()V
+
+    .line 215
+    .line 216
+    .line 217
+    :goto_5
+    invoke-static {p1}, Landroid/text/TextUtils;->isEmpty(Ljava/lang/CharSequence;)Z
+
+    .line 218
+    .line 219
+    .line 220
+    move-result v1
+
+    .line 221
+    if-nez v1, :cond_5
+
+    .line 222
+    .line 223
+    const-string v1, "sms_body"
+
+    .line 224
+    .line 225
+    invoke-virtual {v0, v1, p1}, Landroid/content/Intent;->putExtra(Ljava/lang/String;Ljava/lang/String;)Landroid/content/Intent;
+
+    .line 226
+    .line 227
+    .line 228
+    :cond_5
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->requireContext()Landroid/content/Context;
+
+    .line 229
+    .line 230
+    .line 231
+    move-result-object p1
+
+    .line 232
+    invoke-virtual {p1}, Landroid/content/Context;->getPackageManager()Landroid/content/pm/PackageManager;
+
+    .line 233
+    .line 234
+    .line 235
+    move-result-object p1
+
+    .line 236
+    invoke-virtual {v0, p1}, Landroid/content/Intent;->resolveActivity(Landroid/content/pm/PackageManager;)Landroid/content/ComponentName;
+
+    .line 237
+    .line 238
+    .line 239
+    move-result-object p1
+
+    .line 240
+    if-eqz p1, :cond_6
+
+    .line 241
+    .line 242
+    invoke-virtual {p0, v0}, Landroidx/fragment/app/Fragment;->startActivity(Landroid/content/Intent;)V
+
+    .line 243
+    .line 244
+    .line 245
+    goto :goto_6
+
+    .line 246
+    :cond_6
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getContext()Landroid/content/Context;
+
+    .line 247
+    .line 248
+    .line 249
+    move-result-object p1
+
+    .line 250
+    const-string v0, "No SMS app found."
+
+    .line 251
+    .line 252
+    invoke-static {p1, v0, v2}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
+
+    .line 253
+    .line 254
+    .line 255
+    move-result-object p1
+
+    .line 256
+    invoke-virtual {p1}, Landroid/widget/Toast;->show()V
+
+    .line 257
+    .line 258
+    .line 259
+    :goto_6
+    return-void
+.end method
+
+.method public static final r(Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;Lcom/ultramobile/mint/viewmodels/settings/ReferralObject;)V
+    .locals 1
+
+    .line 1
+    if-eqz p1, :cond_1
+
+    .line 2
+    .line 3
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->n()Landroid/webkit/WebView;
+
+    .line 4
+    .line 5
+    .line 6
+    move-result-object p1
+
+    .line 7
+    const/4 v0, 0x0
+
+    .line 8
+    invoke-virtual {p1, v0}, Landroid/view/View;->setVisibility(I)V
+
+    .line 9
+    .line 10
+    .line 11
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->n()Landroid/webkit/WebView;
+
+    .line 12
+    .line 13
+    .line 14
+    move-result-object p1
+
+    .line 15
+    invoke-virtual {p1}, Landroid/webkit/WebView;->getProgress()I
+
+    .line 16
+    .line 17
+    .line 18
+    move-result p1
+
+    .line 19
+    const/16 v0, 0x64
+
+    .line 20
+    .line 21
+    if-ne p1, v0, :cond_0
+
+    .line 22
+    .line 23
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->u()V
+
+    .line 24
+    .line 25
+    .line 26
+    :cond_0
+    return-void
+
+    .line 27
+    :cond_1
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->n()Landroid/webkit/WebView;
+
+    .line 28
+    .line 29
+    .line 30
+    move-result-object p0
+
+    .line 31
+    const/16 p1, 0x8
+
+    .line 32
+    .line 33
+    invoke-virtual {p0, p1}, Landroid/view/View;->setVisibility(I)V
+
+    .line 34
+    .line 35
+    .line 36
+    return-void
+.end method
+
+.method public static final s(Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;)V
+    .locals 0
+
+    .line 1
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->reloadData()V
+
+    .line 2
+    .line 3
+    .line 4
+    return-void
+.end method
+
+.method public static final t(Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;Landroid/view/View;)Lkotlin/Unit;
+    .locals 1
+
+    .line 1
+    const-string v0, "it"
+
+    .line 2
+    .line 3
+    invoke-static {p1, v0}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullParameter(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 4
+    .line 5
+    .line 6
+    invoke-static {p0}, Landroidx/navigation/fragment/FragmentKt;->findNavController(Landroidx/fragment/app/Fragment;)Landroidx/navigation/NavController;
+
+    .line 7
+    .line 8
+    .line 9
+    move-result-object p0
+
+    .line 10
+    invoke-static {p0}, Lcom/ultramobile/mint/fragments/manage_plan/ExtensionsKt;->popBackStackSafe(Landroidx/navigation/NavController;)Z
+
+    .line 11
+    .line 12
+    .line 13
+    sget-object p0, Lkotlin/Unit;->INSTANCE:Lkotlin/Unit;
+
+    .line 14
+    .line 15
+    return-object p0
+.end method
+
+.method public static final v(Ljava/lang/String;)V
+    .locals 0
+
+    .line 1
+    return-void
+.end method
+
+
+# virtual methods
+.method public final m()Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;
+    .locals 2
+
+    .line 1
+    iget-object v0, p0, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->e:Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;
+
+    .line 2
+    .line 3
+    if-eqz v0, :cond_0
+
+    .line 4
+    .line 5
+    return-object v0
+
+    .line 6
+    :cond_0
+    sget v0, Lcom/ultramobile/mint/R$string;->errorBinding:I
+
+    .line 7
+    .line 8
+    invoke-virtual {p0, v0}, Landroidx/fragment/app/Fragment;->getString(I)Ljava/lang/String;
+
+    .line 9
+    .line 10
+    .line 11
+    move-result-object v0
+
+    .line 12
+    const-string v1, "getString(...)"
+
+    .line 13
+    .line 14
+    invoke-static {v0, v1}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullExpressionValue(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 15
+    .line 16
+    .line 17
+    new-instance v1, Ljava/lang/IllegalStateException;
+
+    .line 18
+    .line 19
+    invoke-virtual {v0}, Ljava/lang/Object;->toString()Ljava/lang/String;
+
+    .line 20
+    .line 21
+    .line 22
+    move-result-object v0
+
+    .line 23
+    invoke-direct {v1, v0}, Ljava/lang/IllegalStateException;-><init>(Ljava/lang/String;)V
+
+    .line 24
+    .line 25
+    .line 26
+    throw v1
+.end method
+
+.method public final n()Landroid/webkit/WebView;
+    .locals 2
+
+    .line 1
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->m()Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;
+
+    .line 2
+    .line 3
+    .line 4
+    move-result-object v0
+
+    .line 5
+    iget-object v0, v0, Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;->referralBanner:Landroid/webkit/WebView;
+
+    .line 6
+    .line 7
+    const-string v1, "referralBanner"
+
+    .line 8
+    .line 9
+    invoke-static {v0, v1}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullExpressionValue(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 10
+    .line 11
+    .line 12
+    return-object v0
+.end method
+
+.method public final o()Landroidx/swiperefreshlayout/widget/SwipeRefreshLayout;
+    .locals 2
+
+    .line 1
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->m()Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;
+
+    .line 2
+    .line 3
+    .line 4
+    move-result-object v0
+
+    .line 5
+    iget-object v0, v0, Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;->swiperefresh:Landroidx/swiperefreshlayout/widget/SwipeRefreshLayout;
+
+    .line 6
+    .line 7
+    const-string v1, "swiperefresh"
+
+    .line 8
+    .line 9
+    invoke-static {v0, v1}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullExpressionValue(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 10
+    .line 11
+    .line 12
+    return-object v0
+.end method
+
+.method public onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;
+    .locals 0
+    .param p1    # Landroid/view/LayoutInflater;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p2    # Landroid/view/ViewGroup;
+        .annotation build Lorg/jetbrains/annotations/Nullable;
+        .end annotation
+    .end param
+    .param p3    # Landroid/os/Bundle;
+        .annotation build Lorg/jetbrains/annotations/Nullable;
+        .end annotation
+    .end param
+    .annotation build Lorg/jetbrains/annotations/Nullable;
+    .end annotation
+
+    .line 1
+    const-string p3, "inflater"
+
+    .line 2
+    .line 3
+    invoke-static {p1, p3}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullParameter(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 4
+    .line 5
+    .line 6
+    const/4 p3, 0x0
+
+    .line 7
+    invoke-static {p1, p2, p3}, Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;->inflate(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Z)Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;
+
+    .line 8
+    .line 9
+    .line 10
+    move-result-object p1
+
+    .line 11
+    iput-object p1, p0, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->e:Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;
+
+    .line 12
+    .line 13
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->m()Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;
+
+    .line 14
+    .line 15
+    .line 16
+    move-result-object p1
+
+    .line 17
+    invoke-virtual {p1}, Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;->getRoot()Landroidx/constraintlayout/widget/ConstraintLayout;
+
+    .line 18
+    .line 19
+    .line 20
+    move-result-object p1
+
+    .line 21
+    return-object p1
+.end method
+
+.method public onDestroy()V
+    .locals 2
+
+    .line 1
+    invoke-super {p0}, Landroidx/fragment/app/Fragment;->onDestroy()V
+
+    .line 2
+    .line 3
+    .line 4
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->o()Landroidx/swiperefreshlayout/widget/SwipeRefreshLayout;
+
+    .line 5
+    .line 6
+    .line 7
+    move-result-object v0
+
+    .line 8
+    if-eqz v0, :cond_0
+
+    .line 9
+    .line 10
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->o()Landroidx/swiperefreshlayout/widget/SwipeRefreshLayout;
+
+    .line 11
+    .line 12
+    .line 13
+    move-result-object v0
+
+    .line 14
+    const/4 v1, 0x0
+
+    .line 15
+    invoke-virtual {v0, v1}, Landroidx/swiperefreshlayout/widget/SwipeRefreshLayout;->setOnRefreshListener(Landroidx/swiperefreshlayout/widget/SwipeRefreshLayout$OnRefreshListener;)V
+
+    .line 16
+    .line 17
+    .line 18
+    :cond_0
+    return-void
+.end method
+
+.method public onDestroyView()V
+    .locals 1
+
+    .line 1
+    invoke-super {p0}, Lcom/ultramobile/mint/baseFiles/MintBaseFragment;->onDestroyView()V
+
+    .line 2
+    .line 3
+    .line 4
+    const/4 v0, 0x0
+
+    .line 5
+    iput-object v0, p0, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->e:Lcom/ultramobile/mint/databinding/FragmentSettingsReferralWebviewBinding;
+
+    .line 6
+    .line 7
+    return-void
+.end method
+
+.method public onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
+    .locals 1
+    .param p1    # Landroid/view/View;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p2    # Landroid/os/Bundle;
+        .annotation build Lorg/jetbrains/annotations/Nullable;
+        .end annotation
+    .end param
+
+    .line 1
+    const-string v0, "view"
+
+    .line 2
+    .line 3
+    invoke-static {p1, v0}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullParameter(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 4
+    .line 5
+    .line 6
+    invoke-super {p0, p1, p2}, Lcom/ultramobile/mint/baseFiles/MintBaseFragment;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
+
+    .line 7
+    .line 8
+    .line 9
+    new-instance p1, Landroidx/lifecycle/ViewModelProvider;
+
+    .line 10
+    .line 11
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->requireActivity()Landroidx/fragment/app/FragmentActivity;
+
+    .line 12
+    .line 13
+    .line 14
+    move-result-object p2
+
+    .line 15
+    const-string v0, "requireActivity(...)"
+
+    .line 16
+    .line 17
+    invoke-static {p2, v0}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullExpressionValue(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 18
+    .line 19
+    .line 20
+    invoke-direct {p1, p2}, Landroidx/lifecycle/ViewModelProvider;-><init>(Landroidx/lifecycle/ViewModelStoreOwner;)V
+
+    .line 21
+    .line 22
+    .line 23
+    const-class p2, Lcom/ultramobile/mint/viewmodels/activation/ActivationViewModel;
+
+    .line 24
+    .line 25
+    invoke-virtual {p1, p2}, Landroidx/lifecycle/ViewModelProvider;->get(Ljava/lang/Class;)Landroidx/lifecycle/ViewModel;
+
+    .line 26
+    .line 27
+    .line 28
+    move-result-object p1
+
+    .line 29
+    check-cast p1, Lcom/ultramobile/mint/viewmodels/activation/ActivationViewModel;
+
+    .line 30
+    .line 31
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getActivity()Landroidx/fragment/app/FragmentActivity;
+
+    .line 32
+    .line 33
+    .line 34
+    move-result-object p2
+
+    .line 35
+    const-string v0, "null cannot be cast to non-null type com.ultramobile.mint.ActivationActivity"
+
+    .line 36
+    .line 37
+    invoke-static {p2, v0}, Lkotlin/jvm/internal/Intrinsics;->checkNotNull(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 38
+    .line 39
+    .line 40
+    check-cast p2, Lcom/ultramobile/mint/ActivationActivity;
+
+    .line 41
+    .line 42
+    invoke-virtual {p2}, Lcom/ultramobile/mint/baseFiles/MintBaseActivity;->setMainStatusBarColor()V
+
+    .line 43
+    .line 44
+    .line 45
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->q()V
+
+    .line 46
+    .line 47
+    .line 48
+    invoke-virtual {p1}, Lcom/ultramobile/mint/viewmodels/activation/ActivationViewModel;->getReferralObject()Landroidx/lifecycle/MutableLiveData;
+
+    .line 49
+    .line 50
+    .line 51
+    move-result-object p1
+
+    .line 52
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->getViewLifecycleOwner()Landroidx/lifecycle/LifecycleOwner;
+
+    .line 53
+    .line 54
+    .line 55
+    move-result-object p2
+
+    .line 56
+    new-instance v0, Lg81;
+
+    .line 57
+    .line 58
+    invoke-direct {v0, p0}, Lg81;-><init>(Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;)V
+
+    .line 59
+    .line 60
+    .line 61
+    invoke-virtual {p1, p2, v0}, Landroidx/lifecycle/LiveData;->observe(Landroidx/lifecycle/LifecycleOwner;Landroidx/lifecycle/Observer;)V
+
+    .line 62
+    .line 63
+    .line 64
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->o()Landroidx/swiperefreshlayout/widget/SwipeRefreshLayout;
+
+    .line 65
+    .line 66
+    .line 67
+    move-result-object p1
+
+    .line 68
+    sget p2, Lcom/ultramobile/mint/R$color;->mintGreen:I
+
+    .line 69
+    .line 70
+    filled-new-array {p2}, [I
+
+    .line 71
+    .line 72
+    .line 73
+    move-result-object p2
+
+    .line 74
+    invoke-virtual {p1, p2}, Landroidx/swiperefreshlayout/widget/SwipeRefreshLayout;->setColorSchemeResources([I)V
+
+    .line 75
+    .line 76
+    .line 77
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->o()Landroidx/swiperefreshlayout/widget/SwipeRefreshLayout;
+
+    .line 78
+    .line 79
+    .line 80
+    move-result-object p1
+
+    .line 81
+    new-instance p2, Lh81;
+
+    .line 82
+    .line 83
+    invoke-direct {p2, p0}, Lh81;-><init>(Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;)V
+
+    .line 84
+    .line 85
+    .line 86
+    invoke-virtual {p1, p2}, Landroidx/swiperefreshlayout/widget/SwipeRefreshLayout;->setOnRefreshListener(Landroidx/swiperefreshlayout/widget/SwipeRefreshLayout$OnRefreshListener;)V
+
+    .line 87
+    .line 88
+    .line 89
+    invoke-direct {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->getBackButton()Landroidx/appcompat/widget/AppCompatImageButton;
+
+    .line 90
+    .line 91
+    .line 92
+    move-result-object p1
+
+    .line 93
+    new-instance p2, Li81;
+
+    .line 94
+    .line 95
+    invoke-direct {p2, p0}, Li81;-><init>(Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;)V
+
+    .line 96
+    .line 97
+    .line 98
+    invoke-static {p1, p2}, Lcom/ultramobile/mint/baseFiles/listeners/UltraSafeClickListenerKt;->setUltraSafeOnClickListener(Landroid/view/View;Lkotlin/jvm/functions/Function1;)V
+
+    .line 99
+    .line 100
+    .line 101
+    return-void
+.end method
+
+.method public final q()V
+    .locals 2
+
+    .line 1
+    sget v0, Lcom/ultramobile/mint/R$string;->referral_url:I
+
+    .line 2
+    .line 3
+    invoke-virtual {p0, v0}, Landroidx/fragment/app/Fragment;->getString(I)Ljava/lang/String;
+
+    .line 4
+    .line 5
+    .line 6
+    move-result-object v0
+
+    .line 7
+    const-string v1, "getString(...)"
+
+    .line 8
+    .line 9
+    invoke-static {v0, v1}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullExpressionValue(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 10
+    .line 11
+    .line 12
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->n()Landroid/webkit/WebView;
+
+    .line 13
+    .line 14
+    .line 15
+    move-result-object v1
+
+    .line 16
+    invoke-virtual {v1, v0}, Landroid/webkit/WebView;->loadUrl(Ljava/lang/String;)V
+
+    .line 17
+    .line 18
+    .line 19
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->n()Landroid/webkit/WebView;
+
+    .line 20
+    .line 21
+    .line 22
+    move-result-object v0
+
+    .line 23
+    invoke-virtual {v0}, Landroid/webkit/WebView;->getSettings()Landroid/webkit/WebSettings;
+
+    .line 24
+    .line 25
+    .line 26
+    move-result-object v0
+
+    .line 27
+    const-string v1, "getSettings(...)"
+
+    .line 28
+    .line 29
+    invoke-static {v0, v1}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullExpressionValue(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 30
+    .line 31
+    .line 32
+    const/4 v1, 0x1
+
+    .line 33
+    invoke-virtual {v0, v1}, Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V
+
+    .line 34
+    .line 35
+    .line 36
+    invoke-virtual {v0, v1}, Landroid/webkit/WebSettings;->setDomStorageEnabled(Z)V
+
+    .line 37
+    .line 38
+    .line 39
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->n()Landroid/webkit/WebView;
+
+    .line 40
+    .line 41
+    .line 42
+    move-result-object v0
+
+    .line 43
+    new-instance v1, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment$loadReferralWebView$1;
+
+    .line 44
+    .line 45
+    invoke-direct {v1}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment$loadReferralWebView$1;-><init>()V
+
+    .line 46
+    .line 47
+    .line 48
+    invoke-virtual {v0, v1}, Landroid/webkit/WebView;->setWebChromeClient(Landroid/webkit/WebChromeClient;)V
+
+    .line 49
+    .line 50
+    .line 51
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->n()Landroid/webkit/WebView;
+
+    .line 52
+    .line 53
+    .line 54
+    move-result-object v0
+
+    .line 55
+    new-instance v1, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment$loadReferralWebView$2;
+
+    .line 56
+    .line 57
+    invoke-direct {v1, p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment$loadReferralWebView$2;-><init>(Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;)V
+
+    .line 58
+    .line 59
+    .line 60
+    invoke-virtual {v0, v1}, Landroid/webkit/WebView;->setWebViewClient(Landroid/webkit/WebViewClient;)V
+
+    .line 61
+    .line 62
+    .line 63
+    return-void
+.end method
+
+.method public reloadData()V
+    .locals 0
+
+    .line 1
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->q()V
+
+    .line 2
+    .line 3
+    .line 4
+    return-void
+.end method
+
+.method public final u()V
+    .locals 3
+
+    .line 1
+    new-instance v0, Landroidx/lifecycle/ViewModelProvider;
+
+    .line 2
+    .line 3
+    invoke-virtual {p0}, Landroidx/fragment/app/Fragment;->requireActivity()Landroidx/fragment/app/FragmentActivity;
+
+    .line 4
+    .line 5
+    .line 6
+    move-result-object v1
+
+    .line 7
+    const-string v2, "requireActivity(...)"
+
+    .line 8
+    .line 9
+    invoke-static {v1, v2}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullExpressionValue(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 10
+    .line 11
+    .line 12
+    invoke-direct {v0, v1}, Landroidx/lifecycle/ViewModelProvider;-><init>(Landroidx/lifecycle/ViewModelStoreOwner;)V
+
+    .line 13
+    .line 14
+    .line 15
+    const-class v1, Lcom/ultramobile/mint/viewmodels/activation/ActivationViewModel;
+
+    .line 16
+    .line 17
+    invoke-virtual {v0, v1}, Landroidx/lifecycle/ViewModelProvider;->get(Ljava/lang/Class;)Landroidx/lifecycle/ViewModel;
+
+    .line 18
+    .line 19
+    .line 20
+    move-result-object v0
+
+    .line 21
+    check-cast v0, Lcom/ultramobile/mint/viewmodels/activation/ActivationViewModel;
+
+    .line 22
+    .line 23
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->o()Landroidx/swiperefreshlayout/widget/SwipeRefreshLayout;
+
+    .line 24
+    .line 25
+    .line 26
+    move-result-object v1
+
+    .line 27
+    const/4 v2, 0x0
+
+    .line 28
+    invoke-virtual {v1, v2}, Landroidx/swiperefreshlayout/widget/SwipeRefreshLayout;->setRefreshing(Z)V
+
+    .line 29
+    .line 30
+    .line 31
+    invoke-virtual {v0}, Lcom/ultramobile/mint/viewmodels/activation/ActivationViewModel;->generateReferralScript()Ljava/lang/String;
+
+    .line 32
+    .line 33
+    .line 34
+    move-result-object v0
+
+    .line 35
+    if-nez v0, :cond_0
+
+    .line 36
+    .line 37
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->n()Landroid/webkit/WebView;
+
+    .line 38
+    .line 39
+    .line 40
+    move-result-object v0
+
+    .line 41
+    const/16 v1, 0x8
+
+    .line 42
+    .line 43
+    invoke-virtual {v0, v1}, Landroid/view/View;->setVisibility(I)V
+
+    .line 44
+    .line 45
+    .line 46
+    return-void
+
+    .line 47
+    :cond_0
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->n()Landroid/webkit/WebView;
+
+    .line 48
+    .line 49
+    .line 50
+    move-result-object v1
+
+    .line 51
+    invoke-virtual {v1, v2}, Landroid/view/View;->setVisibility(I)V
+
+    .line 52
+    .line 53
+    .line 54
+    invoke-virtual {p0}, Lcom/ultramobile/mint/fragments/campus/CampusReferralWebViewFragment;->n()Landroid/webkit/WebView;
+
+    .line 55
+    .line 56
+    .line 57
+    move-result-object v1
+
+    .line 58
+    new-instance v2, Lj81;
+
+    .line 59
+    .line 60
+    invoke-direct {v2}, Lj81;-><init>()V
+
+    .line 61
+    .line 62
+    .line 63
+    invoke-virtual {v1, v0, v2}, Landroid/webkit/WebView;->evaluateJavascript(Ljava/lang/String;Landroid/webkit/ValueCallback;)V
+
+    .line 64
+    .line 65
+    .line 66
+    return-void
+.end method

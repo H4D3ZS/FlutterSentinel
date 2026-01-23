@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:label="order_sim_navigation" android:id="@id/order_sim_navigation" app:startDestination="@id/orderSimOnboardingFragment"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <fragment android:label="OnboardingFragment" android:name="com.ultramobile.mint.fragments.ordersim.onboarding.OnboardingFragment" android:id="@id/orderSimOnboardingFragment">
+        <action android:id="@id/action_orderStatusFragment" app:destination="@id/orderStatusFragment" />
+        <action android:id="@id/actionCloseTutorial" app:destination="@id/compatibilityIntroFragment" />
+        <action android:id="@id/actionCloseTutorialSkipCompatibility" app:destination="@id/personalOrderSimFragment" />
+    </fragment>
+    <fragment android:label="ProcessDeviceCompatibilityFragment" android:name="com.ultramobile.mint.fragments.ordersim.ProcessDeviceCompatibilityFragment" android:id="@id/processDeviceCompatibilityFragment">
+        <action android:id="@id/action_compatibilityResultFragment" app:destination="@id/compatibilityResultFragment" />
+    </fragment>
+    <fragment android:label="PersonalOrderSimFragment" android:name="com.ultramobile.mint.fragments.ordersim.PersonalOrderSimFragment" android:id="@id/personalOrderSimFragment">
+        <action android:id="@id/action_orderAddressFragment" app:destination="@id/orderAddressFragment" />
+        <action android:id="@id/action_locationCoverageFragment" app:destination="@id/locationCoverageFragment" />
+    </fragment>
+    <fragment android:label="PersonalOrderSimFragment" android:name="com.ultramobile.mint.fragments.ordersim.zip.LocationCoverageFragment" android:id="@id/locationCoverageFragment">
+        <action android:id="@id/action_orderAddressFragment" app:destination="@id/orderAddressFragment" />
+    </fragment>
+    <fragment android:label="OrderSimPurchaseOverviewFragment" android:name="com.ultramobile.mint.fragments.ordersim.purchase.OrderSimPurchaseOverviewFragment" android:id="@id/orderSimPurchaseOverviewFragment">
+        <action android:id="@id/action_personalOrderSimFragment" app:destination="@id/personalOrderSimFragment" />
+    </fragment>
+    <fragment android:label="PaymentMethodSelectionFragment" android:name="com.ultramobile.mint.fragments.payment.PaymentMethodSelectionFragment" android:id="@id/paymentMethodSelectionFragment">
+        <action android:id="@id/action_addPaymentFragment" app:destination="@id/addPaymentFragment4" />
+    </fragment>
+    <fragment android:label="AddPaymentFragment" android:name="com.ultramobile.mint.fragments.payment.AddPaymentFragment" android:id="@id/addPaymentFragment4">
+        <action android:id="@id/action_confirmPlanFragment" app:destination="@id/orderSimPurchaseFragment" app:popUpTo="@id/compatibilityIntroFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="OrderSimPurchaseFragment" android:name="com.ultramobile.mint.fragments.ordersim.purchase.OrderSimPurchaseFragment" android:id="@id/orderSimPurchaseFragment">
+        <action android:id="@id/action_addPaymentFragment4" app:destination="@id/addPaymentFragment4" app:popUpTo="@id/compatibilityIntroFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_updatePersonalOrderSimFragment" app:destination="@id/personalOrderSimFragment" app:popUpTo="@id/compatibilityIntroFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_updateOrderAddressFragment" app:destination="@id/orderAddressFragment" app:popUpTo="@id/compatibilityIntroFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_orderProcessActivationFragment" app:destination="@id/orderProcessActivationFragment" />
+    </fragment>
+    <fragment android:label="OrderAddressFragment" android:name="com.ultramobile.mint.fragments.ordersim.OrderAddressFragment" android:id="@id/orderAddressFragment">
+        <action android:id="@id/action_addPaymentFragment4" app:destination="@id/addPaymentFragment4" app:popUpTo="@id/compatibilityIntroFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_orderSimPurchaseFragment" app:destination="@id/orderSimPurchaseFragment" app:popUpTo="@id/compatibilityIntroFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_orderAddressVerificationFragment" app:destination="@id/orderAddressVerificationFragment" />
+        <action android:id="@id/action_addPaymentInterstitialFragment" app:destination="@id/addPaymentInterstitialFragment" />
+    </fragment>
+    <fragment android:label="PaymentInterstitialFragment" android:name="com.ultramobile.mint.fragments.ordersim.PaymentFreeInterstitialFragment" android:id="@id/addPaymentInterstitialFragment">
+        <action android:id="@id/action_addPaymentFragment" app:destination="@id/addPaymentFragment4" app:popUpTo="@id/compatibilityIntroFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="OrderStatusFragment" android:name="com.ultramobile.mint.fragments.ordersim.OrderStatusFragment" android:id="@id/orderStatusFragment" />
+    <fragment android:label="OrderProcessActivationFragment" android:name="com.ultramobile.mint.fragments.ordersim.process.OrderProcessActivationFragment" android:id="@id/orderProcessActivationFragment">
+        <action android:id="@id/action_orderProcessConfirmationFragment" app:destination="@id/orderProcessConfirmationFragment" />
+    </fragment>
+    <fragment android:label="OrderProcessConfirmationFragment" android:name="com.ultramobile.mint.fragments.ordersim.process.OrderProcessConfirmationFragment" android:id="@id/orderProcessConfirmationFragment">
+        <action android:id="@id/action_orderStatusFragment" app:destination="@id/orderStatusFragment" />
+    </fragment>
+    <fragment android:label="OrderAddressVerificationFragment" android:name="com.ultramobile.mint.fragments.ordersim.OrderAddressVerificationFragment" android:id="@id/orderAddressVerificationFragment">
+        <action android:id="@id/action_addPaymentFragment4" app:destination="@id/addPaymentFragment4" app:popUpTo="@id/compatibilityIntroFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_orderSimPurchaseFragment" app:destination="@id/orderSimPurchaseFragment" app:popUpTo="@id/compatibilityIntroFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_orderAddressFragment2" app:destination="@id/orderAddressFragment" app:popUpTo="@id/compatibilityIntroFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_addPaymentInterstitialFragment" app:destination="@id/addPaymentInterstitialFragment" />
+    </fragment>
+    <fragment android:label="CompatibilityIntroFragment" android:name="com.ultramobile.mint.fragments.ordersim.compatibility.CompatibilityIntroFragment" android:id="@id/compatibilityIntroFragment">
+        <action android:id="@id/action_compatibilitySearchAddressFragment" app:destination="@id/compatibilitySearchAddressFragment" />
+        <action android:id="@id/action_compatibilityDeviceSelectionFragment" app:destination="@id/compatibilityDeviceSelectionFragment" />
+        <action android:id="@id/action_processCompatibilityFragment" app:destination="@id/processDeviceCompatibilityFragment" />
+        <action android:id="@id/action_orderSimPurchaseOverviewFragment" app:destination="@id/personalOrderSimFragment" />
+    </fragment>
+    <fragment android:label="CompatibilitySearchAddressFragment" android:name="com.ultramobile.mint.fragments.ordersim.compatibility.CompatibilitySearchAddressFragment" android:id="@id/compatibilitySearchAddressFragment">
+        <action android:id="@id/action_compatibilityDeviceSelectionFragment" app:destination="@id/compatibilityDeviceSelectionFragment" />
+        <action android:id="@id/action_processCompatibilityFragment" app:destination="@id/processDeviceCompatibilityFragment" />
+    </fragment>
+    <fragment android:label="CompatibilityDeviceSelectionFragment" android:name="com.ultramobile.mint.fragments.ordersim.compatibility.CompatibilityDeviceInitialFragment" android:id="@id/compatibilityDeviceSelectionFragment">
+        <action android:id="@id/action_compatibilityDeviceIMEIFragment" app:destination="@id/compatibilityDeviceIMEIFragment" />
+        <action android:id="@id/action_compatibilityDeviceModelSelectionFragment" app:destination="@id/compatibilityDeviceModelSelectionFragment" />
+    </fragment>
+    <fragment android:label="CompatibilityDeviceIMEIFragment" android:name="com.ultramobile.mint.fragments.ordersim.compatibility.CompatibilityDeviceIMEIFragment" android:id="@id/compatibilityDeviceIMEIFragment">
+        <action android:id="@id/action_processCompatibilityFragment" app:destination="@id/processDeviceCompatibilityFragment" />
+    </fragment>
+    <fragment android:label="CompatibilityDeviceModelSelectionFragment" android:name="com.ultramobile.mint.fragments.ordersim.compatibility.CompatibilityDeviceModelSelectionFragment" android:id="@id/compatibilityDeviceModelSelectionFragment">
+        <action android:id="@id/action_processCompatibilityFragment" app:destination="@id/processDeviceCompatibilityFragment" />
+        <action android:id="@id/action_compatibilityBrandSearchFragment" app:destination="@id/compatibilityBrandSearchFragment" />
+        <action android:id="@id/action_compatibilityModelSearchFragment" app:destination="@id/compatibilityModelSearchFragment" />
+    </fragment>
+    <fragment android:label="CompatibilityBrandSearchFragment" android:name="com.ultramobile.mint.fragments.ordersim.compatibility.CompatibilityBrandSearchFragment" android:id="@id/compatibilityBrandSearchFragment" />
+    <fragment android:label="CompatibilityModelSearchFragment" android:name="com.ultramobile.mint.fragments.ordersim.compatibility.CompatibilityModelSearchFragment" android:id="@id/compatibilityModelSearchFragment" />
+    <fragment android:label="CompatibilityResultFragment" android:name="com.ultramobile.mint.fragments.ordersim.compatibility.CompatibilityResultFragment" android:id="@id/compatibilityResultFragment">
+        <action android:id="@id/action_compatibilityDeviceSelectionFragment" app:destination="@id/compatibilityDeviceSelectionFragment" />
+        <action android:id="@id/action_compatibilityAddressSearchFragment" app:destination="@id/compatibilitySearchAddressFragment" />
+        <action android:id="@id/action_orderSimPurchaseOverviewFragment" app:destination="@id/personalOrderSimFragment" />
+    </fragment>
+</navigation>

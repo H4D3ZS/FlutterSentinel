@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector android:height="195.0dip" android:width="200.0dip" android:viewportWidth="200.0" android:viewportHeight="195.0"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:aapt="http://schemas.android.com/aapt">
+    <group>
+        <path android:fillColor="#ffebf1ed" android:pathData="M0 0V195H375V0" />
+        <group android:pivotX="187.5" android:pivotY="97.5" android:scaleX="2.828" android:scaleY="13.868" android:rotation="45.0" android:translateX="0.844" android:translateY="-3.348">
+            <path android:fillColor="@drawable/$dashboard_header_gradient__0" android:pathData="M0 0V195H375V0" />
+        </group>
+    </group>
+</vector>

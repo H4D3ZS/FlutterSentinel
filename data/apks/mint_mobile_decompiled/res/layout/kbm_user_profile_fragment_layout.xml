@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <TextView android:textSize="20.0sp" android:textColor="#ffffffff" android:gravity="center" android:layout_gravity="center" android:id="@id/alphabeticImage" android:background="@drawable/kbm_circular_text_view" android:visibility="gone" android:layout_width="150.0dip" android:layout_height="150.0dip" android:layout_marginLeft="8.0dip" android:layout_marginTop="8.0dip" android:layout_marginStart="8.0dip" />
+    <de.hdodenhof.circleimageview.CircleImageView android:gravity="center" android:layout_gravity="center" android:id="@id/contactImage" android:padding="5.0dip" android:visibility="visible" android:layout_width="150.0dip" android:layout_height="150.0dip" android:layout_margin="5.0dip" android:src="@null" />
+    <RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <androidx.cardview.widget.CardView android:id="@id/brand_messenger_name_cardView" android:clickable="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="5.0dip" app:cardCornerRadius="0.0dip">
+            <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <TextView android:textSize="18.0sp" android:textColor="@color/black" android:paddingLeft="20.0dip" android:paddingTop="10.0dip" android:paddingBottom="5.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/com.kbm.name" android:textDirection="locale" android:textAlignment="gravity" android:paddingStart="20.0dip" />
+                <TextView android:textSize="14.0sp" android:textColor="#7f000000" android:id="@id/userName" android:paddingLeft="20.0dip" android:paddingBottom="10.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textDirection="locale" android:textAlignment="gravity" android:paddingStart="20.0dip" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:id="@id/brand_messenger_last_sean_status_cardView" android:visibility="visible" android:clickable="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="5.0dip" android:layout_below="@id/brand_messenger_name_cardView" app:cardCornerRadius="0.0dip">
+            <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <TextView android:textSize="18.0sp" android:textColor="@color/black" android:paddingLeft="20.0dip" android:paddingTop="10.0dip" android:paddingBottom="5.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/com.kbm.status" android:textDirection="locale" android:textAlignment="gravity" android:paddingStart="20.0dip" />
+                <TextView android:textSize="14.0sp" android:textColor="#7f000000" android:id="@id/brand_messenger_user_status" android:paddingLeft="20.0dip" android:paddingBottom="10.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textDirection="locale" android:textAlignment="gravity" android:paddingStart="20.0dip" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:id="@id/brand_messenger_email_cardview" android:visibility="gone" android:clickable="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="5.0dip" android:layout_below="@id/brand_messenger_last_sean_status_cardView" app:cardCornerRadius="0.0dip">
+            <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <TextView android:textSize="18.0sp" android:textColor="@color/black" android:paddingLeft="20.0dip" android:paddingTop="10.0dip" android:paddingBottom="5.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/com.kbm.email" android:textDirection="locale" android:textAlignment="gravity" android:paddingStart="20.0dip" />
+                <TextView android:textSize="14.0sp" android:textColor="#7f000000" android:id="@id/email" android:paddingLeft="20.0dip" android:paddingBottom="10.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textDirection="locale" android:textAlignment="gravity" android:paddingStart="20.0dip" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:id="@id/brand_messenger_user_phone_cardview" android:visibility="visible" android:clickable="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="5.0dip" android:layout_below="@id/brand_messenger_email_cardview" app:cardCornerRadius="0.0dip">
+            <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <TextView android:textSize="18.0sp" android:textColor="@color/black" android:paddingLeft="20.0dip" android:paddingTop="10.0dip" android:paddingBottom="5.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/com.kbm.phone" android:textDirection="locale" android:textAlignment="gravity" android:paddingStart="20.0dip" />
+                <TextView android:textSize="14.0sp" android:textColor="#7f000000" android:id="@id/phone" android:paddingLeft="20.0dip" android:paddingBottom="10.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textDirection="locale" android:textAlignment="gravity" android:paddingStart="20.0dip" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </RelativeLayout>
+</LinearLayout>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation android:label="order_new_sim_navigation" android:id="@id/order_new_sim_navigation" app:startDestination="@id/orderNewSimFragment" xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <fragment android:label="OrderNewSimFragment" android:name="com.ultramobile.mint.fragments.settings.replacesim.OrderNewSimFragment" android:id="@id/orderNewSimFragment">
+        <action android:id="@id/action_to_deliveryAddressFragment" app:destination="@id/deliveryAddressFragment" />
+    </fragment>
+    <fragment android:label="DeliveryAddressFragment" android:name="com.ultramobile.mint.fragments.settings.replacesim.DeliveryAddressFragment" android:id="@id/deliveryAddressFragment">
+        <action android:id="@id/action_to_deliveryAddressVerificationFragment" app:destination="@id/deliveryAddressVerificationFragment" />
+        <action android:id="@id/action_to_confirmPurchaseFragment" app:destination="@id/confirmPurchaseFragment" />
+    </fragment>
+    <fragment android:label="DeliveryAddressVerificationFragment" android:name="com.ultramobile.mint.fragments.settings.replacesim.DeliveryAddressVerificationFragment" android:id="@id/deliveryAddressVerificationFragment">
+        <action android:id="@id/action_to_addPaymentMethodFragment" app:destination="@id/addPaymentMethodFragment" app:popUpTo="@id/deliveryAddressFragment" app:popUpToInclusive="false" />
+        <action android:id="@id/action_to_confirmPurchaseFragment" app:destination="@id/confirmPurchaseFragment" app:popUpTo="@id/deliveryAddressFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="SettingsPaymentMethodSelectionFragment" android:name="com.ultramobile.mint.fragments.payment.SettingsPaymentMethodSelectionFragment" android:id="@id/settingsPaymentMethodSelectionFragment">
+        <action android:id="@id/action_settingsPaymentFragment" app:destination="@id/addPaymentMethodFragment" />
+    </fragment>
+    <fragment android:label="ReplacementSimPurchaseFragment" android:name="com.ultramobile.mint.fragments.settings.replacesim.AddPaymentMethodFragment" android:id="@id/addPaymentMethodFragment">
+        <action android:id="@id/action_to_confirmPurchaseFragment" app:destination="@id/confirmPurchaseFragment" app:popUpTo="@id/deliveryAddressFragment" app:popUpToInclusive="false" />
+    </fragment>
+    <fragment android:label="ConfirmPurchaseFragment" android:name="com.ultramobile.mint.fragments.settings.replacesim.ConfirmPurchaseFragment" android:id="@id/confirmPurchaseFragment">
+        <action android:id="@id/action_to_addPaymentMethodFragment" app:destination="@id/settingsPaymentMethodSelectionFragment" />
+        <action android:id="@id/action_to_deliveryAddressFragment" app:destination="@id/deliveryAddressFragment" />
+        <action android:id="@id/action_SmsVerification" app:destination="@id/twoFactorSMSConfirmationFragment" />
+    </fragment>
+    <fragment android:label="ColorThemeFragment" android:name="com.ultramobile.mint.fragments.settings.twofactor.TwoFactorSMSConfirmationFragment" android:id="@id/twoFactorSMSConfirmationFragment">
+        <argument android:name="caller" android:defaultValue="@null" app:argType="com.ultramobile.mint.fragments.settings.twofactor.OtpVerification" app:nullable="true" />
+    </fragment>
+</navigation>

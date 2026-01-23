@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center" android:layout_gravity="center" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:layout_gravity="center" android:orientation="vertical" android:id="@id/kbm_business_introduction_without_conversations" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" app:layout_collapseMode="parallax">
+        <com.google.android.material.imageview.ShapeableImageView android:id="@id/kbm_business_intro_icon_without_conversations" app:shapeAppearanceOverlay="@style/KBMUi_Style_ShapeableImageView_Circle" style="@style/KBMUi_Style_Business_Image_Imageview" />
+        <TextView android:id="@id/kbm_business_intro_name_without_conversations" android:layout_width="fill_parent" android:layout_height="wrap_content" style="@style/KBMUi_Style_Business_Name_Textview" />
+        <TextView android:id="@id/kbm_business_intro_description_without_conversations" android:layout_width="fill_parent" android:layout_height="wrap_content" style="@style/KBMUi_Style_Business_Introduction_Textview" />
+        <TextView android:id="@id/no_conversations" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" style="@style/KBMUi_Style_Conversation_Loading_Error" />
+    </LinearLayout>
+    <androidx.coordinatorlayout.widget.CoordinatorLayout android:id="@id/kbm_conversations_layout_with_conversations" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <com.google.android.material.appbar.AppBarLayout android:background="@android:color/transparent" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <com.google.android.material.appbar.CollapsingToolbarLayout android:layout_width="fill_parent" android:layout_height="wrap_content" app:layout_scrollFlags="scroll|exitUntilCollapsed">
+                <LinearLayout android:layout_gravity="center" android:orientation="vertical" android:id="@id/kbm_business_introduction" android:layout_width="fill_parent" android:layout_height="wrap_content" app:layout_collapseMode="parallax">
+                    <com.google.android.material.imageview.ShapeableImageView android:id="@id/kbm_business_intro_icon" app:shapeAppearanceOverlay="@style/KBMUi_Style_ShapeableImageView_Circle" style="@style/KBMUi_Style_Business_Image_Imageview" />
+                    <TextView android:id="@id/kbm_business_intro_name" android:layout_width="fill_parent" android:layout_height="wrap_content" style="@style/KBMUi_Style_Business_Name_Textview" />
+                    <TextView android:id="@id/kbm_business_intro_description" android:layout_width="fill_parent" android:layout_height="wrap_content" style="@style/KBMUi_Style_Business_Introduction_Textview" />
+                </LinearLayout>
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout android:id="@id/swipe_container" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="wrap_content" app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            <androidx.recyclerview.widget.RecyclerView android:layout_gravity="top" android:id="@id/conversations_list" android:paddingBottom="100.0dip" android:focusable="true" android:focusableInTouchMode="true" android:clipToPadding="false" android:descendantFocusability="beforeDescendants" android:layout_width="fill_parent" android:layout_height="wrap_content" android:cacheColorHint="#00000000" android:layout_weight="1.0" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <com.google.android.material.button.MaterialButton android:layout_gravity="bottom" android:id="@id/start_new_chat_button" android:text="@string/com.kbm.start_new_chat" android:layout_alignParentBottom="true" app:layout_dodgeInsetEdges="bottom" style="@style/KBMUi_Style_Start_New_Chat_Button" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

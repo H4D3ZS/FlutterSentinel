@@ -1,0 +1,9 @@
+{
+  "name": "mint_mobile",
+  "package_name": "com.uvnv.mintsim",
+  "platform": "android",
+  "bug_bounty_program": "",
+  "scope": [],
+  "out_of_scope": [],
+  "notes": ""
+}

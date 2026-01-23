@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true" android:drawable="@drawable/kbm_video_icon_volume_on" />
+    <item android:drawable="@drawable/kbm_volume_off" />
+</selector>
