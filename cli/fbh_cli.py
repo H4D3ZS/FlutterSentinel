@@ -107,6 +107,38 @@ def target_remove(name, delete_workspace):
     if delete_workspace:
         click.echo(f"🗑️  Workspace deleted")
 
+@target.command("mass-add")
+@click.argument("input_file", type=click.Path(exists=True))
+@click.option("--platform", "-P", default="android", type=click.Choice(["android", "ios"]))
+def target_mass_add(input_file, platform):
+    """Add multiple targets from a JSON file"""
+    import json
+    try:
+        with open(input_file, "r") as f:
+            targets_data = json.load(f)
+            
+        click.echo(f"📁 Importing {len(targets_data)} targets from {input_file}...")
+        
+        count = 0
+        for entry in targets_data:
+            name = entry.get('name', '').replace(' ', '_').lower()
+            package = entry.get('package')
+            
+            if not name or not package:
+                continue
+                
+            if Target.exists(name):
+                click.echo(f"⚠️  Target '{name}' already exists, skipping.")
+                continue
+                
+            t = Target(name, package, platform)
+            t.create_workspace()
+            count += 1
+            
+        click.echo(f"✅ Successfully added {count} new targets!")
+    except Exception as e:
+        click.echo(f"❌ Failed to import targets: {e}")
+
 @cli.group()
 def scan():
     """Run security scans"""
@@ -133,7 +165,11 @@ def scan_run(target_name, module):
     from fbh.modules.static.quick_scanner import QuickScanner
     from fbh.modules.recon.sigint_scanner import SigIntScanner
     from fbh.modules.network.jwt_scanner import JWTScanner
+    from fbh.modules.network.jwt_bruteforce import JWTBruteForceScanner
+    from fbh.modules.recon.vdp_discoverer import VDPDiscoverer
+    from fbh.modules.dynamic.auth_tester import AuthTester
     from fbh.modules.dynamic.deeplink_scanner import DeepLinkScanner
+    from fbh.modules.network.endpoint_fuzzer import EndpointFuzzer
     
     if not Target.exists(target_name):
         click.echo(f"❌ Target '{target_name}' not found!")
@@ -154,8 +190,16 @@ def scan_run(target_name, module):
                 scanner = SigIntScanner(target)
             elif mod == 'jwt':
                 scanner = JWTScanner(target)
+            elif mod == 'jwt_bruteforce':
+                scanner = JWTBruteForceScanner(target)
+            elif mod == 'vdp':
+                scanner = VDPDiscoverer(target)
+            elif mod == 'auth_tester':
+                scanner = AuthTester(target)
             elif mod == 'deeplink':
                 scanner = DeepLinkScanner(target)
+            elif mod == 'fuzz':
+                scanner = EndpointFuzzer(target)
             elif mod == 'quick':
                 scanner = QuickScanner(target)
             else:
@@ -232,9 +276,56 @@ def stats(target):
             click.echo(f"    {severity}: {count}")
 
 @cli.group()
-def workflow():
-    """Manage workflows"""
+def agent():
+    """Manage autonomous AI agents"""
     pass
+
+@agent.command("run")
+@click.argument("agent_name")
+@click.option("--target", "-t", required=True, help="Target name to run agent on")
+def agent_run(agent_name, target):
+    """Run an autonomous agent"""
+    from fbh.agents.pattern_agent import PatternRecognitionAgent
+    from fbh.agents.exploit_agent import ExploitGeneratorAgent
+    
+    if not Target.exists(target):
+        click.echo(f"❌ Target '{target}' not found!")
+        return
+        
+    t = Target(target)
+    
+    if agent_name == "pattern":
+        a = PatternRecognitionAgent(t)
+    elif agent_name == "exploit":
+        a = ExploitGeneratorAgent(t)
+    else:
+        click.echo(f"⚠️  Unknown agent: {agent_name}")
+        return
+        
+    click.echo(f"🤖 [AI] Running agent '{a.name}' on {target}...")
+    a.run()
+    click.echo(f"✨ AI analysis complete!")
+
+@cli.group()
+def scheduler():
+    """Manage autonomous scanning scheduler"""
+    pass
+
+@scheduler.command("start")
+@click.option("--interval", "-i", default=24, help="Scan interval in hours")
+def scheduler_start(interval):
+    """Start the background scheduler"""
+    from fbh.core.scheduler import scheduler as s
+    s.start(interval_hours=interval)
+    click.echo(f"⏰ Scheduler started! Running mass audit every {interval} hours.")
+    # Keep main alive if needed, but CLI usually exits. 
+    # For a daemon-like behavior, we'd need a PID file or similar.
+    click.echo("💡 Tip: Use 'auto_bounty.py' for a full interactive run.")
+
+@scheduler.command("stop")
+def scheduler_stop():
+    """Stop the background scheduler (requires process management)"""
+    click.echo("🛑 Manual stop: Kill the FBH daemon process to stop the scheduler.")
 
 @workflow.command("list")
 def workflow_list():

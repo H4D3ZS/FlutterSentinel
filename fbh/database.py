@@ -44,6 +44,8 @@ class Database:
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 status TEXT DEFAULT 'active',
+                scan_progress INTEGER DEFAULT 0,
+                last_error TEXT,
                 config TEXT
             )
         """)
@@ -96,6 +98,14 @@ class Database:
                 output TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (finding_id) REFERENCES findings(id)
+            )
+        """)
+        
+        # Settings table
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS settings (
+                key TEXT PRIMARY KEY,
+                value TEXT
             )
         """)
         
@@ -173,6 +183,24 @@ class Database:
         
         conn.commit()
     
+    def get_scans(self, target_id: int = None, limit: int = 10) -> List[Dict]:
+        """Get scan history"""
+        conn = self.connect()
+        cursor = conn.cursor()
+        if target_id:
+            cursor.execute("SELECT * FROM scans WHERE target_id = ? ORDER BY started_at DESC LIMIT ?", (target_id, limit))
+        else:
+            cursor.execute("SELECT * FROM scans ORDER BY started_at DESC LIMIT ?", (limit,))
+        return [dict(row) for row in cursor.fetchall()]
+
+    def get_scan(self, scan_id: int) -> Optional[Dict]:
+        """Get scan by ID"""
+        conn = self.connect()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM scans WHERE id = ?", (scan_id,))
+        row = cursor.fetchone()
+        return dict(row) if row else None
+    
     # Finding operations
     def add_finding(self, target_id: int, scan_id: int, severity: str,
                    category: str, title: str, description: str,
@@ -194,7 +222,7 @@ class Database:
         return cursor.lastrowid
     
     def get_findings(self, target_id: int = None, severity: str = None,
-                    verified: bool = None) -> List[Dict]:
+                    verified: bool = None, limit: int = None, offset: int = 0) -> List[Dict]:
         """Get findings with filters"""
         conn = self.connect()
         cursor = conn.cursor()
@@ -215,6 +243,9 @@ class Database:
             params.append(1 if verified else 0)
         
         query += " ORDER BY created_at DESC"
+        
+        if limit:
+            query += f" LIMIT {int(limit)} OFFSET {int(offset)}"
         
         cursor.execute(query, params)
         return [dict(row) for row in cursor.fetchall()]
@@ -255,6 +286,28 @@ class Database:
             'total_findings': sum(severity_counts.values())
         }
     
+    def get_setting(self, key: str, default: Any = None) -> Any:
+        """Get a setting value"""
+        conn = self.connect()
+        cursor = conn.cursor()
+        cursor.execute("SELECT value FROM settings WHERE key = ?", (key,))
+        row = cursor.fetchone()
+        return row['value'] if row else default
+
+    def set_setting(self, key: str, value: Any):
+        """Set a setting value"""
+        conn = self.connect()
+        cursor = conn.cursor()
+        cursor.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", (key, str(value)))
+        conn.commit()
+
+    def get_all_settings(self) -> Dict[str, str]:
+        """Get all settings as a dict"""
+        conn = self.connect()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM settings")
+        return {row['key']: row['value'] for row in cursor.fetchall()}
+
     def close(self):
         """Close database connection"""
         if self.conn:

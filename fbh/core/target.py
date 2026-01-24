@@ -30,6 +30,8 @@ class Target:
             self.db_id = existing['id']
             self.package_name = existing['package_name']
             self.platform = existing['platform']
+            self.status = existing.get('status', 'active')
+            self.scan_progress = existing.get('scan_progress', 0)
             logger.info(f"Loaded existing target: {name}")
         else:
             logger.info(f"Created new target: {name}")
@@ -130,6 +132,27 @@ class Target:
         if not self.db_id:
             return {'total_scans': 0, 'findings_by_severity': {}, 'total_findings': 0}
         return db.get_stats(target_id=self.db_id)
+        
+    def update_progress(self, progress: int, status_text: str = None) -> None:
+        """Update scan progress in database"""
+        if not self.db_id:
+            return
+        conn = db.connect()
+        cursor = conn.cursor()
+        if status_text:
+            cursor.execute("UPDATE targets SET scan_progress = ?, status = ? WHERE id = ?", (progress, status_text, self.db_id))
+        else:
+            cursor.execute("UPDATE targets SET scan_progress = ? WHERE id = ?", (progress, self.db_id))
+        conn.commit()
+        
+    def set_error(self, error_message: str) -> None:
+        """Log a target-level error"""
+        if not self.db_id:
+            return
+        conn = db.connect()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE targets SET last_error = ?, status = 'error' WHERE id = ?", (error_message, self.db_id))
+        conn.commit()
     
     def delete(self, remove_workspace: bool = False) -> None:
         """Delete target"""

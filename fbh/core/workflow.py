@@ -21,6 +21,34 @@ class Workflow:
         with open(self.workflow_file, 'r') as f:
             return yaml.safe_load(f)
     
+    def run_on_target(self, target: Target) -> Dict:
+        """Run workflow on a single target with progress tracking"""
+        logger.info(f"🚀 Running workflow {self.config.get('name')} on {target.name}")
+        target.update_progress(0, 'active')
+        
+        modules = self.config.get('modules', [])
+        total = len(modules)
+        target_results = {}
+        
+        for i, module_config in enumerate(modules, 1):
+            module_name = module_config.get('name')
+            progress = int((i / total) * 100)
+            target.update_progress(progress, f'running: {module_name}')
+            
+            scanner = self._load_scanner(module_name, target)
+            if scanner:
+                try:
+                    findings = scanner.run()
+                    target_results[module_name] = {'findings': len(findings), 'status': 'success'}
+                    logger.info(f"✅ {module_name} finished: {len(findings)} findings")
+                except Exception as e:
+                    logger.error(f"❌ {module_name} failed: {e}")
+                    target_results[module_name] = {'status': 'failed', 'error': str(e)}
+        
+        target.update_progress(100, 'completed')
+        self.results[target.name] = target_results
+        return target_results
+
     def run(self) -> Dict:
         """Execute workflow"""
         logger.info(f"Running workflow: {self.config.get('name', 'unknown')}")
