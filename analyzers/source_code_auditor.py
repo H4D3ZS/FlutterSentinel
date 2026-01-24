@@ -49,6 +49,12 @@ class SourceCodeAuditor:
                 r'JWT[_-]?SECRET[\s]*=[\s]*["\']([^"\']+)["\']',
                 r'TOKEN[\s]*=[\s]*["\']([^"\']+)["\']',
                 r'password[\s]*=[\s]*["\']([^"\']+)["\']',
+                r'ghp_[a-zA-Z0-9]{36}',  # GitHub PAT
+                r'gho_[a-zA-Z0-9]{36}',  # GitHub OAuth
+                r'ghs_[a-zA-Z0-9]{36}',  # GitHub App Token
+                r'xoxb-[0-9]{10,12}-[0-9]{10,12}-[a-zA-Z0-9]{24}',  # Slack Bot Token
+                r'AKIA[0-9A-Z]{16}',  # AWS Access Key ID
+                r'AIza[0-9A-Za-z\\-_]{35}',  # Google API keys (moved here)
             ],
             'endpoints': [
                 r'https?://[^"\s\']+/admin[^"\s\']*',

@@ -105,9 +105,27 @@ class Workflow:
             elif module_name == 'jwt':
                 from fbh.modules.network.jwt_scanner import JWTScanner
                 return JWTScanner(target)
+            elif module_name == 'jwt_static':
+                from fbh.modules.static.jwt_scanner import JWTScanner
+                return JWTScanner(target)
+            elif module_name == 'vdp':
+                from fbh.modules.recon.vdp_discoverer import VDPDiscoverer
+                return VDPDiscoverer(target)
+            elif module_name == 'auth_testing':
+                from fbh.modules.dynamic.auth_tester import AuthTester
+                return AuthTester(target)
+            elif module_name == 'endpoint_fuzzer':
+                from fbh.modules.network.endpoint_fuzzer import EndpointFuzzer
+                return EndpointFuzzer(target)
+            elif module_name == 'jwt_bruteforce':
+                from fbh.modules.network.jwt_bruteforce import JWTBruteForceScanner
+                return JWTBruteForceScanner(target)
             elif module_name == 'deeplink':
                 from fbh.modules.dynamic.deeplink_scanner import DeepLinkScanner
                 return DeepLinkScanner(target)
+            elif module_name == 'iac_sentinel':
+                from fbh.modules.static.iac_scanner import IaCScanner
+                return IaCScanner(target)
             else:
                 logger.warning(f"Unknown scanner: {module_name}")
                 return None

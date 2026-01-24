@@ -79,9 +79,46 @@ const AiAgents: React.FC = () => {
         }
 
         try {
-            await FBH_API.triggerScan(selectedTarget); // Simplified for demo
-            addLog('ANALYSIS CORE COMPLETED', 'success');
-            addLog('Updates pushed to Intelligence Center.', 'success');
+            const initialResponse = await FBH_API.runAgent(selectedTarget, agentId);
+            const taskId = initialResponse.task_id;
+
+            if (!taskId) {
+                addLog('AGENT EXECUTION FAILED TO INITIALIZE', 'error');
+                return;
+            }
+
+            addLog(`TASK QUEUED: ID ${taskId}`, 'info');
+
+            // Polling for completion
+            let completed = false;
+            let attempts = 0;
+            const maxAttempts = 60; // 60 seconds max for demo
+
+            while (!completed && attempts < maxAttempts) {
+                attempts++;
+                const statusRes = await FBH_API.getTaskStatus(taskId);
+                const task = statusRes.task;
+
+                if (task.status === 'completed') {
+                    addLog('ANALYSIS CORE COMPLETED', 'success');
+                    addLog('Updates pushed to Intelligence Center.', 'success');
+                    completed = true;
+                } else if (task.status === 'failed') {
+                    addLog(`AGENT FAULT: ${task.result || 'Unknown error'}`, 'error');
+                    completed = true;
+                } else {
+                    // Still pending or in progress
+                    if (attempts % 5 === 0) {
+                        addLog(`SENTINEL STATUS: ${task.status.toUpperCase()}...`, 'bot');
+                    }
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+            }
+
+            if (!completed) {
+                addLog('AGENT TIMEOUT: ANALYSIS CONTINUING IN BACKGROUND', 'warning');
+            }
+
         } catch (err) {
             addLog('CRITICAL FAULT DETECTED IN AGENT HANDLER', 'error');
         } finally {
@@ -110,6 +147,20 @@ const AiAgents: React.FC = () => {
             desc: 'Intelligent severity prioritization and CVSS scoring.',
             icon: ShieldCheck,
             color: 'text-severity-low'
+        },
+        {
+            id: 'payload_architect',
+            name: 'Payload Architect',
+            desc: 'Sophisticated exploit crafting for JWT and Auth bypass.',
+            icon: Terminal,
+            color: 'text-orange-400'
+        },
+        {
+            id: 'llm_reviewer',
+            name: 'LLM Code Review',
+            desc: 'Deep security reasoning using Large Language Models.',
+            icon: Cpu,
+            color: 'text-blue-400'
         }
     ];
 

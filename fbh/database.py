@@ -34,19 +34,34 @@ class Database:
         conn = self.connect()
         cursor = conn.cursor()
         
+        # Workspaces table
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS workspaces (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT UNIQUE,
+                description TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        
+        # Insert default workspace if not exists
+        cursor.execute("INSERT OR IGNORE INTO workspaces (name, description) VALUES ('Default Workspace', 'The primary FBH workspace.')")
+
         # Targets table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS targets (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                workspace_id INTEGER DEFAULT 1,
                 name TEXT UNIQUE NOT NULL,
                 package_name TEXT,
                 platform TEXT,
+                config TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 status TEXT DEFAULT 'active',
                 scan_progress INTEGER DEFAULT 0,
                 last_error TEXT,
-                config TEXT
+                FOREIGN KEY (workspace_id) REFERENCES workspaces(id)
             )
         """)
         
@@ -106,6 +121,20 @@ class Database:
             CREATE TABLE IF NOT EXISTS settings (
                 key TEXT PRIMARY KEY,
                 value TEXT
+            )
+        """)
+        
+        # Phase 9: Task queue for distributed workers
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                target_id INTEGER,
+                task_type TEXT,
+                status TEXT DEFAULT 'pending',
+                payload TEXT,
+                result TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
         
@@ -293,6 +322,55 @@ class Database:
         cursor.execute("SELECT value FROM settings WHERE key = ?", (key,))
         row = cursor.fetchone()
         return row['value'] if row else default
+
+    def submit_task(self, target_id: Any, task_type: str, payload: Dict = None) -> int:
+        """Add a task to the queue"""
+        conn = self.connect()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO tasks (target_id, task_type, payload) VALUES (?, ?, ?)",
+            (str(target_id), task_type, json.dumps(payload or {}))
+        )
+        task_id = cursor.lastrowid
+        conn.commit()
+        return task_id
+
+    def get_target_scans(self, target_id: Any) -> List[Dict[str, Any]]:
+        """Get scan history for a target"""
+        conn = self.connect()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM scans WHERE target_id = ? ORDER BY created_at DESC",
+            (str(target_id),)
+        )
+        return [dict(row) for row in cursor.fetchall()]
+
+    # Workspace operations
+    def list_workspaces(self) -> List[Dict[str, Any]]:
+        """List all available workspaces"""
+        conn = self.connect()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM workspaces ORDER BY name ASC")
+        return [dict(row) for row in cursor.fetchall()]
+
+    def add_workspace(self, name: str, description: str = "") -> int:
+        """Create a new workspace"""
+        conn = self.connect()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO workspaces (name, description) VALUES (?, ?)", (name, description))
+        workspace_id = cursor.lastrowid
+        conn.commit()
+        return workspace_id
+
+    def list_targets(self, workspace_id: int = None) -> List[Dict[str, Any]]:
+        """List targets, optionally filtered by workspace"""
+        conn = self.connect()
+        cursor = conn.cursor()
+        if workspace_id:
+            cursor.execute("SELECT * FROM targets WHERE workspace_id = ? ORDER BY name ASC", (workspace_id,))
+        else:
+            cursor.execute("SELECT * FROM targets ORDER BY name ASC")
+        return [dict(row) for row in cursor.fetchall()]
 
     def set_setting(self, key: str, value: Any):
         """Set a setting value"""
