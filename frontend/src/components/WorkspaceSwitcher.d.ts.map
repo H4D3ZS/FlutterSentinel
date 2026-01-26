@@ -1,0 +1,1 @@
+{"version":3,"file":"WorkspaceSwitcher.d.ts","sourceRoot":"","sources":["WorkspaceSwitcher.tsx"],"names":[],"mappings":"AAAA,OAAO,KAA8B,MAAM,OAAO,CAAC;AAWnD,UAAU,sBAAsB;IAC5B,iBAAiB,EAAE,CAAC,WAAW,EAAE,MAAM,GAAG,SAAS,KAAK,IAAI,CAAC;CAChE;AAED,QAAA,MAAM,iBAAiB,EAAE,KAAK,CAAC,EAAE,CAAC,sBAAsB,CAoIvD,CAAC;AAEF,eAAe,iBAAiB,CAAC"}

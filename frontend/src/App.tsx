@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import {
     BarChart3,
     Cpu,
@@ -89,6 +89,13 @@ const App = () => {
                                 Configuration
                             </div>
                             <NavLink to="/settings" icon={SettingsIcon}>Settings</NavLink>
+                            <a
+                                href="/"
+                                className="flex items-center gap-3 p-3 rounded-md text-text-secondary hover:bg-background-tertiary hover:text-text-primary transition-all duration-200 mt-2 border-t border-border/30 pt-4"
+                            >
+                                <ShieldCheck size={20} className="text-severity-low" />
+                                <span className="font-semibold text-severity-low">MobSF Core</span>
+                            </a>
                         </div>
                     </nav>
 
@@ -115,7 +122,8 @@ const App = () => {
                         </div>
                     </div>
                 </aside>
-            )}
+            )
+            }
 
             <main className={cn("flex-1 min-h-screen overflow-auto", !isLoginPage && "ml-64")}>
                 <Routes>
@@ -128,7 +136,7 @@ const App = () => {
                     <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                 </Routes>
             </main>
-        </div>
+        </div >
     );
 };
 

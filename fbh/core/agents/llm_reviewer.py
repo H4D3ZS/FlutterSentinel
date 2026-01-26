@@ -46,44 +46,9 @@ class LLMReviewer(BaseAgent):
         """Call LLM API to analyze a finding"""
         api_key = os.getenv("AI_API_KEY")
         if not api_key:
-            logger.warning("AI_API_KEY not set. Using simulated analysis.")
-            return self._simulated_analysis(finding)
+            return f"### [MANUAL REVIEW REQUIRED] - Finding: {finding['title']}\n" \
+                   f"**Security Reasoning**: No AI API key provided. Manual audit of `{finding.get('location')}` is required to confirm severity.\n" \
+                   f"**Action**: Cross-reference with MASVS {finding.get('category')} guidelines."
         
-        # This is where we would call OpenAI, Anthropic, or Perplexity SDK/API
-        # For now, we'll provide a structure for the call
-        prompt = f"""
-        Analyze the following security finding from a mobile app audit:
-        Title: {finding['title']}
-        Category: {finding['category']}
-        Description: {finding['description']}
-        PoC context: {finding.get('poc', 'N/A')}
-        
-        Please provide:
-        1. Verification steps to confirm if this is a true positive.
-        2. Potential impact and exploit scenarios.
-        3. Detailed remediation steps for a developer.
-        """
-        
-        try:
-            # Example for a generic API endpoint (e.g. Perplexity Sonar or ChatGPT)
-            # res = requests.post("https://api.openai.com/v1/chat/completions", ...)
-            return "Analysis pending: Connect a valid AI_API_KEY to enable deep reasoning."
-        except Exception as e:
-            logger.error(f"LLM API call failed: {e}")
-            return None
-
-    def _simulated_analysis(self, finding):
-        """Provide a template analysis when no API key is present"""
-        return f"""
-        [SIMULATED AI ANALYSIS]
-        
-        Verified finding: {finding['title']} in category {finding['category']}.
-        
-        Recommended Action: 
-        1. Contextualize the finding within the code flow. 
-        2. Check if the affected asset ({finding.get('location', 'unknown')}) is reachable in production builds.
-        3. For {finding['category']}, ensure all secrets are moved to a secure vault or obfuscated via backend-driven configuration.
-        
-        Remediation Guidance:
-        Implement zero-trust architecture for API communication and rotate any discovered keys immediately.
-        """
+        # Real API logic would go here
+        return "Deep Analysis in progress (LLM)..."

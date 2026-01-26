@@ -67,4 +67,3 @@ class VulnerabilityChainer:
             summary += f"   - Escalated Impact: {chain['impact_esclation']}\n\n"
             
         return summary
- Aurora: "Target impact can be significantly escalated by chaining these discoveries."

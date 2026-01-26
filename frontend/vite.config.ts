@@ -13,6 +13,13 @@ export default defineConfig({
     build: {
         outDir: '../MOBSF/mobsf/FBH/static/fbh/dist',
         emptyOutDir: true,
+        rollupOptions: {
+            output: {
+                entryFileNames: `index.js`,
+                chunkFileNames: `[name].js`,
+                assetFileNames: `[name].[ext]`
+            }
+        }
     },
     server: {
         proxy: {

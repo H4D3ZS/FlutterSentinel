@@ -27,6 +27,10 @@ class Database:
         if not self.conn:
             self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
             self.conn.row_factory = sqlite3.Row
+            # Performance Optimizations
+            self.conn.execute("PRAGMA journal_mode=WAL")
+            self.conn.execute("PRAGMA synchronous=NORMAL")
+            self.conn.execute("PRAGMA cache_size=-64000") # 64MB cache
         return self.conn
     
     def initialize(self):
@@ -146,15 +150,22 @@ class Database:
         conn.commit()
     
     # Target operations
-    def add_target(self, name: str, package_name: str, platform: str, config: Dict = None) -> int:
+    def add_target(
+        self,
+        name: str,
+        package_name: str,
+        platform: str,
+        workspace_id: int = 1,
+        config: Dict = None
+    ) -> int:
         """Add a new target"""
         conn = self.connect()
         cursor = conn.cursor()
         
         cursor.execute("""
-            INSERT INTO targets (name, package_name, platform, config)
-            VALUES (?, ?, ?, ?)
-        """, (name, package_name, platform, json.dumps(config or {})))
+            INSERT INTO targets (name, package_name, platform, workspace_id, config)
+            VALUES (?, ?, ?, ?, ?)
+        """, (name, package_name, platform, workspace_id, json.dumps(config or {})))
         
         conn.commit()
         return cursor.lastrowid
@@ -167,20 +178,25 @@ class Database:
         cursor.execute("SELECT * FROM targets WHERE name = ?", (name,))
         row = cursor.fetchone()
         
-        if row:
-            return dict(row)
-        return None
+        return dict(row) if row else None
     
-    def list_targets(self, status: str = None) -> List[Dict]:
-        """List all targets"""
+    def list_targets(self, workspace_id: int = None, status: str = None) -> List[Dict]:
+        """List targets with optional filters"""
         conn = self.connect()
         cursor = conn.cursor()
         
-        if status:
-            cursor.execute("SELECT * FROM targets WHERE status = ? ORDER BY created_at DESC", (status,))
-        else:
-            cursor.execute("SELECT * FROM targets ORDER BY created_at DESC")
+        query = "SELECT * FROM targets WHERE 1=1"
+        params = []
         
+        if workspace_id:
+            query += " AND workspace_id = ?"
+            params.append(workspace_id)
+        if status:
+            query += " AND status = ?"
+            params.append(status)
+            
+        query += " ORDER BY name ASC"
+        cursor.execute(query, params)
         return [dict(row) for row in cursor.fetchall()]
     
     # Scan operations
@@ -213,13 +229,18 @@ class Database:
         conn.commit()
     
     def get_scans(self, target_id: int = None, limit: int = 10) -> List[Dict]:
-        """Get scan history"""
+        """Get scan history with optional target filter"""
         conn = self.connect()
         cursor = conn.cursor()
+        
         if target_id:
-            cursor.execute("SELECT * FROM scans WHERE target_id = ? ORDER BY started_at DESC LIMIT ?", (target_id, limit))
+            cursor.execute(
+                "SELECT * FROM scans WHERE target_id = ? ORDER BY started_at DESC LIMIT ?",
+                (target_id, limit)
+            )
         else:
             cursor.execute("SELECT * FROM scans ORDER BY started_at DESC LIMIT ?", (limit,))
+            
         return [dict(row) for row in cursor.fetchall()]
 
     def get_scan(self, scan_id: int) -> Optional[Dict]:
@@ -307,7 +328,7 @@ class Database:
         else:
             cursor.execute("SELECT COUNT(*) as count FROM scans")
         
-        total_scans = cursor.fetchone()['count']
+        total_scans = (cursor.fetchone() or {'count': 0})['count']
         
         return {
             'total_scans': total_scans,
@@ -323,6 +344,20 @@ class Database:
         row = cursor.fetchone()
         return row['value'] if row else default
 
+    def set_setting(self, key: str, value: Any):
+        """Set a setting value"""
+        conn = self.connect()
+        cursor = conn.cursor()
+        cursor.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", (key, str(value)))
+        conn.commit()
+
+    def get_all_settings(self) -> Dict[str, str]:
+        """Get all settings as a dict"""
+        conn = self.connect()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM settings")
+        return {row['key']: row['value'] for row in cursor.fetchall()}
+
     def submit_task(self, target_id: Any, task_type: str, payload: Dict = None) -> int:
         """Add a task to the queue"""
         conn = self.connect()
@@ -334,19 +369,9 @@ class Database:
         task_id = cursor.lastrowid
         conn.commit()
         return task_id
-
-    def get_target_scans(self, target_id: Any) -> List[Dict[str, Any]]:
-        """Get scan history for a target"""
-        conn = self.connect()
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT * FROM scans WHERE target_id = ? ORDER BY created_at DESC",
-            (str(target_id),)
-        )
-        return [dict(row) for row in cursor.fetchall()]
-
+    
     # Workspace operations
-    def list_workspaces(self) -> List[Dict[str, Any]]:
+    def list_workspaces(self) -> List[Dict]:
         """List all available workspaces"""
         conn = self.connect()
         cursor = conn.cursor()
@@ -361,30 +386,6 @@ class Database:
         workspace_id = cursor.lastrowid
         conn.commit()
         return workspace_id
-
-    def list_targets(self, workspace_id: int = None) -> List[Dict[str, Any]]:
-        """List targets, optionally filtered by workspace"""
-        conn = self.connect()
-        cursor = conn.cursor()
-        if workspace_id:
-            cursor.execute("SELECT * FROM targets WHERE workspace_id = ? ORDER BY name ASC", (workspace_id,))
-        else:
-            cursor.execute("SELECT * FROM targets ORDER BY name ASC")
-        return [dict(row) for row in cursor.fetchall()]
-
-    def set_setting(self, key: str, value: Any):
-        """Set a setting value"""
-        conn = self.connect()
-        cursor = conn.cursor()
-        cursor.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", (key, str(value)))
-        conn.commit()
-
-    def get_all_settings(self) -> Dict[str, str]:
-        """Get all settings as a dict"""
-        conn = self.connect()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM settings")
-        return {row['key']: row['value'] for row in cursor.fetchall()}
 
     def close(self):
         """Close database connection"""

@@ -1,26 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-    Layers,
-    ChevronDown,
-    Plus,
-    Folder,
-    Check,
-    Briefcase
-} from 'lucide-react';
+import { ChevronDown, Plus, Folder } from 'lucide-react';
 import { FBH_API } from '../services/api';
-import { clsx } from 'clsx';
+import { motion, AnimatePresence } from 'framer-motion';
+
+interface Workspace {
+    id: number;
+    name: string;
+    description?: string;
+}
 
 interface WorkspaceSwitcherProps {
-    onWorkspaceChange: (id: number) => void;
+    onWorkspaceChange: (workspaceId: number | undefined) => void;
 }
 
 const WorkspaceSwitcher: React.FC<WorkspaceSwitcherProps> = ({ onWorkspaceChange }) => {
-    const [workspaces, setWorkspaces] = useState<any[]>([]);
-    const [activeWorkspace, setActiveWorkspace] = useState<any>(null);
+    const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+    const [activeWorkspace, setActiveWorkspace] = useState<Workspace | null>(null);
     const [isOpen, setIsOpen] = useState(false);
-    const [isAdding, setIsAdding] = useState(false);
-    const [newWorkspaceName, setNewWorkspaceName] = useState('');
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchWorkspaces();
@@ -29,51 +26,81 @@ const WorkspaceSwitcher: React.FC<WorkspaceSwitcherProps> = ({ onWorkspaceChange
     const fetchWorkspaces = async () => {
         try {
             const data = await FBH_API.getWorkspaces();
-            setWorkspaces(data.workspaces);
-            if (data.workspaces.length > 0 && !activeWorkspace) {
-                const defaultWs = data.workspaces.find((w: any) => w.id === 1) || data.workspaces[0];
-                setActiveWorkspace(defaultWs);
-                onWorkspaceChange(defaultWs.id);
+            const workspaceList = data.workspaces || [{ id: 1, name: 'Default Workspace' }];
+            setWorkspaces(workspaceList);
+            
+            // Set first workspace as active by default
+            if (workspaceList.length > 0) {
+                setActiveWorkspace(workspaceList[0]);
+                onWorkspaceChange(workspaceList[0].id);
             }
         } catch (error) {
             console.error('Failed to fetch workspaces:', error);
+            // Fallback to default workspace
+            const defaultWorkspace = { id: 1, name: 'Default Workspace' };
+            setWorkspaces([defaultWorkspace]);
+            setActiveWorkspace(defaultWorkspace);
+            onWorkspaceChange(defaultWorkspace.id);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleSelect = (workspace: any) => {
+    const handleWorkspaceSelect = (workspace: Workspace) => {
         setActiveWorkspace(workspace);
         onWorkspaceChange(workspace.id);
         setIsOpen(false);
     };
 
-    const handleAdd = async () => {
-        if (!newWorkspaceName.trim()) return;
+    const handleCreateWorkspace = async () => {
+        const name = prompt('Enter workspace name:');
+        if (!name) return;
+
         try {
-            await FBH_API.createWorkspace({ name: newWorkspaceName });
-            setNewWorkspaceName('');
-            setIsAdding(false);
-            fetchWorkspaces();
+            await FBH_API.createWorkspace({ name });
+            fetchWorkspaces(); // Refresh list
         } catch (error) {
             console.error('Failed to create workspace:', error);
+            alert('Failed to create workspace');
         }
     };
 
-    if (!activeWorkspace) return null;
+    if (loading) {
+        return (
+            <div className="p-4 border-b border-border">
+                <div className="animate-pulse">
+                    <div className="h-4 bg-background-tertiary rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-background-tertiary rounded w-1/2"></div>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="relative px-3 mb-6">
+        <div className="p-4 border-b border-border relative">
+            <div className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest mb-2">
+                Active Workspace
+            </div>
+            
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center gap-3 p-3 bg-background-tertiary/50 border border-border hover:border-accent/30 rounded-xl transition-all group"
+                className="w-full flex items-center justify-between p-3 bg-background-tertiary hover:bg-background-primary border border-border rounded-lg transition-all group"
             >
-                <div className="p-2 rounded-lg bg-accent/10 text-accent group-hover:bg-accent group-hover:text-white transition-colors">
-                    <Briefcase size={16} />
+                <div className="flex items-center gap-3">
+                    <Folder size={16} className="text-accent" />
+                    <div className="text-left">
+                        <div className="font-medium text-sm truncate">
+                            {activeWorkspace?.name || 'No Workspace'}
+                        </div>
+                        <div className="text-[10px] text-text-tertiary">
+                            {workspaces.length} workspace{workspaces.length !== 1 ? 's' : ''} available
+                        </div>
+                    </div>
                 </div>
-                <div className="flex-1 text-left overflow-hidden">
-                    <div className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest leading-none mb-1">Active Space</div>
-                    <div className="text-sm font-bold truncate">{activeWorkspace.name}</div>
-                </div>
-                <ChevronDown size={16} className={clsx("text-text-tertiary transition-transform", isOpen && "rotate-180")} />
+                <ChevronDown 
+                    size={16} 
+                    className={`text-text-tertiary transition-transform ${isOpen ? 'rotate-180' : ''}`} 
+                />
             </button>
 
             <AnimatePresence>
@@ -82,60 +109,36 @@ const WorkspaceSwitcher: React.FC<WorkspaceSwitcherProps> = ({ onWorkspaceChange
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="absolute left-3 right-3 top-full mt-2 bg-background-secondary border border-border rounded-xl shadow-2xl z-[60] overflow-hidden"
+                        className="absolute top-full left-4 right-4 mt-2 bg-background-secondary border border-border rounded-lg shadow-2xl z-50 overflow-hidden"
                     >
-                        <div className="p-2 space-y-1">
-                            {workspaces.map(ws => (
+                        <div className="max-h-64 overflow-y-auto">
+                            {workspaces.map((workspace) => (
                                 <button
-                                    key={ws.id}
-                                    onClick={() => handleSelect(ws)}
-                                    className={clsx(
-                                        "w-full flex items-center gap-3 p-2.5 rounded-lg transition-colors text-left",
-                                        activeWorkspace.id === ws.id ? "bg-accent/10 text-accent" : "hover:bg-background-tertiary text-text-secondary"
-                                    )}
+                                    key={workspace.id}
+                                    onClick={() => handleWorkspaceSelect(workspace)}
+                                    className={`w-full p-3 text-left hover:bg-background-tertiary transition-colors flex items-center gap-3 ${
+                                        activeWorkspace?.id === workspace.id ? 'bg-accent/10 text-accent' : ''
+                                    }`}
                                 >
-                                    <Folder size={16} className={activeWorkspace.id === ws.id ? "text-accent" : "text-text-tertiary"} />
-                                    <span className="flex-1 text-sm font-medium truncate">{ws.name}</span>
-                                    {activeWorkspace.id === ws.id && <Check size={14} />}
+                                    <Folder size={14} />
+                                    <div>
+                                        <div className="font-medium text-sm">{workspace.name}</div>
+                                        {workspace.description && (
+                                            <div className="text-[10px] text-text-tertiary">{workspace.description}</div>
+                                        )}
+                                    </div>
                                 </button>
                             ))}
-
-                            <div className="pt-2 border-t border-border mt-1">
-                                {isAdding ? (
-                                    <div className="p-2 space-y-2">
-                                        <input
-                                            type="text"
-                                            autoFocus
-                                            value={newWorkspaceName}
-                                            onChange={(e) => setNewWorkspaceName(e.target.value)}
-                                            placeholder="Workspace Name..."
-                                            className="w-full bg-background-primary border border-border rounded-lg p-2 text-xs outline-none focus:border-accent"
-                                        />
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={handleAdd}
-                                                className="btn btn-primary flex-1 py-1.5 text-[10px] font-bold"
-                                            >
-                                                Create
-                                            </button>
-                                            <button
-                                                onClick={() => setIsAdding(false)}
-                                                className="btn btn-secondary flex-1 py-1.5 text-[10px] font-bold"
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <button
-                                        onClick={() => setIsAdding(true)}
-                                        className="w-full flex items-center gap-3 p-2.5 rounded-lg hover:bg-background-tertiary text-text-tertiary hover:text-text-primary transition-colors text-left"
-                                    >
-                                        <Plus size={16} />
-                                        <span className="text-sm font-medium">New Environment</span>
-                                    </button>
-                                )}
-                            </div>
+                        </div>
+                        
+                        <div className="border-t border-border p-2">
+                            <button
+                                onClick={handleCreateWorkspace}
+                                className="w-full p-2 text-left hover:bg-background-tertiary transition-colors flex items-center gap-2 text-accent text-sm font-medium rounded"
+                            >
+                                <Plus size={14} />
+                                Create New Workspace
+                            </button>
                         </div>
                     </motion.div>
                 )}

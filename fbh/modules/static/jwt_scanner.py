@@ -57,14 +57,18 @@ class JWTScanner(Scanner):
                     description=f'Discovered a JWT token with the "none" algorithm enabled, allowing for signature bypass.',
                     location=file_path,
                     poc=token[:30] + "...",
-                    remediation='Configure JWT implementation to reject tokens with "none" algorithm and enforce strong signing (e.g., HS256/RS256).'
+                    remediation='Configure JWT implementation to reject tokens with "none" algorithm and enforce strong signing (
+                        e.g.,
+                        HS256/RS256
+                    ).'
                 )
             else:
                 self.add_finding(
                     severity='info',
                     category='jwt_security',
                     title='Hardcoded JWT Token Discovered',
-                    description='A hardcoded JWT token was found in the application source. This might contain sensitive information or provide unauthorized access.',
+                    description='A hardcoded JWT token was found in the application source. This might contain sensitive information or
+                        or provide unauthorized access.',
                     location=file_path,
                     poc=token[:30] + "...",
                     remediation='Remove hardcoded tokens and implement secure credential management.'

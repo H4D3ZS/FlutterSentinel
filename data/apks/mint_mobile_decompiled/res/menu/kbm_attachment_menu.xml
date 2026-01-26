@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu
-  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:icon="@null" android:id="@id/forward" android:visible="false" android:orderInCategory="1" android:title="@string/com.kbm.shareOptions" android:showAsAction="always" android:actionProviderClass="androidx.appcompat.widget.ShareActionProvider" app:showAsAction="always" />
-    <item android:icon="@null" android:id="@id/shareOptions" android:orderInCategory="2" android:title="@string/com.kbm.shareOptions" android:showAsAction="always" android:actionProviderClass="androidx.appcompat.widget.ShareActionProvider" app:showAsAction="always" />
-</menu>

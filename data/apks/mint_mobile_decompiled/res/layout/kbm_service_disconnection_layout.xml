@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:orientation="vertical" android:id="@id/serviceDisconnectionLayout" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <ImageView android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="99.0dip" android:src="@null" />
-    <TextView android:textSize="20.0sp" android:textColor="#ff3f3f40" android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="28.0dip" android:text="@string/com.kbm.snap_text" android:fontFamily="sans-serif-medium" android:letterSpacing="0.06" />
-    <View android:layout_gravity="center_horizontal" android:background="#ffccc8c8" android:layout_width="50.0dip" android:layout_height="4.0dip" android:layout_marginTop="7.0dip" />
-    <TextView android:textSize="14.0sp" android:textStyle="normal" android:textColor="#ff737376" android:gravity="center" android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="39.0dip" android:layout_marginTop="10.0dip" android:layout_marginRight="40.0dip" android:text="@string/com.kbm.account_disconnection_message" android:minLines="3" android:lineSpacingExtra="7.0sp" android:fontFamily="sans-serif" android:layout_marginStart="39.0dip" android:layout_marginEnd="40.0dip" android:letterSpacing="0.06" />
-</LinearLayout>

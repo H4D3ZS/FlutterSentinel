@@ -22,28 +22,39 @@ class Workflow:
             return yaml.safe_load(f)
     
     def run_on_target(self, target: Target) -> Dict:
-        """Run workflow on a single target with progress tracking"""
-        logger.info(f"🚀 Running workflow {self.config.get('name')} on {target.name}")
+        """Run workflow on a single target with parallel execution"""
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        
+        logger.info(f"🚀 Running workflow {self.config.get('name')} on {target.name} (Parallel Mode)")
         target.update_progress(0, 'active')
         
         modules = self.config.get('modules', [])
-        total = len(modules)
         target_results = {}
+        total = len(modules)
         
-        for i, module_config in enumerate(modules, 1):
-            module_name = module_config.get('name')
-            progress = int((i / total) * 100)
-            target.update_progress(progress, f'running: {module_name}')
+        def execute_module(module_config):
+            name = module_config.get('name')
+            scanner = self._load_scanner(name, target)
+            if not scanner:
+                return name, {'status': 'not_found'}
             
-            scanner = self._load_scanner(module_name, target)
-            if scanner:
-                try:
-                    findings = scanner.run()
-                    target_results[module_name] = {'findings': len(findings), 'status': 'success'}
-                    logger.info(f"✅ {module_name} finished: {len(findings)} findings")
-                except Exception as e:
-                    logger.error(f"❌ {module_name} failed: {e}")
-                    target_results[module_name] = {'status': 'failed', 'error': str(e)}
+            try:
+                findings = scanner.run()
+                logger.info(f"✅ {name} finished: {len(findings)} findings")
+                return name, {'findings': len(findings), 'status': 'success'}
+            except Exception as e:
+                logger.error(f"❌ {name} failed: {e}")
+                return name, {'status': 'failed', 'error': str(e)}
+
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            futures = {executor.submit(execute_module, m): m for m in modules}
+            completed = 0
+            for future in as_completed(futures):
+                completed += 1
+                name, result = future.result()
+                target_results[name] = result
+                progress = int((completed / total) * 100)
+                target.update_progress(progress, f'completed: {name}')
         
         target.update_progress(100, 'completed')
         self.results[target.name] = target_results
@@ -121,11 +132,23 @@ class Workflow:
                 from fbh.modules.network.jwt_bruteforce import JWTBruteForceScanner
                 return JWTBruteForceScanner(target)
             elif module_name == 'deeplink':
-                from fbh.modules.dynamic.deeplink_scanner import DeepLinkScanner
-                return DeepLinkScanner(target)
+                from fbh.modules.static.deeplink_matcher import DeepLinkMatcher
+                return DeepLinkMatcher(target)
             elif module_name == 'iac_sentinel':
                 from fbh.modules.static.iac_scanner import IaCScanner
                 return IaCScanner(target)
+            elif module_name == 'webview':
+                from fbh.modules.static.webview_analyzer import WebViewAnalyzer
+                return WebViewAnalyzer(target)
+            elif module_name == 'macho':
+                from fbh.modules.static.macho_analyzer import MachOAnalyzer
+                return MachOAnalyzer(target)
+            elif module_name == 'flutter_engine':
+                from fbh.modules.static.flutter_engine_auditor import FlutterEngineAuditor
+                return FlutterEngineAuditor(target)
+            elif module_name == 'deep_scan':
+                from fbh.modules.static.deep_scanner import DeepScanner
+                return DeepScanner(target)
             else:
                 logger.warning(f"Unknown scanner: {module_name}")
                 return None

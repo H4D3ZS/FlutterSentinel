@@ -2,8 +2,8 @@ from typing import List, Dict, Any
 from fbh.core.discovery import DiscoveryModule
 from fbh.database import db
 from fbh.logger import logger
-from scrapers.hackerone import HackerOneClient
-from scrapers.bugcrowd import BugcrowdClient
+from fbh.modules.recon.scrapers.hackerone import HackerOneClient
+from fbh.modules.recon.scrapers.bugcrowd import BugcrowdClient
 
 class BugBountyDiscoverer(DiscoveryModule):
     """Discovers mobile app targets from bug bounty platforms"""

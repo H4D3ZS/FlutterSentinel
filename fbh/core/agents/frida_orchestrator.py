@@ -15,7 +15,13 @@ Java.perform(function() {
     var array_list = Java.use("java.util.ArrayList");
     var ApiClient = Java.use("com.android.org.conscrypt.TrustManagerImpl");
 
-    ApiClient.checkServerTrusted.overload('[[Ljava.security.cert.X509Certificate;', 'java.lang.String', 'java.lang.String').implementation = function(a, b, c) {
+    ApiClient.checkServerTrusted.overload(
+        '[[Ljava.security.cert.X509Certificate;',
+        'java.lang.String',
+        'java.lang.String').implementation = function(a,
+        b,
+        c
+    ) {
         console.log("[+] Bypassing Conscrypt TrustManagerImpl");
         return array_list.$new();
     };
@@ -37,7 +43,11 @@ Java.perform(function() {
  * Universal Android Root Detection Bypass
  */
 Java.perform(function() {
-    var RootPackages = ["com.noshufou.android.su", "com.thirdparty.superuser", "eu.chainfire.supersu", "com.koushikdutta.superuser", "com.topjohnwu.magisk"];
+    var RootPackages = ["com.noshufou.android.su",
+        "com.thirdparty.superuser",
+        "eu.chainfire.supersu",
+        "com.koushikdutta.superuser",
+        "com.topjohnwu.magisk"];
     var File = Java.use("java.io.File");
     
     File.exists.implementation = function() {

@@ -66,7 +66,14 @@ class AuthTester(Scanner):
                     "User-Agent": PayloadObfuscator.get_random_user_agent(),
                     "Content-Type": "application/json"
                 }
-                resp = requests.post(url, json={"test": "rate_limit", "user": "admin", "pass": "admin"}, headers=headers, timeout=5)
+                resp = requests.post(
+                    url,
+                    json={"test": "rate_limit",
+                    "user": "admin",
+                    "pass": "admin"},
+                    headers=headers,
+                    timeout=5
+                )
                 duration = time.time() - start_time
                 responses.append(resp.status_code)
                 
@@ -93,7 +100,11 @@ class AuthTester(Scanner):
                 description=f'The endpoint {url} did not enforce rate limiting after {max_attempts} rapid requests.',
                 location=url,
                 poc=f"Sent {max_attempts} POST requests, all returned {responses[0] if responses else 'N/A'} codes.",
-                remediation='Implement robust rate limiting (e.g., sliding window, token bucket) on all sensitive endpoints.'
+                remediation='Implement robust rate limiting (
+                    e.g.,
+                    sliding window,
+                    token bucket
+                ) on all sensitive endpoints.'
             )
 
     def _test_ip_bypass(self, url):

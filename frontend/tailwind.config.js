@@ -8,26 +8,27 @@ export default {
         extend: {
             colors: {
                 background: {
-                    primary: '#0d1117',
-                    secondary: '#161b22',
-                    tertiary: '#21262d',
+                    primary: '#111827', // slightly lighter than #0d1117
+                    secondary: '#1f2937', // lighter than #161b22
+                    tertiary: '#374151', // lighter than #21262d
                 },
                 text: {
-                    primary: '#c9d1d9',
-                    secondary: '#8b949e',
+                    primary: '#ffffff', // PURE WHITE
+                    secondary: '#d1d5db', // lighter gray
+                    tertiary: '#9ca3af',
                 },
                 accent: {
-                    DEFAULT: '#58a6ff',
-                    hover: '#1f6feb',
+                    DEFAULT: '#3b82f6', // brighter blue
+                    hover: '#60a5fa',
                 },
                 severity: {
-                    critical: '#ff4757',
-                    high: '#ff6348',
-                    medium: '#ffa502',
-                    low: '#3ae374',
-                    info: '#58a6ff',
+                    critical: '#ef4444',
+                    high: '#f97316',
+                    medium: '#eab308',
+                    low: '#22c55e',
+                    info: '#3b82f6',
                 },
-                border: '#30363d',
+                border: '#4b5563',
             },
             fontFamily: {
                 sans: ['Inter', -apple - system, 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],

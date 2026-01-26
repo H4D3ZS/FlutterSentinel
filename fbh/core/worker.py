@@ -97,22 +97,28 @@ class TaskWorker:
         conn.commit()
 
     def _handle_run_agent(self, agent_name, target):
-        """Helper to run agents (extracted from views.py)"""
+        """Helper to run agents with correct mappings and absolute imports"""
         from fbh.core.agents.llm_reviewer import LLMReviewer
         from fbh.core.agents.payload_architect import PayloadArchitect
-        from fbh.core.agents.remediation import RemediationAgent
+        from fbh.core.agents.sentinel import SentinelAgent
+        from fbh.core.agents.exploit_generator import ExploitGenerator
+        from fbh.core.agents.risk_agent import RiskAssessmentAgent
+        from fbh.core.agents.pattern_agent import PatternRecognitionAgent
         
         if agent_name == 'llm_reviewer':
             agent = LLMReviewer(target)
         elif agent_name == 'payload_architect':
             agent = PayloadArchitect(target)
-        elif agent_name == 'remediation':
-            agent = RemediationAgent(target)
         elif agent_name == 'pattern':
-            from fbh.agents.pattern_agent import PatternRecognitionAgent
+            agent = SentinelAgent(target) # Map 'pattern' to the flagship Sentinel
+        elif agent_name == 'exploit':
+            agent = ExploitGenerator(target)
+        elif agent_name == 'risk':
+            agent = RiskAssessmentAgent(target)
+        elif agent_name == 'pattern_legacy':
             agent = PatternRecognitionAgent(target)
         else:
-            raise ValueError(f"Unknown agent: {agent_name}")
+            raise ValueError(f"Unknown agent ID: {agent_name}")
             
         agent.run()
         return {'status': 'success'}

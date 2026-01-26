@@ -69,6 +69,10 @@ api.interceptors.response.use((response) => {
         originalRequest._retry = true;
         try {
             const refreshToken = localStorage.getItem('fbh_refresh_token');
+            if (!refreshToken) {
+                throw new Error('No refresh token available');
+            }
+            
             const res = await axios.post('/fbh/api/token/refresh/', { refresh: refreshToken });
             const { access } = res.data;
             localStorage.setItem('fbh_access_token', access);
@@ -188,7 +192,7 @@ export const FBH_API = {
 
     // Analysis & Intelligence
     getDelta: async (targetName: string) => {
-        const response = await api.get<{ delta: any }>(`/target/${targetName}/delta/`);
+        const response = await api.get<{ delta: any }>(`/targets/${targetName}/delta/`);
         return response.data.delta;
     },
 
@@ -233,6 +237,36 @@ export const FBH_API = {
 
     executePlaybook: async (target: string, incidentType: string, severity: string) => {
         const response = await api.post<{ result: any }>('/ir/playbook/', { target, incident_type: incidentType, severity });
+        return response.data;
+    },
+
+    generateFridaScript: async (scriptType: string, platform: string = 'android') => {
+        const response = await api.post<{ script: string }>('/frida/generate/', { script_type: scriptType, platform });
+        return response.data;
+    },
+
+    applyBinaryPatch: async (data: { target: string; patch_type: string; file_pattern?: string; method_name?: string }) => {
+        const response = await api.post<{ status: string; message: string; patches?: any[] }>('/binary/patch/', data);
+        return response.data;
+    },
+
+    generateBountyReport: async (targetName: string) => {
+        const response = await api.get<{ report: string }>(`/target/bounty-report/${targetName}/`);
+        return response.data;
+    },
+
+    generatePoCCommand: async (findingId: string) => {
+        const response = await api.post<{ poc_command: string }>('/poc/generate/', { finding_id: findingId });
+        return response.data;
+    },
+
+    auditSignatures: async (targetName: string) => {
+        const response = await api.get<{ anti_tamper_findings: any[] }>(`/target/audit-signatures/${targetName}/`);
+        return response.data;
+    },
+
+    getReflutterBlueprint: async (targetName: string) => {
+        const response = await api.get<{ status: string; message?: string; engine_hash?: string; blueprint?: any }>(`/target/reflutter-blueprint/${targetName}/`);
         return response.data;
     },
 

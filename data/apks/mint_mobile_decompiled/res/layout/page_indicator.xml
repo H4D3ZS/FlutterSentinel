@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" android:importantForAutofill="no"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <View android:layout_gravity="center" android:id="@id/page_indicator" android:background="@drawable/bar_indicator" android:layout_width="fill_parent" android:layout_height="@dimen/photo_viewer_bar_indicator_height" android:layout_margin="@dimen/photo_viewer_bar_indicator_margin" />
-</FrameLayout>

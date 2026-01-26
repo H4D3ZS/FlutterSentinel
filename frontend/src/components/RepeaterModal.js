@@ -1,0 +1,42 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Send, RefreshCw, Terminal, Globe, Shield, Code, Clock, ChevronRight, Copy, Hash } from 'lucide-react';
+import { FBH_API } from '../services/api';
+import { clsx } from 'clsx';
+const RepeaterModal = ({ isOpen, onClose, initialData }) => {
+    const [method, setMethod] = useState(initialData?.method || 'GET');
+    const [url, setUrl] = useState(initialData?.url || '');
+    const [headers, setHeaders] = useState(JSON.stringify(initialData?.headers || { "Content-Type": "application/json" }, null, 2));
+    const [body, setBody] = useState(initialData?.body || '');
+    const [response, setResponse] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const handleSend = async () => {
+        setLoading(true);
+        try {
+            const parsedHeaders = JSON.parse(headers);
+            const res = await FBH_API.sendRepeaterRequest({
+                method,
+                url,
+                headers: parsedHeaders,
+                body
+            });
+            setResponse(res.response);
+        }
+        catch (error) {
+            setResponse({ error: error.message || 'Connection failed' });
+        }
+        finally {
+            setLoading(false);
+        }
+    };
+    if (!isOpen)
+        return null;
+    return (_jsxs("div", { className: "fixed inset-0 z-[100] flex items-center justify-center p-4", children: [_jsx(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, onClick: onClose, className: "absolute inset-0 bg-black/80 backdrop-blur-md" }), _jsxs(motion.div, { initial: { opacity: 0, scale: 0.9, y: 20 }, animate: { opacity: 1, scale: 1, y: 0 }, exit: { opacity: 0, scale: 0.9, y: 20 }, className: "w-full max-w-[1400px] h-[85vh] bg-background-secondary border border-border rounded-2xl shadow-2xl relative z-10 overflow-hidden flex flex-col", children: [_jsxs("div", { className: "p-4 border-b border-border bg-background-tertiary flex items-center justify-between", children: [_jsxs("div", { className: "flex items-center gap-3", children: [_jsx("div", { className: "p-2 rounded-lg bg-accent/10 text-accent", children: _jsx(Terminal, { size: 20 }) }), _jsxs("div", { children: [_jsx("h3", { className: "font-bold", children: "Exploit Playground (Repeater)" }), _jsx("p", { className: "text-[10px] text-text-tertiary font-mono uppercase tracking-widest", children: "Interactive Request Replay Core" })] })] }), _jsx("button", { onClick: onClose, className: "p-2 hover:bg-background-secondary rounded-lg text-text-secondary", children: _jsx(X, { size: 20 }) })] }), _jsxs("div", { className: "flex-1 flex overflow-hidden", children: [_jsxs("div", { className: "w-1/2 flex flex-col border-r border-border p-4 gap-4 overflow-y-auto", children: [_jsxs("div", { className: "flex items-center gap-2", children: [_jsx("select", { value: method, onChange: (e) => setMethod(e.target.value), className: "bg-background-tertiary border border-border rounded-lg px-3 py-2 text-sm font-bold outline-none focus:border-accent", children: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'].map(m => (_jsx("option", { value: m, children: m }, m))) }), _jsxs("div", { className: "flex-1 relative", children: [_jsx(Globe, { className: "absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary", size: 16 }), _jsx("input", { type: "text", value: url, onChange: (e) => setUrl(e.target.value), placeholder: "https://api.target.com/v1/...", className: "w-full bg-background-tertiary border border-border rounded-lg py-2 pl-10 pr-4 text-sm outline-none focus:border-accent font-mono" })] }), _jsxs("button", { onClick: handleSend, disabled: loading, className: "btn btn-primary px-6 flex items-center gap-2 shadow-[0_0_15px_rgba(59,130,246,0.2)]", children: [loading ? _jsx(RefreshCw, { className: "animate-spin", size: 18 }) : _jsx(Send, { size: 18 }), "Send"] })] }), _jsxs("div", { className: "flex-1 grid grid-rows-2 gap-4", children: [_jsxs("div", { className: "flex flex-col gap-2", children: [_jsx("label", { className: "text-[10px] font-bold text-text-tertiary uppercase tracking-widest pl-1", children: "Headers (JSON)" }), _jsx("textarea", { value: headers, onChange: (e) => setHeaders(e.target.value), className: "flex-1 bg-background-primary border border-border rounded-xl p-4 font-mono text-xs outline-none focus:border-accent resize-none placeholder:opacity-30" })] }), _jsxs("div", { className: "flex flex-col gap-2", children: [_jsx("label", { className: "text-[10px] font-bold text-text-tertiary uppercase tracking-widest pl-1", children: "Body" }), _jsx("textarea", { value: body, onChange: (e) => setBody(e.target.value), className: "flex-1 bg-background-primary border border-border rounded-xl p-4 font-mono text-xs outline-none focus:border-accent resize-none placeholder:opacity-30", placeholder: "Enter raw body content..." })] })] })] }), _jsxs("div", { className: "w-1/2 flex flex-col p-4 gap-4 overflow-hidden", children: [_jsxs("div", { className: "flex items-center justify-between", children: [_jsx("h4", { className: "text-[10px] font-bold text-text-tertiary uppercase tracking-widest", children: "Target Response" }), response && !response.error && (_jsxs("div", { className: "flex items-center gap-4 text-[10px] font-mono", children: [_jsxs("div", { className: "flex items-center gap-1 text-text-secondary", children: [_jsx(Hash, { size: 12 }), " Status:", _jsxs("span", { className: clsx("font-bold", response.status >= 200 && response.status < 300 ? "text-severity-low" :
+                                                                    response.status >= 400 ? "text-severity-critical" : "text-severity-medium"), children: [response.status, " ", response.status_text] })] }), _jsxs("div", { className: "flex items-center gap-1 text-text-secondary", children: [_jsx(Clock, { size: 12 }), " ", response.time_ms, "ms"] })] }))] }), _jsx("div", { className: "flex-1 bg-background-primary border border-border rounded-xl overflow-hidden flex flex-col relative", children: loading ? (_jsxs("div", { className: "absolute inset-0 flex flex-col items-center justify-center gap-3 bg-background-primary/50 backdrop-blur-sm z-10", children: [_jsx(RefreshCw, { className: "text-accent animate-spin", size: 32 }), _jsx("span", { className: "text-xs font-mono text-accent animate-pulse", children: "Awaiting Server Response..." })] })) : response ? (response.error ? (_jsxs("div", { className: "p-8 flex flex-col items-center justify-center text-center gap-4 h-full", children: [_jsx(Shield, { className: "text-severity-critical opacity-50", size: 48 }), _jsxs("div", { children: [_jsx("p", { className: "font-bold text-severity-critical mb-1", children: "Execution Fault" }), _jsx("p", { className: "text-xs text-text-secondary font-mono bg-severity-critical/5 p-2 rounded border border-severity-critical/10", children: response.error })] })] })) : (_jsxs("div", { className: "flex flex-col h-full overflow-hidden", children: [_jsx("div", { className: "flex-1 overflow-y-auto p-4 font-mono text-xs whitespace-pre-wrap leading-relaxed", children: response.body || 'Empty response body' }), _jsxs("div", { className: "p-3 bg-background-tertiary border-t border-border flex items-center justify-between", children: [_jsxs("span", { className: "text-[9px] text-text-tertiary", children: ["Content Type: ", response.headers?.['Content-Type'] || 'Unknown'] }), _jsxs("button", { onClick: () => {
+                                                                navigator.clipboard.writeText(response.body);
+                                                                alert('Response copied to clipboard');
+                                                            }, className: "flex items-center gap-1.5 text-[10px] font-bold text-accent hover:underline", children: [_jsx(Copy, { size: 12 }), " Copy Output"] })] })] }))) : (_jsxs("div", { className: "flex-1 flex flex-col items-center justify-center text-center p-8 gap-4 opacity-30", children: [_jsx(Code, { size: 48 }), _jsxs("p", { className: "text-sm font-medium", children: ["Ready for execution.", _jsx("br", {}), "Modify headers/body and click Send."] })] })) })] })] })] })] }));
+};
+export default RepeaterModal;
+//# sourceMappingURL=RepeaterModal.js.map

@@ -98,7 +98,7 @@ class Target:
                 self.name,
                 self.package_name,
                 self.platform,
-                self.load_config()
+                config=self.load_config()
             )
         
         logger.info(f"Workspace created at: {self.workspace}")
@@ -140,7 +140,10 @@ class Target:
         conn = db.connect()
         cursor = conn.cursor()
         if status_text:
-            cursor.execute("UPDATE targets SET scan_progress = ?, status = ? WHERE id = ?", (progress, status_text, self.db_id))
+            cursor.execute(
+                "UPDATE targets SET scan_progress = ?, status = ? WHERE id = ?",
+                (progress, status_text, self.db_id)
+            )
         else:
             cursor.execute("UPDATE targets SET scan_progress = ? WHERE id = ?", (progress, self.db_id))
         conn.commit()

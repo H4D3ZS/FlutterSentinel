@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<vector android:height="16.0dip" android:width="16.0dip" android:viewportWidth="16.0" android:viewportHeight="16.0"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <path android:fillColor="@color/popup_toast_body_and_close_button_error" android:pathData="M15.645,2.067C16.118,1.594 16.118,0.828 15.645,0.355C15.172,-0.118 14.406,-0.118 13.933,0.355L8,6.288L2.067,0.355C1.594,-0.118 0.828,-0.118 0.355,0.355C-0.118,0.828 -0.118,1.594 0.355,2.067L6.288,8L0.355,13.933C-0.118,14.406 -0.118,15.172 0.355,15.645C0.828,16.118 1.594,16.118 2.067,15.645L8,9.712L13.933,15.645C14.406,16.118 15.172,16.118 15.645,15.645C16.118,15.172 16.118,14.406 15.645,13.933L9.713,8L15.645,2.067Z" />
-</vector>

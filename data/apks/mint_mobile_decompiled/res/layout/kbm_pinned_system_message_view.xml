@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:orientation="vertical" android:background="@color/brand_messenger_pinned_header_bg_color" android:padding="16.0dip" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <TextView android:theme="@style/KBMTheme_PinnedHeaderStyle" android:autoLink="web" android:id="@id/brandmessenger_pinned_message_view" android:paddingTop="6.0dip" android:paddingBottom="6.0dip" android:focusable="true" android:focusableInTouchMode="true" android:layout_width="fill_parent" android:layout_height="wrap_content" />
-</LinearLayout>

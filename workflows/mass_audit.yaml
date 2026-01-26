@@ -1,9 +1,6 @@
-name: Mass Security Audit
-description: Comprehensive automated scan for large-scale target analysis
+name: mass_audit
+description: Standard mass audit workflow for all targets
 modules:
-  - vdp
-  - apk
-  - quick
-  - jwt_bruteforce
-  - auth_tester
-  - sigint
+  - name: quick
+  - name: source_code
+  - name: apk

@@ -36,7 +36,7 @@ const AiAgents: React.FC = () => {
     const logEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        FBH_API.listTargets().then(setTargets);
+        FBH_API.getTargets().then(setTargets);
     }, []);
 
     useEffect(() => {

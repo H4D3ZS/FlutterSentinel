@@ -36,7 +36,9 @@ class PerimeterDefender:
 
     @staticmethod
     def _create_modsecurity_sqli_rule(path: str) -> Dict[str, str]:
-        rule_text = f'SecRule REQUEST_URI "@beginsWith {path}" "id:1001,phase:2,deny,log,msg:\'FBH Protected: Potential SQLi attempt on {path}\',chain"\n'
+        rule_text = (f'SecRule REQUEST_URI "@beginsWith {path}" "id:1001,'
+                    f'phase:2,deny,log,msg:\'FBH Protected: Potential SQLi attempt on {path}\','
+                    'chain"\n')
         rule_text += 'SecRule REQUEST_COOKIES|REQUEST_PARAMETERS "@detectSQLi"'
         return {
             "platform": "ModSecurity (WAF)",
@@ -54,20 +56,32 @@ class PerimeterDefender:
                 "Statement": {
                     "AndStatement": {
                         "Statements": [
-                            {"ByteMatchStatement": {"FieldToMatch": {"UriPath": {}}, "PositionalConstraint": "STARTS_WITH", "SearchString": path}},
-                            {"SqliMatchStatement": {"FieldToMatch": {"AllQueryArguments": {}}, "TextTransformations": [{"Priority": 0, "Type": "URL_DECODE"}]}}
+                            {"ByteMatchStatement": {"FieldToMatch": {"UriPath": {}},
+                                "PositionalConstraint": "STARTS_WITH",
+                                "SearchString": path}},
+                                
+                            {"SqliMatchStatement": {"FieldToMatch": {"AllQueryArguments": {}},
+                                "TextTransformations": [{"Priority": 0,
+                                "Type": "URL_DECODE"}]}}
                         ]
                     }
                 },
                 "Action": {"Block": {}},
-                "VisibilityConfig": {"SampledRequestsEnabled": True, "CloudWatchMetricsEnabled": True, "MetricName": "FBHSqliBlock"}
+                "VisibilityConfig": {"SampledRequestsEnabled": True,
+                    "CloudWatchMetricsEnabled": True,
+                    "MetricName": "FBHSqliBlock"}
             }, indent=2),
             "description": "AWS WAF JSON rule to block SQL injection attempts on the identified endpoint."
         }
 
     @staticmethod
     def _create_modsecurity_xss_rule(path: str) -> Dict[str, str]:
-        rule_text = f'SecRule REQUEST_URI "@beginsWith {path}" "id:1002,phase:2,deny,log,msg:\'FBH Protected: Potential XSS attempt on {path}\',chain"\n'
+        rule_text = f'SecRule REQUEST_URI "@beginsWith {path}" "id:1002,
+            phase:2,
+            deny,
+            log,
+            msg:\'FBH Protected: Potential XSS attempt on {path}\',
+            chain"\n'
         rule_text += 'SecRule REQUEST_COOKIES|REQUEST_PARAMETERS "@detectXSS"'
         return {
             "platform": "ModSecurity (WAF)",

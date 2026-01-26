@@ -79,5 +79,6 @@ class IaCScanner(Scanner):
             'description': desc,
             'location': loc,
             'poc': snippet,
-            'remediation': "Follow security best practices for IaC: Use principle of least privilege and rotate secrets using a Vault."
+            'remediation': "Follow security best practices for IaC: Use principle of least privilege and
+                and rotate secrets using a Vault."
         }

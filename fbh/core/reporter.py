@@ -34,10 +34,12 @@ class Reporter:
         
         if critical_count > 0 or high_count > 0:
             summary += (
-                f"The automated security assessment has uncovered {critical_count} critical and {high_count} high-severity "
-                "vulnerabilities that represent a significant threat to the application's integrity. "
-                "Primary attack vectors identified include potential Unauthorized Information Disclosure and Authentication Bypasses. "
-                "Immediate remediation of these findings is recommended to prevent data exfiltration or account takeover."
+                f"The automated security assessment has uncovered {critical_count} critical "
+                f"and {high_count} high-severity vulnerabilities that represent a significant "
+                "threat to the application's integrity. Primary attack vectors identified include "
+                "potential Unauthorized Information Disclosure and Authentication Bypasses. "
+                "Immediate remediation of these findings is recommended to prevent data "
+                "exfiltration or account takeover."
             )
         else:
             summary += (
@@ -47,7 +49,8 @@ class Reporter:
             
         # Add a note about the specialized modules
         summary += (
-            "\n\n*This summary was synthesized using FBH AI Sentinels based on specific behavioral patterns identified in the Flutter binary and associated network traffic.*"
+            "\n\n*This summary was synthesized using FBH AI Sentinels based on specific "
+            "behavioral patterns identified in the Flutter binary and associated network traffic.*"
         )
         
         return summary
@@ -83,7 +86,10 @@ class Reporter:
         report += "\n---\n\n## 🔍 Top Critical/High Vulnerabilities\n"
         
         # Sort findings by severity
-        sorted_findings = sorted(findings, key=lambda x: severity_order.index(x['severity']) if x['severity'] in severity_order else 4)
+        sorted_findings = sorted(
+            findings,
+            key=lambda x: severity_order.index(x['severity']) if x['severity'] in severity_order else 4
+        )
 
         for i, finding in enumerate(sorted_findings[:15], 1):
             sev_emoji = "🔴" if finding['severity'] == 'critical' else "🟠" if finding['severity'] == 'high' else "🟡"

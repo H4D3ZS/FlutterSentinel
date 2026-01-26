@@ -13,14 +13,8 @@ interface ThreatPoint {
 }
 
 const ThreatMap: React.FC = () => {
-    // Mock data for global threat visualization
-    const threats: ThreatPoint[] = [
-        { id: '1', lat: '40%', lng: '25%', targetName: 'US-East-Sentinel', severity: 'critical', status: 'active' },
-        { id: '2', lat: '35%', lng: '75%', targetName: 'EU-West-Main', severity: 'high', status: 'active' },
-        { id: '3', lat: '65%', lng: '85%', targetName: 'APAC-Gateway-01', severity: 'medium', status: 'mitigated' },
-        { id: '4', lat: '55%', lng: '30%', targetName: 'US-West-Core', severity: 'low', status: 'active' },
-        { id: '5', lat: '25%', lng: '45%', targetName: 'LATAM-Edge', severity: 'critical', status: 'breached' },
-    ];
+    // Threats will be populated by live telemetry in future updates
+    const threats: ThreatPoint[] = [];
 
     const getSeverityColor = (sev: string) => {
         switch (sev) {

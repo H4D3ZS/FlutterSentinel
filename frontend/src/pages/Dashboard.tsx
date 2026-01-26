@@ -162,12 +162,7 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
                     <div className="space-y-4">
                         {(targets?.[0]?.compliance
                             ? targets[0].compliance.categories
-                            : [
-                                { label: 'Storage', score: 100, color: 'bg-severity-low' },
-                                { label: 'Crypto', score: 100, color: 'bg-severity-low' },
-                                { label: 'Network', score: 100, color: 'bg-severity-low' },
-                                { label: 'Platform', score: 100, color: 'bg-severity-low' }
-                            ]
+                            : []
                         ).map((framework: any) => (
                             <div key={framework.label} className="space-y-1">
                                 <div className="flex justify-between text-[10px] font-bold uppercase tracking-tighter">

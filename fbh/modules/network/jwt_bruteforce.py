@@ -58,7 +58,8 @@ class JWTBruteForceScanner(Scanner):
                         description=f'Discovered potential path traversal in JWT kid header: {kid}',
                         location='JWT Header',
                         poc=f"Header: {header}",
-                        remediation='Ensure the kid header value is validated against a whitelist and prevented from accessing arbitrary paths.'
+                        remediation='Ensure the kid header value is validated against a whitelist and
+                            and prevented from accessing arbitrary paths.'
                     )
                 
                 # 2. SQL injection in kid (common pattern)
