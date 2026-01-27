@@ -41,7 +41,9 @@ class VulnerabilityChainer:
                     # Find a representative finding for this step
                     for f in findings:
                         if step in f.get('category', '').upper() or step in f.get('title', '').upper():
-                            involved_findings.append(f['id'])
+                            f_id = f.get('id')
+                            if f_id:
+                                involved_findings.append(f_id)
                             break
             
             if match_count >= len(pattern['steps']):

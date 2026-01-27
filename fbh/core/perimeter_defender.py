@@ -76,12 +76,12 @@ class PerimeterDefender:
 
     @staticmethod
     def _create_modsecurity_xss_rule(path: str) -> Dict[str, str]:
-        rule_text = f'SecRule REQUEST_URI "@beginsWith {path}" "id:1002,
-            phase:2,
-            deny,
-            log,
-            msg:\'FBH Protected: Potential XSS attempt on {path}\',
-            chain"\n'
+        rule_text = (f'SecRule REQUEST_URI "@beginsWith {path}" "id:1002,'
+                    'phase:2,'
+                    'deny,'
+                    'log,'
+                    f'msg:\'FBH Protected: Potential XSS attempt on {path}\','
+                    'chain"\n')
         rule_text += 'SecRule REQUEST_COOKIES|REQUEST_PARAMETERS "@detectXSS"'
         return {
             "platform": "ModSecurity (WAF)",

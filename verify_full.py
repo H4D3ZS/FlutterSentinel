@@ -19,15 +19,21 @@ def check_python_dependencies():
     """Check if all required Python packages are installed"""
     console.print("\n[bold cyan]🐍 Python Dependencies[/bold cyan]")
     
-    required_packages = [
-        'django', 'requests', 'pyjwt', 'beautifulsoup4', 
-        'google-play-scraper', 'rich', 'pathlib'
-    ]
+    # Map package names to module names
+    required_packages = {
+        'django': 'django',
+        'requests': 'requests',
+        'pyjwt': 'jwt',
+        'beautifulsoup4': 'bs4', 
+        'google-play-scraper': 'google_play_scraper',
+        'rich': 'rich',
+        'pathlib': 'pathlib'
+    }
     
     missing = []
-    for package in required_packages:
+    for package, module in required_packages.items():
         try:
-            importlib.import_module(package.replace('-', '_'))
+            importlib.import_module(module)
             console.print(f"  ✅ {package}")
         except ImportError:
             console.print(f"  ❌ {package}")
@@ -203,7 +209,10 @@ def check_mobsf_integration():
     """Check MobSF integration"""
     console.print("\n[bold cyan]📱 MobSF Integration[/bold cyan]")
     
-    mobsf_dir = Path("MOBSF")
+    # Get root dir relative to script
+    root_dir = Path(__file__).parent.absolute()
+    mobsf_dir = root_dir / "MOBSF"
+    
     if mobsf_dir.exists():
         console.print("  ✅ MobSF directory found")
         
@@ -211,7 +220,7 @@ def check_mobsf_integration():
         if fbh_views.exists():
             console.print("  ✅ FBH views integration")
         else:
-            console.print("  ❌ FBH views integration")
+            console.print(f"  ❌ FBH views integration (expected at {fbh_views})")
             return False
         
         fbh_urls = mobsf_dir / "mobsf" / "FBH" / "urls.py"
@@ -223,12 +232,15 @@ def check_mobsf_integration():
         
         return True
     else:
-        console.print("  ❌ MobSF directory not found")
+        console.print(f"  ❌ MobSF directory not found (expected at {mobsf_dir})")
         return False
 
 def check_workspace_structure():
     """Check workspace directory structure"""
     console.print("\n[bold cyan]📁 Workspace Structure[/bold cyan]")
+    
+    # Get root dir relative to script
+    root_dir = Path(__file__).parent.absolute()
     
     required_dirs = [
         'fbh/core',
@@ -241,7 +253,7 @@ def check_workspace_structure():
     
     all_exist = True
     for dir_path in required_dirs:
-        path = Path(dir_path)
+        path = root_dir / dir_path
         if path.exists():
             console.print(f"  ✅ {dir_path}/")
         else:
@@ -263,11 +275,12 @@ def run_penetration_test():
         
         # Clean up any existing test target
         try:
-            existing = db.get_target(test_name)
-            if existing:
-                console.print("  🧹 Cleaning up previous test target")
-        except:
-            pass
+            cursor = db.connect().cursor()
+            cursor.execute("DELETE FROM targets WHERE name = ?", (test_name,))
+            db.connect().commit()
+            console.print("  🧹 Cleaning up previous test target")
+        except Exception as cleanup_err:
+            console.print(f"  [dim]Cleanup info: {cleanup_err}[/dim]")
         
         # Add test target
         target_id = db.add_target(
@@ -298,6 +311,7 @@ def run_penetration_test():
         # Test exploit generation
         from fbh.core.poc_generator import PoCGenerator
         finding_data = {
+            'id': finding_id,
             'category': 'JWT',
             'title': 'Test JWT Vulnerability',
             'location': 'https://test.example.com/api',
@@ -323,7 +337,9 @@ def run_penetration_test():
         return True
         
     except Exception as e:
+        import traceback
         console.print(f"  ❌ Penetration test failed: {e}")
+        console.print(f"[dim]{traceback.format_exc()}[/dim]")
         return False
 
 def main():

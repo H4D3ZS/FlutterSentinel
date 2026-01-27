@@ -84,3 +84,8 @@
 {"timestamp": "2026-01-26T22:42:44+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: test_app", "module": "target", "filename": "target.py", "lineno": 35}
 {"timestamp": "2026-01-26T22:45:09+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: test_app", "module": "target", "filename": "target.py", "lineno": 35}
 {"timestamp": "2026-01-26T22:45:09+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: test_app", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-27T08:51:00+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: fbh_verification_test", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-27T08:51:00+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: test_app", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-27T08:51:28+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: test_app", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-27T08:52:09+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: fbh_verification_test", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-27T08:52:17+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: fbh_verification_test", "module": "target", "filename": "target.py", "lineno": 35}
