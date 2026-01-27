@@ -1,0 +1,122 @@
+{% extends "base/base_layout.html" %}
+{% load static %}
+{% block sidebar_option %}
+sidebar-collapse
+{% endblock %}
+
+{% block extra_css %}
+<style>
+   /* Absolute centering for login box */
+   .login-centering-wrapper {
+      min-height: calc(100vh - 114px);
+      /* Fill space between header and footer */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 2rem 0;
+   }
+
+   .login-card-body {
+      border-radius: 15px;
+      padding: 2.5rem !important;
+   }
+
+   .fbh-logo-login {
+      filter: drop-shadow(0 0 10px rgba(58, 227, 116, 0.3));
+      transition: transform 0.3s ease;
+   }
+
+   .fbh-logo-login:hover {
+      transform: scale(1.05);
+   }
+
+   .login-box {
+      width: 100%;
+      max-width: 450px;
+   }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper bg-dark">
+   <div class="container-fluid">
+      <div class="login-centering-wrapper">
+         <div class="login-box">
+            <div class="card elevation-4 border-0"
+               style="border-radius: 20px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px);">
+               <div class="card-body login-card-body">
+                  <div class="text-center mb-4">
+                     <img src="{% static 'img/fbh_logo.png' %}" alt="FBH Logo" class="fbh-logo-login"
+                        style="width: 140px; height: 140px; margin-bottom: 25px;">
+                     <h1 class="h2 text-white" style="letter-spacing: 1px;">Flutter <strong>Bounty Hunter</strong></h1>
+                     <p class="text-success" style="font-weight: 500; opacity: 0.8;">Unified Offensive Intelligence</p>
+                  </div>
+
+                  <hr style="border-top: 1px solid rgba(255,255,255,0.1);">
+
+                  {% if allow_pwd %}
+                  <form method="post" action="{% url 'login' %}?next={{next}}">
+                     {% csrf_token %}
+                     {{ form.non_field_errors }}
+
+                     <div class="form-group">
+                        <label class="text-muted small text-uppercase">Operator Username</label>
+                        <div class="input-group mb-3">
+                           <input type="username" name="username"
+                              class="form-control bg-transparent text-white border-secondary"
+                              placeholder="Enter username..." style="height: 50px;">
+                           <div class="input-group-append">
+                              <div class="input-group-text border-secondary bg-transparent">
+                                 <span class="fas fa-user text-muted"></span>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+
+                     {% for err in form.username.errors %}
+                     <small class="text-danger"> {{ err }} </small><br>
+                     {% endfor %}
+
+                     <div class="form-group">
+                        <label class="text-muted small text-uppercase">Operator Password</label>
+                        <div class="input-group mb-3">
+                           <input type="password" name="password"
+                              class="form-control bg-transparent text-white border-secondary"
+                              placeholder="Enter password..." style="height: 50px;">
+                           <div class="input-group-append">
+                              <div class="input-group-text border-secondary bg-transparent">
+                                 <span class="fas fa-lock text-muted"></span>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+
+                     {% for err in form.password.errors %}
+                     <small class="text-danger"> {{ err }} </small><br>
+                     {% endfor %}
+
+                     <div class="col-12 mt-4 px-0">
+                        <button type="submit" class="btn btn-success btn-block btn-lg shadow-sm"
+                           style="height: 55px; font-weight: 600;">INITIATE ACCESS</button>
+                     </div>
+                  </form>
+                  {% endif %}
+
+                  {% if sso %}
+                  <div class="col-12 mt-3 px-0">
+                     <a href="{% url 'saml_login' %}?next={{next}}" class="btn btn-outline-light btn-block">Sign in with
+                        SSO</a>
+                  </div>
+                  {% endif %}
+
+                  <div class="text-center mt-4">
+                     <small class="text-muted">Authorized Personnel Only</small>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base/base_layout.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+    rel="stylesheet">
+<link rel="stylesheet" crossorigin href="{% static 'fbh/dist/index.css' %}">
+<style>
+    /* Ensure the React root fills the available space correctly */
+    #root {
+        min-height: calc(100vh - 114px);
+        margin-top: 50px;
+        /* Offset for new MobSF nav height */
+    }
+
+    .content-wrapper {
+        padding-top: 0px !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div id="root"></div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    (function () {
+        const accessToken = "{{ fbh_access_token }}";
+        const refreshToken = "{{ fbh_refresh_token }}";
+        if (accessToken && accessToken !== "None") {
+            localStorage.setItem('fbh_access_token', accessToken);
+        }
+        if (refreshToken && refreshToken !== "None") {
+            localStorage.setItem('fbh_refresh_token', refreshToken);
+        }
+    })();
+</script>
+<script type="module" crossorigin src="{% static 'fbh/dist/index.js' %}"></script>
+{% endblock %}
