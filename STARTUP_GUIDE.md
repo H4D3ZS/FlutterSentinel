@@ -145,6 +145,29 @@ npm run dev:all
 
 This rebuilds the native SQLite module for ARM64.
 
+**sqlite-vec Platform Detection:**
+
+FBHBot now automatically detects your OS and architecture, installing the correct `sqlite-vec` native extension:
+
+- ✅ **macOS Intel (x64/amd64)**: Auto-installs `sqlite-vec-darwin-x64`
+- ✅ **macOS Apple Silicon (ARM64/M1/M2/M3)**: Auto-installs `sqlite-vec-darwin-arm64`
+- ✅ **Linux x64**: Auto-installs `sqlite-vec-linux-x64`
+- ✅ **Linux ARM64**: Auto-installs `sqlite-vec-linux-arm64`
+- ✅ **Windows x64**: Auto-installs `sqlite-vec-windows-x64`
+
+This happens automatically during `npm install` via the `postinstall` hook. No manual configuration needed!
+
+**Manual sqlite-vec Installation:**
+
+If you need to manually trigger the installer:
+
+```bash
+cd fbhbot
+node scripts/install-sqlite-vec.js
+```
+
+See `fbhbot/scripts/README.md` for detailed documentation.
+
 ## 🔄 Graceful Shutdown
 
 To stop all services:
