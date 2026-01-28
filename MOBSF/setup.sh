@@ -20,7 +20,7 @@ echo "[INSTALL] Found Python ${python_version}"
 # Check and upgrade pip
 if python3 -m pip -V &>/dev/null; then
     echo '[INSTALL] Found pip'
-    upgrade_cmd="python3 -m pip install --no-cache-dir --upgrade pip"
+    upgrade_cmd="python3 -m pip install --no-cache-dir --upgrade pip --break-system-packages"
     [[ "$(uname)" != "Darwin" ]] && upgrade_cmd+=" --user"
     eval $upgrade_cmd
 else
@@ -39,7 +39,7 @@ fi
 
 # Install dependencies and set up the environment
 echo '[INSTALL] Installing Requirements'
-python3 -m pip install --no-cache-dir wheel poetry==1.8.4
+python3 -m pip install --no-cache-dir wheel poetry==1.8.4 --break-system-packages
 python3 -m poetry lock
 python3 -m poetry install --no-root --only main --no-interaction --no-ansi
 

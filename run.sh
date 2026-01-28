@@ -20,7 +20,7 @@ echo -e "${BLUE}[*] Verifying FBH package installation...${NC}"
 if ! python3 -c "import fbh" 2>/dev/null; then
     echo -e "${RED}[!] FBH package not found in current environment.${NC}"
     echo -e "${BLUE}[*] Installing fbh in editable mode...${NC}"
-    pip3 install -e .
+    pip3 install -e . --break-system-packages
     if [ $? -ne 0 ]; then
         echo -e "${RED}[!] Failed to install FBH package.${NC}"
         exit 1

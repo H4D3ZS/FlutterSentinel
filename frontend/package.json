@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 5173 --host",
+    "dev:open": "vite --port 5173 --host --open",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },

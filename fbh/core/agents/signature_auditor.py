@@ -48,9 +48,7 @@ class SignatureVerifierAuditor:
                                 "severity": "info",
                                 "category": "ANTI_TAMPER",
                                 "title": f"Native Integrity Check: {symbol}",
-                                "description": f"Native library {lib.name} contains reference to '{symbol}',
-                                    indicating potential anti-tamper or signature verification logic.",
-                                    
+                                "description": f"Native library {lib.name} contains reference to '{symbol}', indicating potential anti-tamper or signature verification logic.",
                                 "location": str(lib.relative_to(search_dir)),
                                 "remediation": "When patching, ensure native integrity checks are also bypassed in the corresponding .so file."
                             })

@@ -1,0 +1,42 @@
+{
+  "name": "fluttersentinel",
+  "version": "1.0.0",
+  "description": "Flutter Bounty Hunter - Autonomous Mobile Exploit Framework",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "frontend",
+    "fbhbot",
+    "fbhbot/dashboard"
+  ],
+  "scripts": {
+    "install:all": "npm install && cd frontend && npm install && cd ../fbhbot && npm install && cd dashboard && npm install && cd ../..",
+    "dev:mobsf": "node scripts/start-mobsf.js",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:fbhbot": "cd fbhbot && npm run dev:all",
+    "dev:all": "concurrently -n \"mobsf,frontend,fbhbot\" -c \"cyan,green,yellow\" \"npm run dev:mobsf\" \"npm run dev:frontend\" \"npm run dev:fbhbot\"",
+    "start": "npm run dev:all",
+    "health-check": "node scripts/health-check.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/FlutterSentinel.git"
+  },
+  "keywords": [
+    "mobile-security",
+    "penetration-testing",
+    "flutter",
+    "android",
+    "ios",
+    "mobsf"
+  ],
+  "author": "",
+  "license": "MIT"
+}

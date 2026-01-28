@@ -685,11 +685,11 @@ def manifest_analysis(app_dic, man_data_dic):
                                     # app will not be run on a system where the
                                     # system's API level is below 17.
                         else:
-                            if man_data_dic['min_sdk'] and
-                                and man_data_dic['target_sdk']
-                                and int(man_data_dic['min_sdk']) < ANDROID_4_2_LEVEL:
-                                if itemname == 'Content Provider' and
-                                    and int(man_data_dic['target_sdk']) < ANDROID_4_2_LEVEL:
+                            if (man_data_dic.get('min_sdk')
+                                    and man_data_dic.get('target_sdk')
+                                    and int(man_data_dic['min_sdk']) < ANDROID_4_2_LEVEL):
+                                if (itemname == 'Content Provider'
+                                        and int(man_data_dic['target_sdk']) < ANDROID_4_2_LEVEL):
                                     perm = ''
                                     item = node.getAttribute(f'{ns}:name')
                                     if node.getAttribute(f'{ns}:permission'):

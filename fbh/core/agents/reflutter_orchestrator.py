@@ -35,8 +35,7 @@ class ReflutterOrchestrator:
         if not engine_hash:
             return {
                 "status": "failure",
-                "message": "Could not identify Flutter engine hash. App might not be using Flutter or
-                    or uses a custom engine."
+                "message": "Could not identify Flutter engine hash. App might not be using Flutter or uses a custom engine."
             }
 
         # 2. Map engine hash to version (simplified heuristic for the agent)

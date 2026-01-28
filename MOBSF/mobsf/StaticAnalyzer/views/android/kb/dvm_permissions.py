@@ -69,13 +69,13 @@ DVM_PERMISSIONS = {
             
         'WRITE_CALENDAR': ['dangerous',
             'add or modify calendar events and send emails to guests',
-            'Allows an application to add or change the events on your calendar,
-            which may send emails to guests. Malicious applications can use this to erase or modify your calendar events or to send emails to guests.'],
+            'Allows an application to add or change the events on your calendar, '
+            'which may send emails to guests. Malicious applications can use this to erase or modify your calendar events or to send emails to guests.'],
             
         'READ_USER_DICTIONARY': ['dangerous',
             'read user-defined dictionary',
-            'Allows an application to read any private words,
-            names and phrases that the user may have stored in the user dictionary.'],
+            'Allows an application to read any private words, '
+            'names and phrases that the user may have stored in the user dictionary.'],
             
         'WRITE_USER_DICTIONARY': ['normal',
             'write to user-defined dictionary',
@@ -105,8 +105,8 @@ DVM_PERMISSIONS = {
             
         'INSTALL_LOCATION_PROVIDER': ['signatureOrSystem',
             'permission to install a location provider',
-            'Create mock location sources for testing. Malicious applications can use this to override the location and/or status returned by real-location sources such as GPS or Network providers,
-            or monitor and report your location to an external source.'],
+            'Create mock location sources for testing. Malicious applications can use this to override the location and/or status returned by real-location sources such as GPS or Network providers, '
+            'or monitor and report your location to an external source.'],
             
         'INTERNET': ['normal', 'full Internet access', 'Allows an application to create network sockets.'],
         'ACCESS_NETWORK_STATE': ['normal',
@@ -136,8 +136,8 @@ DVM_PERMISSIONS = {
             
         'AUTHENTICATE_ACCOUNTS': ['dangerous',
             'act as an account authenticator',
-            'Allows an application to use the account authenticator capabilities of the Account Manager,
-            including creating accounts as well as obtaining and setting their passwords.'],
+            'Allows an application to use the account authenticator capabilities of the Account Manager, '
+            'including creating accounts as well as obtaining and setting their passwords.'],
             
         'USE_CREDENTIALS': ['dangerous',
             'use the authentication credentials of an account',
@@ -149,8 +149,8 @@ DVM_PERMISSIONS = {
             
         'MODIFY_AUDIO_SETTINGS': ['normal',
             'change your audio settings',
-            'Allows application to modify global audio settings,
-            such as volume and routing.'],
+            'Allows application to modify global audio settings, '
+            'such as volume and routing.'],
             
         'RECORD_AUDIO': ['dangerous', 'record audio', 'Allows application to access the audio record path.'],
         'CAMERA': ['dangerous',
@@ -166,20 +166,20 @@ DVM_PERMISSIONS = {
             
         'PROCESS_OUTGOING_CALLS': ['dangerous',
             'intercept outgoing calls',
-            'Allows application to process outgoing calls and change the number to be dialled. Malicious applications may monitor,
-            redirect or prevent outgoing calls.'],
+            'Allows application to process outgoing calls and change the number to be dialled. Malicious applications may monitor, '
+            'redirect or prevent outgoing calls.'],
             
         'MODIFY_PHONE_STATE': ['signatureOrSystem',
             'modify phone status',
-            'Allows the application to control the phone features of the device. An application with this permission can switch networks,
-            turn the phone radio on and off and the like,
-            without ever notifying you.'],
+            'Allows the application to control the phone features of the device. An application with this permission can switch networks, '
+            'turn the phone radio on and off and the like, '
+            'without ever notifying you.'],
             
         'READ_PHONE_STATE': ['dangerous',
             'read phone state and identity',
-            'Allows the application to access the phone features of the device. An application with this permission can determine the phone number and serial number of this phone,
-            whether a call is active,
-            the number that call is connected to and so on.'],
+            'Allows the application to access the phone features of the device. An application with this permission can determine the phone number and serial number of this phone, '
+            'whether a call is active, '
+            'the number that call is connected to and so on.'],
             
         'WRITE_EXTERNAL_STORAGE': ['dangerous',
             'read/modify/delete external storage contents',
@@ -215,18 +215,18 @@ DVM_PERMISSIONS = {
             
         'CHANGE_CONFIGURATION': ['signatureOrSystem',
             'change your UI settings',
-            'Allows an application to change the current configuration,
-            such as the locale or overall font size.'],
+            'Allows an application to change the current configuration, '
+            'such as the locale or overall font size.'],
             
         'RESTART_PACKAGES': ['normal',
             'kill background processes',
-            'Allows an application to kill background processes of other applications,
-            even if memory is not low.'],
+            'Allows an application to kill background processes of other applications, '
+            'even if memory is not low.'],
             
         'KILL_BACKGROUND_PROCESSES': ['normal',
             'kill background processes',
-            'Allows an application to kill background processes of other applications,
-            even if memory is not low.'],
+            'Allows an application to kill background processes of other applications, '
+            'even if memory is not low.'],
             
         'FORCE_STOP_PACKAGES': ['signature',
             'force-stop other applications',
@@ -243,8 +243,8 @@ DVM_PERMISSIONS = {
         'SET_ANIMATION_SCALE': ['dangerous', 'modify global animation speed', 'Allows an application to change the global animation speed (faster or slower animations) at any time.'],
         'PERSISTENT_ACTIVITY': ['dangerous',
             'make application always run',
-            'Allows an application to make parts of itself persistent,
-            so that the system can\'t use it for other applications.'],
+            'Allows an application to make parts of itself persistent, '
+            "so that the system can't use it for other applications."],
             
         'GET_PACKAGE_SIZE': ['normal',
             'measure application storage space',
@@ -252,8 +252,8 @@ DVM_PERMISSIONS = {
             
         'SET_PREFERRED_APPLICATIONS': ['signature',
             'set preferred applications',
-            'Allows an application to modify your preferred applications. This can allow malicious applications to silently change the applications that are run,
-            spoofing your existing applications to collect private data from you.'],
+            'Allows an application to modify your preferred applications. This can allow malicious applications to silently change the applications that are run, '
+            'spoofing your existing applications to collect private data from you.'],
             
         'RECEIVE_BOOT_COMPLETED': ['normal',
             'automatically start at boot',
@@ -261,8 +261,8 @@ DVM_PERMISSIONS = {
             
         'BROADCAST_STICKY': ['normal',
             'send sticky broadcast',
-            'Allows an application to send sticky broadcasts,
-            which remain after the broadcast ends. Malicious applications can make the phone slow or unstable by causing it to use too much memory.'],
+            'Allows an application to send sticky broadcasts, '
+            'which remain after the broadcast ends. Malicious applications can make the phone slow or unstable by causing it to use too much memory.'],
             
         'WAKE_LOCK': ['normal',
             'prevent phone from sleeping',
@@ -306,13 +306,13 @@ DVM_PERMISSIONS = {
             
         'READ_SYNC_SETTINGS': ['normal',
             'read sync settings',
-            'Allows an application to read the sync settings,
-            such as whether sync is enabled for Contacts.'],
+            'Allows an application to read the sync settings, '
+            'such as whether sync is enabled for Contacts.'],
             
         'WRITE_SYNC_SETTINGS': ['normal',
             'write sync settings',
-            'Allows an application to modify the sync settings,
-            such as whether sync is enabled for Contacts.'],
+            'Allows an application to modify the sync settings, '
+            'such as whether sync is enabled for Contacts.'],
             
         'READ_SYNC_STATS': ['normal',
             'read sync statistics',
@@ -320,8 +320,8 @@ DVM_PERMISSIONS = {
             
         'WRITE_APN_SETTINGS': ['dangerous',
             'write Access Point Name settings',
-            'Allows an application to modify the APN settings,
-            such as Proxy and Port of any APN.'],
+            'Allows an application to modify the APN settings, '
+            'such as Proxy and Port of any APN.'],
             
         'SUBSCRIBED_FEEDS_READ': ['normal',
             'read subscribed feeds',
@@ -353,8 +353,8 @@ DVM_PERMISSIONS = {
             
         'READ_LOGS': ['dangerous',
             'read sensitive log data',
-            'Allows an application to read from the system\'s various log files. This allows it to discover general information about what you are doing with the phone,
-            potentially including personal or private information.'],
+            "Allows an application to read from the system's various log files. This allows it to discover general information about what you are doing with the phone, "
+            'potentially including personal or private information.'],
             
         'SET_DEBUG_APP': ['dangerous',
             'enable application debugging',
@@ -374,8 +374,8 @@ DVM_PERMISSIONS = {
             
         'DIAGNOSTIC': ['signature',
             'read/write to resources owned by diag',
-            'Allows an application to read and write to any resource owned by the diag group; for example,
-            files in /dev. This could potentially affect system stability and security. This should ONLY be used for hardware-specific diagnostics by the manufacturer or operator.'],
+            'Allows an application to read and write to any resource owned by the diag group; for example, '
+            'files in /dev. This could potentially affect system stability and security. This should ONLY be used for hardware-specific diagnostics by the manufacturer or operator.'],
             
         'STATUS_BAR': ['signatureOrSystem',
             'disable or modify status bar',
@@ -396,17 +396,14 @@ DVM_PERMISSIONS = {
             
         'MANAGE_APP_TOKENS': ['signature',
             'manage application tokens',
-            'Allows applications to create and manage their own tokens,
-            bypassing their common Z-ordering. Should never be needed for common applications.'],
+            'Allows applications to create and manage their own tokens, '
+            'bypassing their common Z-ordering. Should never be needed for common applications.'],
             
-        'INJECT_EVENTS': ['signature', 'press keys and control buttons', 'Allows an application to deliver its own input events (
-            key presses,
-            etc.
-        ) to other applications. Malicious applications can use this to take over the phone.'],
+        'INJECT_EVENTS': ['signature', 'press keys and control buttons', 'Allows an application to deliver its own input events (key presses, etc.) to other applications. Malicious applications can use this to take over the phone.'],
         'SET_ACTIVITY_WATCHER': ['signature',
             'monitor and control all application launching',
-            'Allows an application to monitor and control how the system launches activities. Malicious applications may compromise the system completely. This permission is needed only for development,
-            never for common phone usage.'],
+            'Allows an application to monitor and control how the system launches activities. Malicious applications may compromise the system completely. This permission is needed only for development, '
+            'never for common phone usage.'],
             
         'SHUTDOWN': ['signature',
             'partial shutdown',
@@ -459,9 +456,9 @@ DVM_PERMISSIONS = {
             
         'CHANGE_COMPONENT_ENABLED_STATE': ['signatureOrSystem',
             'enable or disable application components',
-            'Allows an application to change whether or not a component of another application is enabled. Malicious applications can use this to disable important phone capabilities. It is important to be careful with permission,
-            as it is possible to bring application components into an unusable,
-            inconsistent or unstable state.'],
+            'Allows an application to change whether or not a component of another application is enabled. Malicious applications can use this to disable important phone capabilities. It is important to be careful with permission, '
+            'as it is possible to bring application components into an unusable, '
+            'inconsistent or unstable state.'],
             
         'ACCESS_SURFACE_FLINGER': ['signature',
             'access SurfaceFlinger',
@@ -479,8 +476,8 @@ DVM_PERMISSIONS = {
         'DEVICE_POWER': ['signature', 'turn phone on or off', 'Allows the application to turn the phone on or off.'],
         'FACTORY_TEST': ['signature',
             'run in factory test mode',
-            'Run as a low-level manufacturer test,
-            allowing complete access to the phone hardware. Only available when a phone is running in manufacturer test mode.'],
+            'Run as a low-level manufacturer test, '
+            'allowing complete access to the phone hardware. Only available when a phone is running in manufacturer test mode.'],
             
         'BROADCAST_PACKAGE_REMOVED': ['signature',
             'send package removed broadcast',
@@ -496,15 +493,15 @@ DVM_PERMISSIONS = {
             
         'MASTER_CLEAR': ['signatureOrSystem',
             'reset system to factory defaults',
-            'Allows an application to completely reset the system to its factory settings,
-            erasing all data,
-            configuration and installed applications.'],
+            "Allows an application to completely reset the system to its factory settings, "
+            "erasing all data, "
+            "configuration and installed applications."],
             
         'CALL_PRIVILEGED': ['signatureOrSystem',
             'directly call any phone numbers',
-            'Allows the application to call any phone number,
-            including emergency numbers,
-            without your intervention. Malicious applications may place unnecessary and illegal calls to emergency services.'],
+            'Allows the application to call any phone number, '
+            'including emergency numbers, '
+            'without your intervention. Malicious applications may place unnecessary and illegal calls to emergency services.'],
             
         'PERFORM_CDMA_PROVISIONING': ['signatureOrSystem',
             'directly start CDMA phone setup',
@@ -532,8 +529,8 @@ DVM_PERMISSIONS = {
             
         'BIND_APPWIDGET': ['signatureOrSystem',
             'choose widgets',
-            'Allows the application to tell the system which widgets can be used by which application. With this permission,
-            applications can give access to personal data to other applications. Not for use by common applications.'],
+            'Allows the application to tell the system which widgets can be used by which application. With this permission, '
+            'applications can give access to personal data to other applications. Not for use by common applications.'],
             
         'CHANGE_BACKGROUND_DATA_SETTING': ['signature',
             'change background data usage setting',
@@ -579,13 +576,13 @@ DVM_PERMISSIONS = {
             
         'BIND_ACCESSIBILITY_SERVICE': ['signature',
             'required by AccessibilityServices for system binding.',
-            'Must be required by an AccessibilityService,
-            to ensure that only the system can bind to it.'],
+            'Must be required by an AccessibilityService, '
+            'to ensure that only the system can bind to it.'],
             
         'BIND_AUTOFILL_SERVICE': ['signature',
             'required by AutofillServices for system binding.',
-            'Must be required by a AutofillService,
-            to ensure that only the system can bind to it.'],
+            'Must be required by a AutofillService, '
+            'to ensure that only the system can bind to it.'],
             
         'BIND_CARRIER_MESSAGING_SERVICE': ['signature',
             'system-level permission for binding to carrier messaging services.',
@@ -597,28 +594,28 @@ DVM_PERMISSIONS = {
             
         'BIND_CHOOSER_TARGET_SERVICE': ['signature',
             'required by ChooserTargetServices for system binding.',
-            'Must be required by a ChooserTargetService,
-            to ensure that only the system can bind to it.'],
+            'Must be required by a ChooserTargetService, '
+            'to ensure that only the system can bind to it.'],
             
         'BIND_CONDITION_PROVIDER_SERVICE': ['signature',
             'required by ConditionProviderServices for system binding.',
-            'Must be required by a ConditionProviderService,
-            to ensure that only the system can bind to it.'],
+            'Must be required by a ConditionProviderService, '
+            'to ensure that only the system can bind to it.'],
             
         'BIND_DREAM_SERVICE': ['signature',
             'required by DreamServices for system binding.',
-            'Must be required by an DreamService,
-            to ensure that only the system can bind to it.'],
+            'Must be required by an DreamService, '
+            'to ensure that only the system can bind to it.'],
             
         'BIND_INCALL_SERVICE': ['signature',
             'required by InCallServices for system binding.',
-            'Must be required by a InCallService,
-            to ensure that only the system can bind to it.'],
+            'Must be required by a InCallService, '
+            'to ensure that only the system can bind to it.'],
             
         'BIND_MIDI_DEVICE_SERVICE': ['signature',
             'required by MidiDeviceServices for system binding.',
-            'Must be required by an MidiDeviceService,
-            to ensure that only the system can bind to it.'],
+            'Must be required by an MidiDeviceService, '
+            'to ensure that only the system can bind to it.'],
             
         'BIND_NFC_SERVICE': ['signature',
             'required for system binding to NFC services.',
@@ -626,13 +623,13 @@ DVM_PERMISSIONS = {
             
         'BIND_NOTIFICATION_LISTENER_SERVICE': ['signature',
             'required by NotificationListenerServices for system binding.',
-            'Must be required by an NotificationListenerService,
-            to ensure that only the system can bind to it.'],
+            'Must be required by an NotificationListenerService, '
+            'to ensure that only the system can bind to it.'],
             
         'BIND_PRINT_SERVICE': ['signature',
             'required by PrintServices for system binding.',
-            'Must be required by a PrintService,
-            to ensure that only the system can bind to it.'],
+            'Must be required by a PrintService, '
+            'to ensure that only the system can bind to it.'],
             
         'BIND_QUICK_SETTINGS_TILE': ['signatureOrSystem',
             'allows binding to third-party quick settings tiles.',
@@ -640,23 +637,20 @@ DVM_PERMISSIONS = {
             
         'BIND_REMOTEVIEWS': ['signature',
             'required by RemoteViewsServices for system binding.',
-            'Must be required by a RemoteViewsService,
-            to ensure that only the system can bind to it.'],
+            'Must be required by a RemoteViewsService, '
+            'to ensure that only the system can bind to it.'],
             
         'BIND_SCREENING_SERVICE': ['signature',
             'required by CallScreeningServices for system binding.',
-            'Must be required by a CallScreeningService,
-            to ensure that only the system can bind to it.'],
+            'Must be required by a CallScreeningService, '
+            'to ensure that only the system can bind to it.'],
             
         'BIND_TELECOM_CONNECTION_SERVICE': ['signature',
             'required by ConnectionServices for system binding.',
-            'Must be required by a ConnectionService,
-            to ensure that only the system can bind to it.'],
+            'Must be required by a ConnectionService, '
+            'to ensure that only the system can bind to it.'],
             
-        'BIND_TEXT_SERVICE': ['signature', 'required by TextServices (
-            e.g.,
-            SpellCheckerService) for system binding.', 'Must be required by a TextService (e.g. SpellCheckerService
-        ) to ensure that only the system can bind to it.'],
+        'BIND_TEXT_SERVICE': ['signature', 'required by TextServices (e.g., SpellCheckerService) for system binding.', 'Must be required by a TextService (e.g. SpellCheckerService) to ensure that only the system can bind to it.'],
         'BIND_TV_INPUT': ['signature',
             'required by TvInputServices for system binding.',
             'Must be required by a TvInputService to ensure that only the system can bind to it.'],
@@ -667,29 +661,27 @@ DVM_PERMISSIONS = {
             
         'BIND_VOICE_INTERACTION': ['signature',
             'required by VoiceInteractionServices for system binding.',
-            'Must be required by a VoiceInteractionService,
-            to ensure that only the system can bind to it.'],
+            'Must be required by a VoiceInteractionService, '
+            'to ensure that only the system can bind to it.'],
             
         'BIND_VPN_SERVICE': ['signature',
             'required by VpnServices for system binding.',
-            'Must be required by a VpnService,
-            to ensure that only the system can bind to it.'],
+            'Must be required by a VpnService, '
+            'to ensure that only the system can bind to it.'],
             
         'BIND_VR_LISTENER_SERVICE': ['signature',
             'required by VrListenerServices for system binding.',
-            'Must be required by an VrListenerService,
-            to ensure that only the system can bind to it.'],
+            'Must be required by an VrListenerService, '
+            'to ensure that only the system can bind to it.'],
             
         'BLUETOOTH_PRIVILEGED': ['signatureOrSystem',
             'allows privileged Bluetooth operations without user interaction.',
-            'Allows applications to pair bluetooth devices without user interaction,
-            and to allow or disallow phonebook access or message access. This is not available to third party applications.'],
+            'Allows applications to pair bluetooth devices without user interaction, '
+            'and to allow or disallow phonebook access or message access. This is not available to third party applications.'],
             
         'BODY_SENSORS': ['dangerous',
-            'grants access to body sensors,
-            such as heart rate.',
-            'Allows an application to access data from sensors that the user uses to measure what is happening inside his/her body,
-            such as heart rate.'],
+            'grants access to body sensors such as heart rate.',
+            'Allows an application to access data from sensors that the user uses to measure what is happening inside his/her body, such as heart rate.'],
             
         'CAPTURE_AUDIO_OUTPUT': ['signatureOrSystem',
             'allows capturing of audio output.',
@@ -721,14 +713,13 @@ DVM_PERMISSIONS = {
             
         'LOCATION_HARDWARE': ['normal',
             'permits use of location features in hardware.',
-            'Allows an application to use location features in hardware,
-            such as the geofencing api.'],
+            'Allows an application to use location features in hardware, '
+            'such as the geofencing api.'],
             
         'MANAGE_DOCUMENTS': ['signature',
-            'allows management of document access,
-            typically in a picker.',
-            'Allows an application to manage access to documents,
-            usually as part of a document picker.'],
+            'allows management of document access typically in a picker.',
+            'Allows an application to manage access to documents, '
+            'usually as part of a document picker.'],
             
         'MANAGE_OWN_CALLS': ['normal',
             'enables a calling app to manage its own calls.',
@@ -770,8 +761,7 @@ DVM_PERMISSIONS = {
         'SEND_RESPOND_VIA_MESSAGE': ['signatureOrSystem', 'allows sending respond-via-message requests during calls.', 'Allows an application (Phone) to send a request to other applications to handle the respond-via-message action during incoming calls.'],
         'TRANSMIT_IR': ['normal',
             "enables use of the device's IR transmitter.",
-            "Allows using the device's IR transmitter,
-            if available."],
+            "Allows using the device's IR transmitter, if available."],
             
         'UNINSTALL_SHORTCUT': ['normal',
             'deprecated permission for uninstalling shortcuts.',
@@ -804,8 +794,8 @@ DVM_PERMISSIONS = {
             
         'BIND_CALL_REDIRECTION_SERVICE': ['signature',
             'required by CallRedirectionServices for system binding.',
-            'Must be required by a CallRedirectionService,
-            to ensure that only the system can bind to it.'],
+            'Must be required by a CallRedirectionService, '
+            'to ensure that only the system can bind to it.'],
             
         'BIND_CARRIER_MESSAGING_CLIENT_SERVICE': ['signature',
             'required by CarrierMessagingClientServices for system protection.',
@@ -833,8 +823,8 @@ DVM_PERMISSIONS = {
             
         'ACCESS_CALL_AUDIO': ['signature',
             'Application can access call audio',
-            'Allows an application assigned to the Dialer role to be granted access to the telephony call audio streams,
-            both TX and RX.'],
+            'Allows an application assigned to the Dialer role to be granted access to the telephony call audio streams, '
+            'both TX and RX.'],
             
         'BIND_CONTROLS': ['signatureOrSystem',
             'Allows SystemUI to request third party controls.',
@@ -862,14 +852,14 @@ DVM_PERMISSIONS = {
             
         'QUERY_ALL_PACKAGES': ['normal',
             'enables querying any normal app on the device.',
-            'Allows query of any normal app on the device,
-            regardless of manifest declarations.'],
+            'Allows query of any normal app on the device, '
+            'regardless of manifest declarations.'],
             
         'READ_PRECISE_PHONE_STATE': ['dangerous',
             'allows read-only access to precise phone state.',
-            'Allows read only access to precise phone state. Allows reading of detailed information about phone state for special-use applications such as dialers,
-            carrier applications,
-            or ims applications.'],
+            'Allows read only access to precise phone state. Allows reading of detailed information about phone state for special-use applications such as dialers, '
+            'carrier applications, '
+            'or ims applications.'],
             
         'READ_APP_BADGE': ['normal', 'show app notification', 'Allows an application to show app icon badges.'],
         'BIND_COMPANION_DEVICE_SERVICE': ['normal',
@@ -929,11 +919,8 @@ DVM_PERMISSIONS = {
             'Required to be able to discover and pair nearby Bluetooth devices.'],
             
         'BODY_SENSORS_BACKGROUND': ['dangerous',
-            'grants background access to body sensors,
-            like heart rate.',
-            "Allows an application to access data from sensors that the user uses to measure what is happening inside their body,
-            such as heart rate. If you're requesting this permission,
-            you must also request BODY_SENSORS . Requesting this permission by itself doesn't give you Body sensors access."],
+            'grants background access to body sensors like heart rate.',
+            "Allows an application to access data from sensors that the user uses to measure what is happening inside their body, such as heart rate. If you're requesting this permission, you must also request BODY_SENSORS. Requesting this permission by itself doesn't give you Body sensors access."],
             
         'CONFIGURE_WIFI_DISPLAY': ['normal',
             'allows configuring and connecting to Wifi displays.',
@@ -945,8 +932,8 @@ DVM_PERMISSIONS = {
             
         'CREDENTIAL_MANAGER_SET_ALLOWED_PROVIDERS': ['normal',
             'allows specifying candidate credential providers.',
-            'Allows specifying candidate credential providers to be queried in Credential Manager get flows,
-            or to be preferred as a default in the Credential Manager create flows.'],
+            'Allows specifying candidate credential providers to be queried in Credential Manager get flows, '
+            'or to be preferred as a default in the Credential Manager create flows.'],
             
         'CREDENTIAL_MANAGER_SET_ORIGIN': ['normal',
             'enables credential manager APIs on behalf of another RP.',
@@ -1322,14 +1309,14 @@ DVM_PERMISSIONS = {
             
         'MANAGE_WIFI_INTERFACES': ['normal',
             'allows managing conflicts between Wi-Fi interface requests.',
-            'Allows applications to get notified when a Wi-Fi interface request cannot be satisfied without tearing down one or more other interfaces,
-            and provide a decision whether to approve the request or reject it. Not for use by third-party applications.'],
+            'Allows applications to get notified when a Wi-Fi interface request cannot be satisfied without tearing down one or more other interfaces, '
+            'and provide a decision whether to approve the request or reject it. Not for use by third-party applications.'],
             
         'MANAGE_WIFI_NETWORK_SELECTION': ['normal',
             'allows privileged management of Wi-Fi network selection.',
-            'This permission is used to let OEMs grant their trusted app access to a subset of privileged wifi APIs to improve wifi performance. Allows applications to manage Wi-Fi network selection related features such as enable or disable global auto-join,
-            modify connectivity scan intervals,
-            and approve Wi-Fi Direct connections. Not for use by third-party applications.'],
+            'This permission is used to let OEMs grant their trusted app access to a subset of privileged wifi APIs to improve wifi performance. Allows applications to manage Wi-Fi network selection related features such as enable or disable global auto-join, '
+            'modify connectivity scan intervals, '
+            'and approve Wi-Fi Direct connections. Not for use by third-party applications.'],
             
         'NEARBY_WIFI_DEVICES': ['dangerous',
             'required for advertising and connecting to nearby devices via Wi-Fi.',
@@ -1337,8 +1324,8 @@ DVM_PERMISSIONS = {
             
         'OVERRIDE_WIFI_CONFIG': ['normal',
             'allows modification of any Wi-Fi configuration.',
-            'Allows an application to modify any wifi configuration,
-            even if created by another application. Once reconfigured the original creator cannot make any further modifications. Not for use by third-party applications.'],
+            'Allows an application to modify any wifi configuration',
+            'even if created by another application. Once reconfigured the original creator cannot make any further modifications. Not for use by third-party applications.'],
             
         'POST_NOTIFICATIONS': ['dangerous',
             'allows an app to post notifications.',
@@ -1358,9 +1345,9 @@ DVM_PERMISSIONS = {
             
         'READ_BASIC_PHONE_STATE': ['normal',
             'allows read-only access to basic phone state information.',
-            'Allows read only access to phone state with a non dangerous permission,
-            including the information like cellular network type,
-            software version.'],
+            'Allows read only access to phone state with a non dangerous permission',
+            'including the information like cellular network type, '
+            'software version.'],
             
         'READ_HOME_APP_SEARCH_DATA': ['normal',
             'allows querying global AppSearch data visible to the Home role.',
@@ -1380,9 +1367,9 @@ DVM_PERMISSIONS = {
             
         'READ_MEDIA_VISUAL_USER_SELECTED': ['dangerous',
             'allows reading user-selected image or video files from external storage.',
-            'Allows an application to read image or video files from external storage that a user has selected via the permission prompt photo picker. Apps can check this permission to verify that a user has decided to use the photo picker,
-            instead of granting access to READ_MEDIA_IMAGES or READ_MEDIA_VIDEO . It does not prevent apps from accessing the standard photo picker manually. This permission should be requested alongside READ_MEDIA_IMAGES and/or READ_MEDIA_VIDEO,
-            depending on which type of media is desired.'],
+            'Allows an application to read image or video files from external storage that a user has selected via the permission prompt photo picker. Apps can check this permission to verify that a user has decided to use the photo picker',
+            'instead of granting access to READ_MEDIA_IMAGES or READ_MEDIA_VIDEO . It does not prevent apps from accessing the standard photo picker manually. This permission should be requested alongside READ_MEDIA_IMAGES and/or READ_MEDIA_VIDEO, '
+            'depending on which type of media is desired.'],
             
         'READ_NEARBY_STREAMING_POLICY': ['normal', 'allows reading nearby streaming policy settings.', 'Allows an application to read nearby streaming policy. The policy controls whether to allow the device to stream its notifications and apps to nearby devices. Applications that are not the device owner will need this permission to call DevicePolicyManager.getNearbyNotificationStreamingPolicy() or DevicePolicyManager.getNearbyAppStreamingPolicy() .'],
         'REQUEST_COMPANION_PROFILE_APP_STREAMING': ['normal', 'allows requesting association with a virtual display for app streaming.', 'Allows application to request to be associated with a virtual display capable of streaming Android applications ( AssociationRequest.DEVICE_PROFILE_APP_STREAMING ) by CompanionDeviceManager . Not for use by third-party applications.'],
@@ -1404,25 +1391,22 @@ DVM_PERMISSIONS = {
         'RUN_USER_INITIATED_JOBS': ['normal', 'allows using the user-initiated jobs API.', 'Allows applications to use the user-initiated jobs API. For more details see JobInfo.Builder.setUserInitiated(boolean) .'],
         'START_FOREGROUND_SERVICES_FROM_BACKGROUND': ['normal',
             'allows starting foreground services from the background.',
-            "Allows an application to start foreground services from the background at any time. This permission is not for use by third-party applications,
-            with the only exception being if the app is the default SMS app. Otherwise,
-            it's only usable by privileged apps,
-            app verifier app,
-            and apps with any of the EMERGENCY or SYSTEM GALLERY roles."],
+            'Allows an application to start foreground services from the background at any time. This permission is not for use by third-party applications, '
+            'with the only exception being if the app is the default SMS app. Otherwise, '
+            "it's only usable by privileged apps, "
+            'app verifier app, '
+            'and apps with any of the EMERGENCY or SYSTEM GALLERY roles.'],
             
         'START_VIEW_APP_FEATURES': ['signature',
             'allows starting a screen listing app features.',
             'Allows the holder to start the screen with a list of app features.'],
             
-        'SUBSCRIBE_TO_KEYGUARD_LOCKED_STATE': ['signature', 'allows subscribing to the keyguard locked state.', 'Allows an application to subscribe to keyguard locked (
-            i.e.,
-            showing
-        ) state.'],
+        'SUBSCRIBE_TO_KEYGUARD_LOCKED_STATE': ['signature', 'allows subscribing to the keyguard locked state.', 'Allows an application to subscribe to keyguard locked (i.e., showing) state.'],
         'TURN_SCREEN_ON': ['normal',
-            'allows turning the screen on,
-            for use by home automation apps.',
-            'Allows an app to turn on the screen on,
-            e.g. with PowerManager.ACQUIRE_CAUSES_WAKEUP . Intended to only be used by home automation apps.'],
+            'allows turning the screen on',
+            'for use by home automation apps.',
+            'Allows an app to turn on the screen on',
+            'e.g. with PowerManager.ACQUIRE_CAUSES_WAKEUP . Intended to only be used by home automation apps.'],
             
         'UPDATE_PACKAGES_WITHOUT_USER_ACTION': ['normal', 'allows updating packages without requiring user action.', 'Allows an application to indicate via PackageInstaller.SessionParams.setRequireUserAction(int) that user action should not be required for an app update.'],
         'USE_EXACT_ALARM': ['normal',
@@ -1435,21 +1419,21 @@ DVM_PERMISSIONS = {
             
         'ACCESS_HIDDEN_PROFILES': ['normal',
             'Add support for private space by declaring the ACCESS_HIDDEN_PROFILES permission.',
-            'Allows applications to access profiles with android.content.pm.UserProperties#PROFILE_API_VISIBILITY_HIDDEN user property,
-            e.g. UserManager.USER_TYPE_PROFILE_PRIVATE .'],
+            'Allows applications to access profiles with android.content.pm.UserProperties#PROFILE_API_VISIBILITY_HIDDEN user property',
+            'e.g. UserManager.USER_TYPE_PROFILE_PRIVATE .'],
             
         'BIND_APP_FUNCTION_SERVICE': ['signature',
             'This must be required by an AppFunctionService to ensure that only the system is permitted to bind to it.',
-            'Must be required by an AppFunctionService,
-            to ensure that only the system can bind to it.'],
+            'Must be required by an AppFunctionService',
+            'to ensure that only the system can bind to it.'],
             
         'FOREGROUND_SERVICE_MEDIA_PROCESSING': ['normal',
             'Allows a regular application to invoke Service.startForeground using the type "mediaProcessing".',
             'Allows a regular application to use Service.startForeground with the type "mediaProcessing".'],
             
         'MANAGE_DEVICE_POLICY_ASSIST_CONTENT': ['internal',
-            'Grants an application the ability to configure policies for sharing assist content with privileged apps,
-            such as the Assistant app.',
+            'Grants an application the ability to configure policies for sharing assist content with privileged apps',
+            'such as the Assistant app.',
             'Allows an application to set policy related to sending assist content to a privileged app such as the Assistant app.'],
             
         'DETECT_SCREEN_RECORDING': ['normal',
@@ -1477,14 +1461,14 @@ DVM_PERMISSIONS = {
             'Allows an application to manage policy related to microphone toggle.'],
             
         'MEDIA_ROUTING_CONTROL': ['normal',
-            'Allows an application to manage the routing of media applications,
-            restricted to use by the role COMPANION_DEVICE_WATCH.',
+            'Allows an application to manage the routing of media applications',
+            'restricted to use by the role COMPANION_DEVICE_WATCH.',
             'Allows an application to control the routing of media apps. Only for use by role COMPANION_DEVICE_WATCH'],
             
         'READ_DROPBOX_DATA': ['normal',
-            'Allows an application to access data stored in Dropbox,
-            intended exclusively for use by system-level or first-party applications,
-            and not available for third-party applications.',
+            'Allows an application to access data stored in Dropbox',
+            'intended exclusively for use by system-level or first-party applications, '
+            'and not available for third-party applications.',
             'Allows an application to access the data in Dropbox. Not for use by third-party applications.'],
             
         'SET_BIOMETRIC_DIALOG_ADVANCED': ['normal', 'Allows an application to customize BiometricDialog features, including logo and content view. Restricted to system use only.', 'Allows an application to set the advanced features on BiometricDialog (SystemUI), including logo, logo description, and content view with more options button. Not for use by third-party applications.'],
@@ -1494,10 +1478,10 @@ DVM_PERMISSIONS = {
             
         'ACCESS_LAUNCHER_DATA': ['normal',
             'Manage home screen metadata and shortcuts',
-            'This permission protects a content provider within home/launcher applications,
-            enabling management of home screen metadata such as shortcut placement,
-            launch intents,
-            and labels.'],
+            'This permission protects a content provider within home/launcher applications',
+            'enabling management of home screen metadata such as shortcut placement, '
+            'launch intents, '
+            'and labels.'],
             
         'APPLY_PICTURE_PROFILE': ['normal', 'Apply media quality profiles to video layers', 'Allows an app to apply a ERROR(/MediaQualityManager.PictureProfile) to a layer via ERROR(/MediaCodec.PARAMETER_KEY_PICTURE_PROFILE) and, additionally, system apps via ERROR(/SurfaceControl.Transaction#setPictureProfileHandle) .'],
         'BIND_TV_AD_SERVICE': ['signature',
@@ -1538,8 +1522,8 @@ DVM_PERMISSIONS = {
             
         'READ_SYSTEM_PREFERENCES': ['normal',
             'Read system settings and preferences',
-            'Allows an application to access the Settings Preference services to read settings exposed by the system Settings app and system apps that contribute settings surfaced by the Settings app. This allows the calling application to read settings values through the host application,
-            agnostic of underlying storage.'],
+            'Allows an application to access the Settings Preference services to read settings exposed by the system Settings app and system apps that contribute settings surfaced by the Settings app. This allows the calling application to read settings values through the host application',
+            'agnostic of underlying storage.'],
             
         'RECEIVE_SENSITIVE_NOTIFICATIONS': ['signature',
             'Receive sensitive notification content',
@@ -1552,8 +1536,8 @@ DVM_PERMISSIONS = {
         'TV_IMPLICIT_ENTER_PIP': ['normal', 'Enter Picture-in-Picture mode implicitly', 'Allows an app to enter Picture-in-Picture mode when the user is not explicitly requesting it. This includes using ERROR(/PictureInPictureParams.Builder#setAutoEnterEnabled) as well as lifecycle methods such as ERROR(/Activity#onUserLeaveHint) and ERROR(/Activity#onPause) to enter PiP when the user leaves the app. This permission should only be used for certain PiP usage types .'],
         'WRITE_SYSTEM_PREFERENCES': ['normal',
             'Write system settings and preferences',
-            'Allows an application to access the Settings Preference services to write settings values exposed by the system Settings app and system apps that contribute settings surfaced in the Settings app. This allows the calling application to write settings values through the host application,
-            agnostic of underlying storage.'],
+            'Allows an application to access the Settings Preference services to write settings values exposed by the system Settings app and system apps that contribute settings surfaced in the Settings app. This allows the calling application to write settings values through the host application',
+            'agnostic of underlying storage.'],
             
     },
 
@@ -1628,21 +1612,21 @@ DVM_PERMISSIONS = {
             
         'android.permission.ACCESS_ADSERVICES_TOPICS': ['normal',
             'allow applications to access advertising service topics',
-            'This enables the app to retrieve information related to advertising topics or interests,
-            which can be used for targeted advertising purposes.'],
+            'This enables the app to retrieve information related to advertising topics or interests',
+            'which can be used for targeted advertising purposes.'],
             
         'android.permission.ACCESS_ADSERVICES_ATTRIBUTION': ['normal',
             'allow applications to access advertising service attribution',
-            'This enables the app to retrieve information related to advertising attribution,
-            which can be used for targeted advertising purposes. App can gather data about how users interact with ads,
-            such as clicks or impressions,
-            to measure the effectiveness of advertising campaigns.'],
+            'This enables the app to retrieve information related to advertising attribution',
+            'which can be used for targeted advertising purposes. App can gather data about how users interact with ads, '
+            'such as clicks or impressions, '
+            'to measure the effectiveness of advertising campaigns.'],
             
         'android.permission.ACCESS_ADSERVICES_AD_ID': ['normal',
             'allow app to access the device\'s advertising ID.',
-            'This ID is a unique,
-            user-resettable identifier provided by Google\'s advertising services,
-            allowing apps to track user behavior for advertising purposes while maintaining user privacy.'],
+            'This ID is a unique',
+            'user-resettable identifier provided by Google\'s advertising services, '
+            'allowing apps to track user behavior for advertising purposes while maintaining user privacy.'],
             
         'oppo.permission.OPPO_COMPONENT_SAFE': ['signature',
             'permission specific to OPPO devices',
@@ -1661,13 +1645,13 @@ DVM_PERMISSIONS = {
         'DEVELOPMENT_TOOLS': 'Group of permissions that are related to development features.',
         'HARDWARE_CONTROLS': 'Used for permissions that provide direct access to the hardware on the device.',
         'LOCATION': 'Used for permissions that allow access to the user\'s current location.',
-        'MESSAGES': 'Used for permissions that allow an application to send messages on behalf of the user or
-            or intercept messages being received by the user.',
+        'MESSAGES': 'Used for permissions that allow an application to send messages on behalf of the user or, '
+            'or intercept messages being received by the user.',
         'NETWORK': 'Used for permissions that provide access to networking services.',
         'PERSONAL_INFO': 'Used for permissions that provide access to the user\'s private data, such as contacts, calendar events, e-mail messages, etc.',
-        'PHONE_CALLS': 'Used for permissions that are associated with accessing and
-            and modifyign telephony state: intercepting outgoing calls, reading
-            and modifying the phone state.',
+        'PHONE_CALLS': 'Used for permissions that are associated with accessing and, '
+            'and modifyign telephony state: intercepting outgoing calls, reading, '
+            'and modifying the phone state.',
         'STORAGE': 'Group of permissions that are related to SD card access.',
         'SYSTEM_TOOLS': 'Group of permissions that are related to system APIs.',
     },

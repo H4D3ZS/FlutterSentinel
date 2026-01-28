@@ -39,7 +39,7 @@ cd "$DIR"
 # Ensure FBH is installed
 if ! python3 -c "import fbh" 2>/dev/null; then
     echo -e "${YELLOW}[!] Installing FBH framework...${NC}"
-    pip3 install -e .
+    pip3 install -e . --break-system-packages
 fi
 
 # Main command dispatcher

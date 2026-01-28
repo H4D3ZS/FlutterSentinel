@@ -44,41 +44,61 @@ The platform follows a **Penetration Testing Framework** pattern:
 - **`MOBSF/mobsf/FBH`**: Command & control web interface
 - **`frontend/`**: Penetration testing dashboard with exploit management
 
-## 🚀 Quick Start - Penetration Testing Mode
+## 🚀 Quick Start - Unified Development Environment
 
-### 1. Setup Environment
+### 1. One-Command Setup
 ```bash
-# Install FBH framework
-pip install -e .
+# Install all dependencies (root, frontend, and fbhbot)
+npm run install:all
 
-# Install mobile analysis tools
-cd MOBSF && ./setup.sh
-
-# Install optional advanced tools
-# Blutter (Flutter analysis): https://github.com/worawit/blutter
-# APKLeaks (secret extraction): pip install apkleaks
+# Setup MobSF (first time only)
+cd MOBSF && ./setup.sh && cd ..
 ```
 
-### 2. Launch Exploit Platform
+### 2. Launch Everything
 ```bash
-./run.sh
-# Access dashboard: http://localhost:8000/fbh/
+# Start all services with one command
+npm run dev:all
+
+# Or start individual services:
+npm run dev:mobsf      # MobSF only
+npm run dev:frontend   # Web UI only
+npm run dev:fbhbot     # FBHBot only
 ```
 
-### 3. Add Target & Generate Exploits
+### 3. Access Services
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| **MobSF** | http://localhost:8000 | Mobile security analysis platform |
+| **Frontend** | http://localhost:5173 | Penetration testing dashboard |
+| **FBHBot** | http://localhost:3000 | Autonomous bot backend |
+| **FBHBot Dashboard** | http://localhost:5174 | Bot control panel |
+
+### 4. Add Target & Generate Exploits
 ```bash
 # Via Web Interface:
-# 1. Add target APK/IPA
-# 2. Auto-analysis discovers vulnerabilities
-# 3. Exploit generation creates working PoCs
-# 4. Verification tests confirm exploitability
-# 5. Professional reports ready for submission
+# 1. Open http://localhost:5173
+# 2. Add target APK/IPA
+# 3. Auto-analysis discovers vulnerabilities
+# 4. Exploit generation creates working PoCs
+# 5. Verification tests confirm exploitability
+# 6. Professional reports ready for submission
 
 # Via CLI:
 ./fbh.sh target add myapp com.example.app android
 ./fbh.sh exploit generate myapp --type jwt,crypto,auth
 ./fbh.sh verify run myapp --all-exploits
 ./fbh.sh report bounty myapp --platform hackerone
+```
+
+## 💡 Legacy Commands (Still Supported)
+
+```bash
+# Old workflow (still works):
+./run.sh                    # Launch MobSF only
+cd frontend && npm run dev  # Launch frontend only
+cd fbhbot && npm run dev    # Launch FBHBot only
 ```
 
 ## 💰 Bug Bounty Optimization
