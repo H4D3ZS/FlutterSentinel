@@ -1,6 +1,6 @@
 import React from 'react';
 interface DashboardProps {
-    workspaceId: number | undefined;
+    workspaceId?: number;
 }
 declare const Dashboard: React.FC<DashboardProps>;
 export default Dashboard;

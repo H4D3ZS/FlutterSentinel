@@ -7,14 +7,16 @@
   "workspaces": [
     "frontend",
     "fbhbot",
-    "fbhbot/dashboard"
+    "fbhbot/dashboard",
+    "backend"
   ],
   "scripts": {
-    "install:all": "npm install && cd frontend && npm install && cd ../fbhbot && npm install && cd dashboard && npm install && cd ../..",
+    "install:all": "npm install && cd frontend && npm install && cd ../fbhbot && npm install && cd dashboard && npm install && cd ../../backend && npm install && cd ..",
     "dev:mobsf": "node scripts/start-mobsf.js",
     "dev:frontend": "cd frontend && npm run dev",
     "dev:fbhbot": "cd fbhbot && npm run dev:all",
-    "dev:all": "concurrently -n \"mobsf,frontend,fbhbot\" -c \"cyan,green,yellow\" \"npm run dev:mobsf\" \"npm run dev:frontend\" \"npm run dev:fbhbot\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:all": "concurrently -n \"mobsf,frontend,fbhbot,backend\" -c \"cyan,green,yellow,magenta\" \"npm run dev:mobsf\" \"npm run dev:frontend\" \"npm run dev:fbhbot\" \"npm run dev:backend\"",
     "start": "npm run dev:all",
     "health-check": "node scripts/health-check.js"
   },

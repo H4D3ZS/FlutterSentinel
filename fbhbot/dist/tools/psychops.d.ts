@@ -11,13 +11,12 @@ export declare function cloneVoice(context: {
     synthesis_id: string;
     target: string;
     output_path: string;
+    generative_script: string;
     metrics: {
         word_count: number;
         duration_s: string;
         similarity: string;
-        artifacts: string;
     };
-    message: string;
 }>;
 /**
  * Deepfake Generator: Synthetic video creation for identity verification bypass.

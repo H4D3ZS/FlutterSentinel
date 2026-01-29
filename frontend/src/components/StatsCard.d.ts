@@ -4,8 +4,12 @@ interface StatsCardProps {
     label: string;
     value: string | number;
     icon: LucideIcon;
-    color?: 'accent' | 'critical' | 'medium' | 'low';
+    color?: 'primary' | 'red' | 'orange' | 'green' | 'blue';
     subLabel?: string;
+    trend?: {
+        value: string;
+        positive: boolean;
+    };
 }
 declare const StatsCard: React.FC<StatsCardProps>;
 export default StatsCard;

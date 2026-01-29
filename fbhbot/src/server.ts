@@ -18,19 +18,15 @@ const log = createSubsystemLogger("api");
 // Initialize services
 const notifier = new Notifier();
 
-// Initialize memory
-const stateDir = process.env.FBHBOT_STATE_DIR || path.join(process.cwd(), ".fbhbot_state");
-if (!fs.existsSync(stateDir)) fs.mkdirSync(stateDir, { recursive: true });
-const memory = new VectorMemoryManager(path.join(stateDir, "brain.db"));
+// Initialize defaults
+const defaultStateDir = process.env.FBHBOT_STATE_DIR || path.join(process.cwd(), ".fbhbot_state");
+if (!fs.existsSync(defaultStateDir)) fs.mkdirSync(defaultStateDir, { recursive: true });
+const defaultMemory = new VectorMemoryManager(path.join(defaultStateDir, "brain.db"));
+const defaultAgent = new FBHBotAgent(defaultMemory);
+const defaultScheduler = new MissionScheduler(defaultMemory);
 
-// Initialize agent
-const agent = new FBHBotAgent(memory);
-
-// Initialize scheduler
-const scheduler = new MissionScheduler(memory);
-scheduler.init();
-
-export function startServer(port: number) {
+export { startServer as startSingularityServer };
+export function startServer(port: number, memory = defaultMemory, agent = defaultAgent, scheduler = defaultScheduler) {
     const server = http.createServer(async (req, res) => {
         const headers: Record<string, string> = {
             "Content-Type": "application/json",
@@ -142,6 +138,25 @@ export function startServer(port: number) {
                 const alerts = await memory.getRecentAlerts(10);
                 res.writeHead(200, headers);
                 res.end(JSON.stringify({ alerts }));
+                return;
+            }
+
+            // Sovereign Intelligence Explorer
+            if (req.method === "POST" && req.url === "/api/intel/explore") {
+                let body = "";
+                req.on("data", chunk => body += chunk);
+                req.on("end", async () => {
+                    try {
+                        const { target, query, mode } = JSON.parse(body);
+                        const { exploreIntelligence } = await import("./tools/intelligence_explorer.js");
+                        const result = await exploreIntelligence({ target, query, mode }, memory);
+                        res.writeHead(200, headers);
+                        res.end(JSON.stringify(result));
+                    } catch (e) {
+                        res.writeHead(400, headers);
+                        res.end(JSON.stringify({ error: "Invalid JSON or exploration failure" }));
+                    }
+                });
                 return;
             }
 

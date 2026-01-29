@@ -50,6 +50,8 @@ export declare class VectorMemoryManager {
         target_scope: string;
     }): Promise<void>;
     getRecentAlerts(limit?: number): Promise<any[]>;
+    findRelatedFindings(findingId: number, limit?: number): Promise<any[]>;
+    getFindingsByTarget(target: string): Promise<any[]>;
     storePivot(pivot: {
         id: string;
         target: string;

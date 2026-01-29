@@ -74,6 +74,27 @@ export const fbhTools = {
         const crossFindings = await auditCrossPlatform({ extract_dir: decompileDir });
         results.push(...crossFindings.map(f => ({ name: f.type, severity: f.severity, description: f.description, location: f.location, framework: f.framework })));
 
+        // Deep Flutter AOT Analysis
+        if (crossFindings.some(f => f.framework === "Flutter")) {
+            const { analyzeFlutter } = await import("./flutter.js");
+            const flutterResults = await analyzeFlutter({ app_path: args.app_path });
+            if (flutterResults.success) {
+                results.push(...flutterResults.secrets.map(s => ({
+                    name: `Flutter Secret: ${s.RuleID || "Hardcoded"}`,
+                    severity: s.validation?.is_live ? "critical" : "high",
+                    description: s.verified_impact || `Found secret in Flutter strings.`,
+                    location: "libapp.so",
+                    value: s.Secret.substring(0, 50) + "..."
+                })));
+                results.push(...flutterResults.deeplinks.map(d => ({
+                    name: d.type,
+                    severity: d.severity,
+                    description: d.description,
+                    location: d.location
+                })));
+            }
+        }
+
         // Intent/SSL Audit (Existing)
         const manifestPath = path.join(decompileDir, "AndroidManifest.xml");
         const smaliDir = path.join(decompileDir, "smali");
@@ -86,6 +107,46 @@ export const fbhTools = {
 
         const securityFindings = await analyzeSecurityConfig({ smali_dir: smaliDir, res_dir: resDir });
         results.push(...securityFindings.map(f => ({ name: f.type, severity: f.severity, description: f.details, file: f.file })));
+
+        // Deep WebView Behavior Intelligence
+        if (args.platform === "android" && fs.existsSync(smaliDir)) {
+            const { webviewDeepProbe } = await import("./webview_deep_probe.js");
+            const webviewFindings = await webviewDeepProbe({ source_dir: smaliDir });
+            results.push(...webviewFindings.map(f => ({
+                name: f.type,
+                severity: f.severity,
+                description: f.description,
+                location: f.location,
+                payload: f.bypass_payload
+            })));
+
+            // Deep Link & Intent Forensic Probing
+            const { deeplinkDeepProbe } = await import("./deeplink_deep_probe.js");
+            const deeplinkFindings = await deeplinkDeepProbe({ source_dir: smaliDir });
+            results.push(...deeplinkFindings.map(f => ({
+                name: f.type,
+                severity: f.severity,
+                description: f.description,
+                location: f.location,
+                poc: f.poc_url,
+                risk_factors: f.risk_factors
+            })));
+        }
+
+        // Crypto Intelligence Audit
+        const { analyzeCrypto } = await import("./crypto_analyzer.js");
+        const cryptoFindings = await analyzeCrypto({ source_dir: smaliDir });
+        results.push(...cryptoFindings.map(f => ({ name: f.type, severity: f.severity, description: f.description, location: f.location })));
+
+        // SSL Pinning Audit
+        const { detectSSLPinning } = await import("./ssl_pin_detector.js");
+        const sslFindings = await detectSSLPinning({ source_dir: decompileDir });
+        results.push(...sslFindings.map(f => ({ name: f.type, severity: f.severity, description: f.description, location: f.location, bypass: f.bypass_hint })));
+
+        // Advanced Source Audit
+        const { auditSourceCode } = await import("./source_auditor.js");
+        const sourceFindings = await auditSourceCode({ source_dir: decompileDir });
+        results.push(...sourceFindings.map(f => ({ name: f.category, severity: f.severity, description: f.description, location: f.location, match: f.match })));
 
         return { ...auditResponse, findings: results };
     },
@@ -144,6 +205,21 @@ export const fbhTools = {
      */
     acquire: async (package_id: string, platform?: "android" | "ios") => {
         return await acquireApp({ package_id, platform });
+    },
+
+    /**
+     * Payload Mutator: Transform exploit payloads for evasion.
+     */
+    payloadMutate: async (args: { payload: string, technique: string }) => {
+        const { mutatePayload } = await import("./payload_mutator.js");
+        return await mutatePayload(args);
+    },
+
+    /**
+     * Tactical Exploit Engine: Synthesize exploit chains and PoC reports.
+     */
+    exploitChain: async (args: { vulnerabilities: any[] }) => {
+        return await buildExploitChain(args);
     },
 
     /**

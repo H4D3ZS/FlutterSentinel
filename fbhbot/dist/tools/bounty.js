@@ -5,7 +5,8 @@ const log = createSubsystemLogger("tools/bounty");
  */
 export async function generateBountyReport(mission) {
     log.info(`Synthesizing professional bounty report for Mission: ${mission.id}`);
-    const completedStages = mission.stages.filter(s => s.status === 'completed' && s.result);
+    const stages = mission.stages || mission.state?.stages || [];
+    const completedStages = stages.filter(s => s.status === 'completed' && s.result);
     let report = `# Security Vulnerability Report: ${mission.target}\n\n`;
     report += `## Executive Summary\n`;
     report += `Autonomous security analysis of ${mission.target} has identified ${completedStages.length} verified security issues through strategic orchestration.\n\n`;

@@ -322,6 +322,25 @@ LIMIT ?
         const stmt = this.db.prepare("SELECT * FROM tactical_alerts ORDER BY timestamp DESC LIMIT ?");
         return stmt.all(limit);
     }
+    async findRelatedFindings(findingId, limit = 5) {
+        const row = this.db.prepare("SELECT embedding FROM findings_embeddings WHERE finding_id = ?").get(findingId);
+        if (!row)
+            return [];
+        const stmt = this.db.prepare(`
+        SELECT f.*, v.distance
+        FROM findings_embeddings v
+        JOIN findings f ON v.finding_id = f.id
+        WHERE v.embedding MATCH ? AND f.id != ?
+        ORDER BY distance
+        LIMIT ?
+    `);
+        return stmt.all(row.embedding, findingId, limit);
+    }
+    async getFindingsByTarget(target) {
+        // Search in content or metadata
+        const stmt = this.db.prepare("SELECT * FROM findings WHERE content LIKE ? OR metadata LIKE ? ORDER BY timestamp DESC");
+        return stmt.all(`%${target}%`, `%${target}%`);
+    }
     async storePivot(pivot) {
         const stmt = this.db.prepare(`
       INSERT INTO pivots (id, target, type, status, internal_ip, metadata)

@@ -1,66 +1,162 @@
 @import "tailwindcss";
 
 @theme {
-    /* High Contrast Dark Mode */
-    --color-background-primary: #000000;
-    /* True Black */
-    --color-background-secondary: #121212;
-    /* Material Surface */
-    --color-background-tertiary: #1E1E1E;
-    /* Elevated Surface */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
-    --color-text-primary: #FFFFFF;
-    /* Pure White */
-    --color-text-secondary: #E0E0E0;
-    /* High Contrast Gray */
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
 
-    --color-accent: #3B82F6;
-    /* Bright Blue */
-    --color-accent-hover: #2563EB;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
 
-    --color-severity-critical: #FF5252;
-    --color-severity-high: #FF9800;
-    --color-severity-medium: #FFC107;
-    --color-severity-low: #4CAF50;
-    --color-severity-info: #2196F3;
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
 
-    --color-border: #333333;
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
 
-    --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    --font-mono: "Fira Code", "Ubuntu Mono", monospace;
-}
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
 
-@layer base {
-    body {
-        @apply bg-background-primary text-text-primary min-h-screen;
-        font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-    }
-}
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
 
-@layer components {
-    .btn {
-        @apply px-4 py-2 rounded-md font-medium transition-all duration-200 active:scale-[0.98];
-    }
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
 
-    .btn-primary {
-        @apply bg-accent text-white hover:bg-accent-hover shadow-lg shadow-accent/10;
-    }
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
 
-    .card {
-        @apply bg-background-secondary border border-border rounded-lg p-6 hover:border-accent/40 transition-colors;
-    }
-}
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
 
-.spin {
-    animation: spin 1s linear infinite;
-}
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 
-@keyframes spin {
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
     from {
-        transform: rotate(0deg);
+      height: 0;
     }
 
     to {
-        transform: rotate(360deg);
+      height: var(--radix-accordion-content-height);
     }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+
+    to {
+      height: 0;
+    }
+  }
+}
+
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+    --chart-1: 221.2 83.2% 53.3%;
+    --chart-2: 212 95.1% 17.1%;
+    --chart-3: 76 61% 33%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+    --sidebar-background: 222.2 84% 4.9%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom Cyber Effects */
+.cyber-glow {
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+}
+
+.matrix-green {
+  color: #10b981;
+  text-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+}
+
+.terminal-text {
+  font-family: var(--font-mono);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border) / 0.5);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.5);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border) / 0.5) transparent;
 }

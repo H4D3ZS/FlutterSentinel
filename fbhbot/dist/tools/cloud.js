@@ -56,6 +56,28 @@ export async function cloudRecon(context) {
                                 : "Resource name exists but access is forbidden (403)."
                         });
                     }
+                    // Special Firebase deep path testing
+                    if (platform.name === "gcp" && bucketName.includes("firebase")) {
+                        const firebasePaths = [".json", "/users.json", "/data.json", "/config.json", "/secrets.json"];
+                        for (const fbPath of firebasePaths) {
+                            const fbUrl = `${url}${fbPath}`;
+                            try {
+                                const fbRes = await fetch(fbUrl, { method: 'GET' });
+                                if (fbRes.status === 200) {
+                                    findings.push({
+                                        platform: "firebase",
+                                        type: "Realtime Database",
+                                        resource_name: bucketName,
+                                        url: fbUrl,
+                                        status: "Publicly Exposed",
+                                        severity: "critical",
+                                        description: `Exposed Firebase data found at ${fbPath}.`
+                                    });
+                                }
+                            }
+                            catch (e) { }
+                        }
+                    }
                 }
                 catch (error) {
                     // Silently ignore DNS failures

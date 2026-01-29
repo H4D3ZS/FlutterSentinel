@@ -8,7 +8,7 @@ const execAsync = promisify(exec);
 const log = createSubsystemLogger("tools/cross_platform");
 
 export interface CrossPlatformFinding {
-    framework: "ReactNative" | "Ionic" | "Cordova";
+    framework: "ReactNative" | "Ionic" | "Cordova" | "Flutter";
     type: string;
     severity: "low" | "medium" | "high" | "critical";
     description: string;
@@ -16,7 +16,7 @@ export interface CrossPlatformFinding {
 }
 
 /**
- * Tactical Cross-Platform Analyzer: Audits JS-based frameworks.
+ * Tactical Cross-Platform Analyzer: Audits JS-based frameworks and Flutter.
  */
 export class CrossPlatformAnalyzer {
     async analyzeApp(extractDir: string): Promise<CrossPlatformFinding[]> {
@@ -31,6 +31,35 @@ export class CrossPlatformAnalyzer {
         const ionicFindings = await this.auditIonic(extractDir);
         findings.push(...ionicFindings);
 
+        // 3. Flutter Discovery
+        const flutterFindings = await this.auditFlutterDetection(extractDir);
+        findings.push(...flutterFindings);
+
+        return findings;
+    }
+
+    private async auditFlutterDetection(dir: string): Promise<CrossPlatformFinding[]> {
+        const findings: CrossPlatformFinding[] = [];
+        const libAppPaths = [
+            "lib/arm64-v8a/libapp.so",
+            "lib/armeabi-v7a/libapp.so",
+            "lib/x86_64/libapp.so"
+        ];
+
+        for (const relPath of libAppPaths) {
+            const fullPath = path.join(dir, relPath);
+            if (fs.existsSync(fullPath)) {
+                log.info(`Found Flutter AOT binary: ${fullPath}`);
+                findings.push({
+                    framework: "Flutter",
+                    type: "Framework Detected: Flutter",
+                    severity: "low",
+                    description: "This application is built with individual Dart AOT snapshots. Advanced analysis with Blutter is recommended.",
+                    location: relPath
+                });
+                break; // Only need one match
+            }
+        }
         return findings;
     }
 
@@ -43,14 +72,12 @@ export class CrossPlatformAnalyzer {
 
         for (const relPath of bundlePaths) {
             const fullPath = path.join(dir, relPath);
-            // Handle glob-like payload path
             const actualPath = relPath.includes("*") ? this.resolveGlob(dir, relPath) : fullPath;
 
             if (actualPath && fs.existsSync(actualPath)) {
                 log.info(`Found React Native bundle: ${actualPath}`);
                 const content = fs.readFileSync(actualPath, "utf-8");
 
-                // Scan for secrets in bundle
                 const patterns = [
                     { name: "Firebase Key", regex: /AIza[0-9A-Za-z-_]{35}/g, severity: "high" as const },
                     { name: "Stripe Key", regex: /pk_live_[0-9a-zA-Z]{24}/g, severity: "high" as const }
@@ -89,7 +116,6 @@ export class CrossPlatformAnalyzer {
         if (fs.existsSync(wwwDir)) {
             log.info(`Found Ionic/Cordova www directory: ${wwwDir}`);
 
-            // Check config.xml for access origins
             const configXml = path.join(dir, "res/xml/config.xml");
             if (fs.existsSync(configXml)) {
                 const content = fs.readFileSync(configXml, "utf-8");
@@ -104,7 +130,6 @@ export class CrossPlatformAnalyzer {
                 }
             }
 
-            // Scan JS files in www
             const jsFiles = this.getAllFiles(wwwDir, ".js");
             for (const file of jsFiles) {
                 const content = fs.readFileSync(file, "utf-8");
@@ -150,9 +175,6 @@ export class CrossPlatformAnalyzer {
     }
 }
 
-/**
- * Tactical Tool implementation for Cross-Platform Analysis.
- */
 export async function auditCrossPlatform(args: { extract_dir: string }) {
     const analyzer = new CrossPlatformAnalyzer();
     return await analyzer.analyzeApp(args.extract_dir);

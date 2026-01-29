@@ -37,7 +37,7 @@ export class MissionRefiner {
             missedOpportunities.push("Lack of dedicated reconnaissance stage limits the attack surface visibility.");
         }
         if (failedStages.length > 0) {
-            missedOpportunities.push(`Failed execution in stages: ${failedStages.map(s => s.type).join(', ')}. Parameter tuning recommended.`);
+            missedOpportunities.push(`Failed execution in stages: ${failedStages.map((s: any) => s.type).join(', ')}. Parameter tuning recommended.`);
         } else {
             missedOpportunities.push("Heuristic suggests further depth in post-exploitation could reveal privilege escalation paths.");
         }

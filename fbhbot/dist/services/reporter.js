@@ -9,7 +9,8 @@ export class ReporterService {
         report += `🎯 GOAL: ${mission.goal}\n`;
         report += `📈 STATUS: ${mission.status.toUpperCase()}\n`;
         report += `${"=".repeat(60)}\n\n`;
-        mission.stages.forEach((stage, index) => {
+        const stages = mission.stages || mission.state?.stages || [];
+        stages.forEach((stage, index) => {
             const statusIcon = stage.status === 'completed' ? '✅' : stage.status === 'failed' ? '❌' : '⏳';
             report += `${index + 1}. ${statusIcon} [${stage.type.toUpperCase()}] ${stage.description}\n`;
             if (stage.result) {

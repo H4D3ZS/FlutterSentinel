@@ -1,24 +1,22 @@
-import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
-import React, { useState, useEffect } from 'react';
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Shield, Zap, AlertTriangle, Info, FileText, Download, RefreshCw, ExternalLink, ChevronRight, Search, History as HistoryIcon, FileCode, Terminal, Server, Globe, Database, CheckCircle, ShieldHalf, GitPullRequest, Code, Award, Crosshair, FileSearch, PlayCircle, Hammer, Copy } from 'lucide-react';
+import { ArrowLeft, Shield, Zap, AlertTriangle, Info, FileText, Download, RefreshCw, ExternalLink, ChevronRight, Search, History as HistoryIcon, FileCode, Terminal, Server, Globe, Database, CheckCircle, ShieldHalf, GitPullRequest, Code, Award, Crosshair, FileSearch, PlayCircle, Hammer, Copy, Activity, ShieldCheck, Loader2, BrainCircuit, ShieldAlert, Fingerprint, Network, Share2, ZoomIn, Layers } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FBH_API } from '../services/api';
-import { clsx } from 'clsx';
-import RepeaterModal from '../components/RepeaterModal';
-const CodeBlock = React.memo(({ code, language }) => {
-    return (_jsxs("div", { className: "relative group", children: [_jsx("div", { className: "absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity", children: _jsx("button", { onClick: () => navigator.clipboard.writeText(code), className: "p-1.5 rounded bg-white/10 hover:bg-white/20 text-white/70", children: _jsx(Copy, { size: 14 }) }) }), _jsx("pre", { className: "p-4 rounded-xl bg-background-tertiary border border-border/50 font-mono text-xs overflow-x-auto leading-relaxed scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent", children: _jsx("code", { className: `language-${language} text-text-primary`, children: code }) })] }));
-});
-const SeverityBadge = React.memo(({ severity }) => {
-    const colors = {
-        critical: 'bg-severity-critical/20 text-severity-critical border-severity-critical/30',
-        high: 'bg-severity-high/20 text-severity-high border-severity-high/30',
-        medium: 'bg-severity-medium/20 text-severity-medium border-severity-medium/30',
-        low: 'bg-severity-low/20 text-severity-low border-severity-low/30',
-        info: 'bg-background-tertiary text-text-tertiary border-border'
-    };
-    return (_jsx("span", { className: `px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${colors[severity.toLowerCase()] || colors.info}`, children: severity }));
-});
+import api from '@/lib/api';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card";
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from '@/components/ui/progress';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
+const SeverityBadge = ({ severity }) => {
+    const sev = severity.toLowerCase();
+    return (_jsx(Badge, { variant: "outline", className: cn("text-[9px] uppercase font-bold tracking-widest h-5", sev === 'critical' && "bg-red-500/10 text-red-500 border-red-500/30", sev === 'high' && "bg-orange-500/10 text-orange-500 border-orange-500/30", sev === 'medium' && "bg-yellow-500/10 text-yellow-500 border-yellow-500/30", sev === 'low' && "bg-green-500/10 text-green-500 border-green-500/30", (sev === 'info' || sev === 'android' || sev === 'ios') && "bg-blue-500/10 text-blue-500 border-blue-500/30"), children: severity }));
+};
 const TargetDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -26,289 +24,134 @@ const TargetDetail = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedFinding, setSelectedFinding] = useState(null);
-    const [generatingFix, setGeneratingFix] = useState(false);
-    const [aiFix, setAiFix] = useState(null);
-    const [isFixModalOpen, setIsFixModalOpen] = useState(false);
-    const [isRepeaterOpen, setIsRepeaterOpen] = useState(false);
-    const [repeaterInitialData, setRepeaterInitialData] = useState(null);
-    const [delta, setDelta] = useState(null);
-    const [isDeltaLoading, setIsDeltaLoading] = useState(false);
-    const [chains, setChains] = useState(null);
-    const [verifying, setVerifying] = useState(false);
-    const [submittingPatch, setSubmittingPatch] = useState(false);
-    const [generatingFrida, setGeneratingFrida] = useState(false);
-    const [generatingReport, setGeneratingReport] = useState(false);
-    const [auditingSignatures, setAuditingSignatures] = useState(false);
-    const [generatingReflutter, setGeneratingReflutter] = useState(false);
-    const [simulatingPath, setSimulatingPath] = useState(null);
     const [activeTab, setActiveTab] = useState('findings');
-    const handleGenerateFix = async (findingId) => {
-        setGeneratingFix(true);
-        try {
-            const data = await FBH_API.generateFindingFix(findingId);
-            setAiFix(data.fix);
-            setIsFixModalOpen(true);
-        }
-        catch (error) {
-            console.error('Failed to generate fix:', error);
-            alert('AI engine failed to generate a fix for this finding.');
-        }
-        finally {
-            setGeneratingFix(false);
-        }
-    };
-    const handleVerifyFinding = async (findingId) => {
-        setVerifying(true);
-        try {
-            const data = await FBH_API.verifyFinding(findingId);
-            alert(`Verification Results:\n${data.message}`);
-            // Refresh target data
-            if (id) {
-                const updated = await FBH_API.getTargetDetail(id);
-                setTarget(updated);
-            }
-        }
-        catch (error) {
-            console.error('Verification failed:', error);
-            alert('Autonomous verification engine failed to reach the target.');
-        }
-        finally {
-            setVerifying(false);
-        }
-    };
-    const handleSubmitPatch = async (findingId, fixCode) => {
-        if (!target)
+    const [intelligenceLoading, setIntelligenceLoading] = useState(false);
+    const [clusters, setClusters] = useState([]);
+    const [relationshipGraph, setRelationshipGraph] = useState(null);
+    const fetchIntelligence = async (mode) => {
+        if (!target?.name && !target?.package)
             return;
-        setSubmittingPatch(true);
+        setIntelligenceLoading(true);
         try {
-            const data = await FBH_API.submitPatch(findingId, fixCode, target.name);
-            alert(`Autonomous Patch Submitted!\nPR Link: ${data.pr_url}\n${data.message}`);
+            const response = await api.post('/intel/explore', {
+                target: target.name || target.package,
+                query: target.name || target.package,
+                mode
+            });
+            if (mode === 'cluster')
+                setClusters(response.data);
+            else
+                setRelationshipGraph(response.data);
         }
         catch (error) {
-            console.error('Patch submission failed:', error);
-            alert('Failed to submit autonomous patch to repository.');
+            console.error('Intelligence extraction failure:', error);
+            toast.error('Intelligence Offline', {
+                description: 'Failed to synchronize with the neural relationship engine.'
+            });
         }
         finally {
-            setSubmittingPatch(false);
+            setIntelligenceLoading(false);
         }
     };
-    const handleGenerateWAF = async (findingId) => {
-        try {
-            const data = await FBH_API.generateWafRules(findingId);
-            const rulesStr = data.rules.map((r) => `--- ${r.platform} ---\n${r.rule}\n`).join('\n');
-            setAiFix(rulesStr); // Reuse fix modal for WAF rules
-            setIsFixModalOpen(true);
-        }
-        catch (error) {
-            console.error('WAF generation failed:', error);
-            alert('Failed to generate perimeter protection rules.');
+    const handleTabChange = (val) => {
+        setActiveTab(val);
+        if (val === 'intelligence') {
+            fetchIntelligence('cluster');
+            fetchIntelligence('map');
         }
     };
-    const handleGenerateFrida = async (type) => {
-        setGeneratingFrida(true);
-        try {
-            const data = await FBH_API.generateFridaScript(type);
-            setAiFix(data.script); // Reuse modal for now
-            setIsFixModalOpen(true);
-        }
-        catch (error) {
-            console.error('Frida generation failed:', error);
-            alert('Failed to generate Frida instrumentation script.');
-        }
-        finally {
-            setGeneratingFrida(false);
-        }
-    };
-    const handleGenerateBountyReport = async () => {
-        if (!target)
-            return;
-        setGeneratingReport(true);
-        try {
-            const data = await FBH_API.generateBountyReport(target.name);
-            setAiFix(data.report);
-            setIsFixModalOpen(true);
-        }
-        catch (error) {
-            console.error('Report generation failed:', error);
-            alert('Failed to generate professional bounty report.');
-        }
-        finally {
-            setGeneratingReport(false);
-        }
-    };
-    const handleGeneratePoCCommand = async (findingId) => {
-        try {
-            const data = await FBH_API.generatePoCCommand(findingId);
-            alert(`ADB PoC Command Generated:\n\n${data.poc_command}`);
-        }
-        catch (error) {
-            console.error('PoC generation failed:', error);
-            alert('Failed to generate ADB PoC command.');
-        }
-    };
-    const handleAuditSignatures = async () => {
-        if (!target)
-            return;
-        setAuditingSignatures(true);
-        try {
-            const data = await FBH_API.auditSignatures(target.name);
-            alert(`Found ${data.anti_tamper_findings.length} potential integrity checks. Check logs for details.`);
-        }
-        catch (error) {
-            console.error('Signature audit failed:', error);
-            alert('Failed to audit anti-tamper logic.');
-        }
-        finally {
-            setAuditingSignatures(false);
-        }
-    };
-    const handleGetReflutterBlueprint = async () => {
-        if (!target)
-            return;
-        setGeneratingReflutter(true);
-        try {
-            const data = await FBH_API.getReflutterBlueprint(target.name);
-            if (data.status === 'success') {
-                const blueprint = data.blueprint;
-                const formatted = `### Flutter Engine Patching Blueprint\n` +
-                    `**Engine Hash**: ${data.engine_hash}\n` +
-                    `**Impact**: ${blueprint.impact}\n\n` +
-                    `**Patching Steps**:\n` +
-                    blueprint.manual_steps.map((s) => `- ${s}`).join('\n');
-                setAiFix(formatted);
-                setIsFixModalOpen(true);
-            }
-            else {
-                alert(data.message);
-            }
-        }
-        catch (error) {
-            console.error('Reflutter blueprint failed:', error);
-            alert('Failed to generate reFlutter blueprint.');
-        }
-        finally {
-            setGeneratingReflutter(false);
-        }
-    };
-    const handleSimulatePath = (idx) => {
-        setSimulatingPath(idx);
-        setTimeout(() => {
-            setSimulatingPath(null);
-            alert("Attack Path Simulation Complete: Vulnerability chain confirmed at step 3. Artifacts generated.");
-        }, 2000);
-    };
-    const handleExportNuclei = async () => {
-        if (!target)
-            return;
-        try {
-            await FBH_API.exportNuclei(target.name);
-        }
-        catch (error) {
-            console.error('Nuclei export failed:', error);
-            alert('Failed to export Nuclei templates.');
-        }
-    };
-    const handleImportBurp = async (file) => {
-        if (!target)
-            return;
-        try {
-            const result = await FBH_API.importBurpXML(target.name, file);
-            alert(result.message);
-            // Refresh target details to show new findings
-            const data = await FBH_API.getTargetDetail(target.name);
-            setTarget(data);
-        }
-        catch (error) {
-            console.error('Burp import failed:', error);
-            alert('Failed to import Burp Suite findings.');
-        }
-    };
-    const fetchDelta = async () => {
+    const fetchTargetData = useCallback(async () => {
         if (!id)
             return;
-        setIsDeltaLoading(true);
+        setLoading(true);
         try {
-            const data = await FBH_API.getDelta(id);
-            setDelta(data);
+            // We use the MobSF report endpoint via our proxy
+            const response = await api.post('/mobsf/report', { hash: id });
+            const data = response.data;
+            // Transform MobSF data if needed (MobSF report structure is nested)
+            // This is a simplified transformation for the unified UI
+            const transformedTarget = {
+                name: data.file_name || 'Analysis Target',
+                package: data.package_name || 'com.fbh.target',
+                platform: data.platform || 'mobile',
+                status: 'completed',
+                scan_progress: 100,
+                findings: [
+                    ...(data.findings || []),
+                    // Some MobSF reports put findings in specific sections
+                    ...(data.binary_analysis || []).map((f) => ({ ...f, category: 'Binary' })),
+                    ...(data.manifest_analysis || []).map((f) => ({ ...f, category: 'Manifest' })),
+                ].map((f, idx) => ({
+                    id: f.id || `f-${idx}`,
+                    title: f.title || f.name || 'Security Finding',
+                    description: f.description || f.stat || 'No description provided.',
+                    severity: f.severity || 'info',
+                    category: f.category || 'General',
+                    file_path: f.file || f.path
+                })),
+                stats: {
+                    total_findings: 0,
+                    findings_by_severity: {}
+                }
+            };
+            // Calculate stats
+            transformedTarget.findings?.forEach(f => {
+                const sev = f.severity.toLowerCase();
+                transformedTarget.stats.findings_by_severity[sev] = (transformedTarget.stats.findings_by_severity[sev] || 0) + 1;
+                transformedTarget.stats.total_findings++;
+            });
+            setTarget(transformedTarget);
         }
         catch (error) {
-            console.error('Failed to fetch delta:', error);
+            console.error('Failed to fetch target detail:', error);
+            toast.error('Mission Failed', {
+                description: 'Failed to exfiltrate analysis data from the vault.'
+            });
         }
         finally {
-            setIsDeltaLoading(false);
+            setLoading(false);
         }
-    };
-    const fetchChains = async () => {
-        if (!id)
-            return;
-        try {
-            const data = await FBH_API.analyzeChains(id);
-            setChains(data);
-        }
-        catch (error) {
-            console.error('Failed to fetch chains:', error);
-        }
-    };
-    useEffect(() => {
-        if (activeTab === 'intelligence' && !chains) {
-            fetchChains();
-        }
-    }, [activeTab]);
-    useEffect(() => {
-        const fetchTarget = async () => {
-            if (!id)
-                return;
-            try {
-                const data = await FBH_API.getTargetDetail(id);
-                setTarget(data);
-                fetchDelta();
-            }
-            catch (error) {
-                console.error('Failed to fetch target details:', error);
-            }
-            finally {
-                setLoading(false);
-            }
-        };
-        fetchTarget();
     }, [id]);
+    useEffect(() => {
+        fetchTargetData();
+    }, [fetchTargetData]);
     const filteredFindings = target?.findings?.filter(f => f.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         f.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
         f.category?.toLowerCase().includes(searchTerm.toLowerCase())) || [];
+    const NeuralInsights = () => {
+        if (intelligenceLoading) {
+            return (_jsxs("div", { className: "py-20 flex flex-col items-center justify-center space-y-4", children: [_jsx(BrainCircuit, { size: 48, className: "text-primary animate-pulse" }), _jsx("p", { className: "text-sm font-mono text-slate-500 animate-pulse tracking-widest uppercase", children: "Syncing Neural Swarm..." })] }));
+        }
+        return (_jsxs("div", { className: "space-y-8 animate-in fade-in duration-700", children: [_jsxs(Card, { className: "border-border/40 bg-slate-900/40 backdrop-blur-md rounded-3xl overflow-hidden p-8", children: [_jsxs("div", { className: "flex justify-between items-center mb-8", children: [_jsxs("div", { children: [_jsxs("h3", { className: "text-lg font-bold text-white flex items-center gap-2", children: [_jsx(Network, { size: 20, className: "text-primary" }), " Semantic Relationship Map"] }), _jsx("p", { className: "text-xs text-slate-500 font-mono tracking-tighter mt-1", children: "AI core identified node clusters through vector embedding distance." })] }), _jsxs("div", { className: "flex gap-2", children: [_jsx(Button, { variant: "outline", size: "icon", className: "h-8 w-8 rounded-lg border-border/40", children: _jsx(ZoomIn, { size: 14 }) }), _jsx(Button, { variant: "outline", size: "icon", className: "h-8 w-8 rounded-lg border-border/40", children: _jsx(Share2, { size: 14 }) })] })] }), _jsxs("div", { className: "relative h-[400px] bg-slate-950/40 rounded-2xl border border-border/20 overflow-hidden flex items-center justify-center", children: [_jsx("div", { className: "absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/30 via-transparent to-transparent" }), _jsx("svg", { className: "absolute inset-0 w-full h-full pointer-events-none", children: relationshipGraph?.edges.map((edge, i) => {
+                                        const source = relationshipGraph.nodes.findIndex(n => n.id === edge.source);
+                                        const target = relationshipGraph.nodes.findIndex(n => n.id === edge.target);
+                                        if (source === -1 || target === -1)
+                                            return null;
+                                        const x1 = 150 + (source % 3) * 200;
+                                        const y1 = 100 + Math.floor(source / 3) * 150;
+                                        const x2 = 150 + (target % 3) * 200;
+                                        const y2 = 100 + Math.floor(target / 3) * 150;
+                                        return (_jsx("line", { x1: x1, y1: y1, x2: x2, y2: y2, stroke: "currentColor", strokeWidth: 1 + edge.strength * 2, className: "text-primary/30 animate-pulse" }, i));
+                                    }) }), _jsx("div", { className: "relative z-10 flex flex-wrap justify-center gap-12 p-8", children: relationshipGraph?.nodes.map((node, i) => (_jsxs(motion.div, { initial: { opacity: 0, scale: 0 }, animate: { opacity: 1, scale: 1 }, transition: { delay: i * 0.1 }, className: cn("w-32 h-32 rounded-full border-2 flex flex-col items-center justify-center p-4 text-center cursor-pointer transition-all hover:scale-110 relative group bg-slate-900/80 backdrop-blur-xl", node.severity.toLowerCase() === 'critical' ? 'border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.2)]' :
+                                            node.severity.toLowerCase() === 'high' ? 'border-orange-500/50 shadow-[0_0_20px_rgba(249,115,22,0.2)]' :
+                                                'border-primary/50 shadow-[0_0_20px_rgba(59,130,246,0.2)]'), children: [_jsx(Fingerprint, { size: 24, className: cn("mb-2", node.severity.toLowerCase() === 'critical' ? 'text-red-500' : 'text-primary') }), _jsx("span", { className: "text-[10px] font-bold text-white line-clamp-2 leading-tight uppercase font-mono tracking-tighter", children: node.title.replace('Findings Export:', '') })] }, node.id))) })] })] }), _jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: clusters.map((cluster, i) => (_jsxs(Card, { className: "border-border/40 bg-slate-900/40 backdrop-blur-md rounded-3xl overflow-hidden hover:border-primary/30 transition-all group", children: [_jsxs(CardHeader, { className: "p-6 pb-2", children: [_jsxs("div", { className: "flex justify-between items-start mb-2", children: [_jsxs(Badge, { variant: "outline", className: "border-primary/30 text-primary bg-primary/5 text-[9px] uppercase font-bold tracking-widest px-2.5 py-0.5", children: ["Cluster: ", cluster.category] }), _jsx(Layers, { size: 16, className: "text-slate-600 group-hover:text-primary transition-colors" })] }), _jsxs(CardTitle, { className: "text-lg font-bold text-white", children: [cluster.findings.length, " Linked Indicators"] })] }), _jsxs(CardContent, { className: "p-6 pt-2 space-y-4", children: [_jsxs("p", { className: "text-xs text-slate-400 leading-relaxed italic", children: ["\"", cluster.summary, "\""] }), _jsxs("div", { className: "p-3 bg-red-500/5 border border-red-500/20 rounded-xl", children: [_jsxs("p", { className: "text-[10px] font-bold text-red-400 uppercase tracking-widest flex items-center gap-2 mb-1", children: [_jsx(Zap, { size: 12 }), " Impact Forecast"] }), _jsx("p", { className: "text-xs text-slate-300 font-medium", children: cluster.total_impact })] })] })] }, i))) })] }));
+    };
     if (loading) {
-        return (_jsx("div", { className: "flex items-center justify-center h-screen bg-background-primary", children: _jsxs("div", { className: "flex flex-col items-center gap-4", children: [_jsx(RefreshCw, { className: "w-10 h-10 text-accent animate-spin" }), _jsx("p", { className: "text-text-secondary font-mono animate-pulse", children: "Decrypting analysis data..." })] }) }));
+        return (_jsxs("div", { className: "flex flex-col items-center justify-center h-[60vh] gap-4", children: [_jsxs("div", { className: "relative", children: [_jsx(RefreshCw, { className: "w-10 h-10 text-primary animate-spin" }), _jsx(Activity, { className: "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 text-primary" })] }), _jsx("p", { className: "text-sm font-mono text-slate-500 animate-pulse tracking-widest uppercase", children: "Decrypting Vault Data..." })] }));
     }
     if (!target) {
-        return (_jsxs("div", { className: "p-8 flex flex-col items-center justify-center h-screen text-center", children: [_jsx(Shield, { className: "w-16 h-16 text-red-500 mb-4 opacity-50" }), _jsx("h2", { className: "text-2xl font-bold mb-2", children: "Target Not Found" }), _jsx("p", { className: "text-text-secondary mb-6", children: "The requested analysis profile could not be located in the vault." }), _jsxs("button", { onClick: () => navigate('/'), className: "btn btn-secondary flex items-center gap-2", children: [_jsx(ArrowLeft, { size: 18 }), " Back to Dashboard"] })] }));
+        return (_jsxs("div", { className: "py-20 flex flex-col items-center justify-center text-center space-y-4", children: [_jsx(AlertTriangle, { size: 48, className: "text-red-500 opacity-50" }), _jsx("h2", { className: "text-2xl font-bold text-white", children: "Target Identity Lost" }), _jsx("p", { className: "text-slate-500 max-w-md", children: "The requested target has been purged from the intelligence ledger or the core link is down." }), _jsxs(Button, { variant: "outline", onClick: () => navigate('/'), className: "gap-2", children: [_jsx(ArrowLeft, { size: 16 }), " Return to Center"] })] }));
     }
-    return (_jsxs("div", { className: "p-8 max-w-[1600px] mx-auto min-h-screen", children: [_jsxs("div", { className: "flex items-center gap-4 mb-8", children: [_jsx("button", { onClick: () => navigate('/'), className: "p-2 hover:bg-background-secondary rounded-full transition-colors border border-transparent hover:border-border", children: _jsx(ArrowLeft, { size: 24 }) }), _jsxs("div", { children: [_jsxs("div", { className: "flex items-center gap-3", children: [_jsx("h1", { className: "text-3xl font-bold tracking-tight", children: target.name }), _jsx(SeverityBadge, { severity: target.platform })] }), _jsx("p", { className: "text-text-secondary font-mono text-sm mt-1", children: target.package })] }), _jsxs("div", { className: "ml-auto flex items-center gap-3", children: [_jsxs("button", { className: "btn btn-secondary flex items-center gap-2 border-border/50 hover:bg-background-secondary", children: [_jsx(Download, { size: 18 }), " Export PDF"] }), _jsxs("button", { className: "btn btn-primary flex items-center gap-2 shadow-[0_0_20px_rgba(59,130,246,0.3)]", children: [_jsx(RefreshCw, { size: 18 }), " Trigger Rescan"] })] })] }), _jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-12 gap-8", children: [_jsxs("div", { className: "lg:col-span-8 space-y-6", children: [_jsxs("div", { className: "flex items-center gap-6 border-b border-border mb-6", children: [_jsxs("button", { onClick: () => setActiveTab('findings'), className: clsx("pb-4 text-sm font-bold transition-all relative", activeTab === 'findings' ? "text-accent" : "text-text-secondary hover:text-text-primary"), children: ["Findings (", filteredFindings.length, ")", activeTab === 'findings' && _jsx(motion.div, { layoutId: "tab-underline", className: "absolute bottom-0 left-0 right-0 h-0.5 bg-accent" })] }), _jsxs("button", { onClick: () => setActiveTab('history'), className: clsx("pb-4 text-sm font-bold transition-all relative", activeTab === 'history' ? "text-accent" : "text-text-secondary hover:text-text-primary"), children: ["Analysis History & Delta", activeTab === 'history' && _jsx(motion.div, { layoutId: "tab-underline", className: "absolute bottom-0 left-0 right-0 h-0.5 bg-accent" })] }), _jsxs("button", { onClick: () => setActiveTab('infrastructure'), className: clsx("pb-4 text-sm font-bold transition-all relative", activeTab === 'infrastructure' ? "text-accent" : "text-text-secondary hover:text-text-primary"), children: ["Infrastructure", activeTab === 'infrastructure' && _jsx(motion.div, { layoutId: "tab-underline", className: "absolute bottom-0 left-0 right-0 h-0.5 bg-accent" })] }), _jsxs("button", { onClick: () => setActiveTab('intelligence'), className: clsx("pb-4 text-sm font-bold transition-all relative", activeTab === 'intelligence' ? "text-accent" : "text-text-secondary hover:text-text-primary"), children: ["Intelligence & Chains", activeTab === 'intelligence' && _jsx(motion.div, { layoutId: "tab-underline", className: "absolute bottom-0 left-0 right-0 h-0.5 bg-accent" })] })] }), activeTab === 'findings' && (_jsxs(_Fragment, { children: [_jsx("div", { className: "grid grid-cols-4 gap-4", children: ['Critical', 'High', 'Medium', 'Low'].map((sev) => {
-                                            const count = target.stats?.findings_by_severity?.[sev.toLowerCase()] || 0;
-                                            return (_jsxs("div", { className: "card p-4 flex flex-col items-center justify-center text-center border-border/50 bg-background-secondary/50", children: [_jsx("div", { className: clsx("text-2xl font-bold mb-1", sev === 'Critical' ? 'text-severity-critical' :
-                                                            sev === 'High' ? 'text-severity-high' :
-                                                                sev === 'Medium' ? 'text-severity-medium' : 'text-severity-low'), children: count }), _jsx("div", { className: "text-[10px] font-bold text-text-secondary uppercase tracking-widest", children: sev })] }, sev));
-                                        }) }), _jsxs("div", { className: "relative", children: [_jsx(Search, { className: "absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary", size: 18 }), _jsx("input", { type: "text", placeholder: "Search findings by title, category, or description...", className: "w-full bg-background-secondary border border-border rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all", value: searchTerm, onChange: (e) => setSearchTerm(e.target.value) })] }), _jsx("div", { className: "space-y-4", children: filteredFindings.length > 0 ? (filteredFindings.map((finding) => (_jsxs(motion.div, { layout: true, onClick: () => setSelectedFinding(finding), className: clsx("card relative p-5 cursor-pointer transition-all border-l-4 group", selectedFinding?.id === finding.id
-                                                ? "bg-background-tertiary border-accent shadow-lg scale-[1.01] z-10"
-                                                : "bg-background-secondary/50 border-transparent hover:border-accent/30 hover:bg-background-tertiary/50"), children: [_jsxs("div", { className: "flex justify-between items-start", children: [_jsxs("div", { className: "flex-1", children: [_jsxs("div", { className: "flex items-center gap-3 mb-2", children: [_jsx(SeverityBadge, { severity: finding.severity }), _jsx("span", { className: "text-xs font-mono text-text-tertiary", children: finding.category })] }), _jsx("h3", { className: "text-lg font-bold group-hover:text-accent transition-colors", children: finding.title }), _jsx("div", { className: "flex items-center gap-4 mt-3", children: _jsxs("div", { className: "flex items-center gap-1.5 text-text-tertiary text-xs", children: [_jsx("div", { className: "w-1 h-1 rounded-full bg-text-tertiary" }), finding.location] }) })] }), _jsx(ChevronRight, { size: 18, className: clsx("text-text-tertiary transition-transform duration-300", selectedFinding?.id === finding.id ? "rotate-90 text-accent" : "group-hover:translate-x-1") })] }), selectedFinding?.id === finding.id && (_jsx(motion.div, { layoutId: "active-indicator", className: "absolute inset-y-0 left-0 w-1 bg-accent" }))] }, finding.id)))) : (_jsxs("div", { className: "text-center py-20 bg-background-secondary/30 rounded-2xl border border-dashed border-border flex flex-col items-center gap-4", children: [_jsx(Search, { className: "w-12 h-12 text-text-tertiary opacity-30" }), _jsxs("div", { className: "max-w-[300px]", children: [_jsx("h3", { className: "text-xl font-medium text-text-secondary", children: "No findings match your search" }), _jsx("p", { className: "text-text-tertiary mt-2", children: "Try adjusting your filters or search terms" })] })] })) })] })), activeTab === 'history' && (_jsx("div", { className: "space-y-6", children: delta ? (_jsxs(_Fragment, { children: [_jsxs("div", { className: "grid grid-cols-3 gap-6", children: [_jsxs("div", { className: "card p-6 border-severity-critical/20 bg-severity-critical/5", children: [_jsx("div", { className: "text-3xl font-bold text-severity-critical mb-1", children: delta.stats.count_new }), _jsx("div", { className: "text-xs font-bold text-text-tertiary uppercase tracking-widest", children: "New Vulnerabilities" })] }), _jsxs("div", { className: "card p-6 border-severity-low/20 bg-severity-low/5", children: [_jsx("div", { className: "text-3xl font-bold text-severity-low mb-1", children: delta.stats.count_resolved }), _jsx("div", { className: "text-xs font-bold text-text-tertiary uppercase tracking-widest", children: "Resolved Findings" })] }), _jsxs("div", { className: "card p-6 border-border bg-background-tertiary font-mono", children: [_jsx("div", { className: "text-3xl font-bold mb-1", children: delta.stats.count_persistent }), _jsx("div", { className: "text-xs font-bold text-text-tertiary uppercase tracking-widest", children: "Persistent Issues" })] })] }), delta.new.length > 0 && (_jsxs("div", { className: "space-y-3", children: [_jsxs("h4", { className: "text-sm font-bold flex items-center gap-2 text-severity-critical", children: [_jsx(AlertTriangle, { size: 16 }), " New Security Regressions"] }), delta.new.map((f) => (_jsxs("div", { className: "p-3 bg-severity-critical/5 border border-severity-critical/20 rounded-lg flex items-center justify-between", children: [_jsx("span", { className: "text-sm font-medium", children: f.title }), _jsx(SeverityBadge, { severity: f.severity })] }, f.id)))] })), delta.resolved.length > 0 && (_jsxs("div", { className: "space-y-3", children: [_jsxs("h4", { className: "text-sm font-bold flex items-center gap-2 text-severity-low", children: [_jsx(Shield, { size: 16 }), " Verified Mitigations"] }), delta.resolved.map((f) => (_jsxs("div", { className: "p-3 bg-severity-low/5 border border-severity-low/20 rounded-lg flex items-center justify-between", children: [_jsx("span", { className: "text-sm font-medium", children: f.title }), _jsx("div", { className: "text-[10px] font-bold text-severity-low uppercase", children: "Resolved" })] }, f.id)))] }))] })) : (_jsxs("div", { className: "text-center py-20 bg-background-secondary/30 rounded-2xl border border-dashed border-border flex flex-col items-center gap-4", children: [_jsx(HistoryIcon, { className: "w-12 h-12 text-text-tertiary opacity-30" }), _jsxs("div", { className: "max-w-[300px]", children: [_jsx("h3", { className: "text-xl font-medium text-text-secondary", children: "Insufficient History" }), _jsx("p", { className: "text-text-tertiary mt-2", children: "Generate at least two analysis snapshots to enable automated delta tracking and regression analysis." })] })] })) })), activeTab === 'infrastructure' && (_jsx("div", { className: "space-y-6", children: _jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: [target.findings?.filter(f => f.category === 'OSINT').map((asset) => (_jsx("div", { className: "card p-5 border-border/50 bg-background-secondary/30 hover:bg-background-secondary transition-all group", children: _jsxs("div", { className: "flex items-start gap-4", children: [_jsx("div", { className: "p-3 rounded-xl bg-accent/10 text-accent group-hover:bg-accent group-hover:text-white transition-all", children: _jsx(Server, { size: 24 }) }), _jsxs("div", { className: "flex-1 overflow-hidden", children: [_jsx("h4", { className: "font-bold text-lg truncate mb-1", children: asset.location || asset.title }), _jsxs("p", { className: "text-xs text-text-tertiary font-mono mb-4", children: [asset.category, " Asset Found via Sentinel"] }), _jsxs("div", { className: "space-y-2", children: [_jsxs("div", { className: "flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-text-tertiary", children: [_jsx("span", { children: "Exposure Risk" }), _jsx("span", { className: clsx(asset.severity === 'high' ? 'text-severity-high' : 'text-severity-low'), children: asset.severity })] }), _jsx("div", { className: "h-1 w-full bg-background-tertiary rounded-full", children: _jsx("div", { className: clsx("h-full rounded-full", asset.severity === 'high' ? 'bg-severity-high w-3/4' : 'bg-severity-low w-1/4') }) })] })] })] }) }, asset.id))), target.findings?.filter(f => f.category === 'OSINT').length === 0 && (_jsxs("div", { className: "col-span-full py-20 text-center border-2 border-dashed border-border rounded-xl", children: [_jsx(Globe, { size: 48, className: "mx-auto text-text-secondary mb-4 opacity-20" }), _jsx("p", { className: "text-text-secondary text-lg", children: "No internet-exposed assets identified by OSINT Sentinel" }), _jsxs("button", { className: "text-accent hover:underline mt-2 flex items-center gap-1 mx-auto text-sm font-bold", children: [_jsx(Zap, { size: 14 }), " Trigger Shodan Recon"] })] }))] }) })), activeTab === 'intelligence' && (_jsx("div", { className: "space-y-6", children: _jsxs("div", { className: "card p-6 bg-background-tertiary/20 border-accent/20 border-dashed", children: [_jsxs("div", { className: "flex items-center gap-4 mb-6", children: [_jsx("div", { className: "p-3 rounded-2xl bg-accent/10 text-accent border border-accent/30 shadow-[0_0_15px_rgba(59,130,246,0.3)]", children: _jsx(Terminal, { size: 32 }) }), _jsxs("div", { children: [_jsx("h3", { className: "text-xl font-bold tracking-tight", children: "Autonomous Red Team Sentinel" }), _jsx("p", { className: "text-sm text-text-tertiary", children: "Real-time attack path simulation and offensive intelligence" })] })] }), chains ? (_jsxs("div", { className: "space-y-6", children: [_jsxs("div", { className: "p-5 rounded-xl bg-background-secondary border border-border font-mono text-sm whitespace-pre-wrap leading-relaxed", children: [_jsxs("div", { className: "flex items-center gap-2 text-accent mb-2", children: [_jsx(Info, { size: 14 }), " AI SITUATION SUMMARY"] }), chains.summary] }), _jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: chains.chains.map((chain, idx) => (_jsxs("div", { className: "card p-4 bg-background-secondary/50 border-accent/30 flex flex-col justify-between group hover:border-accent", children: [_jsxs("div", { children: [_jsxs("div", { className: "flex items-center justify-between mb-2", children: [_jsx("span", { className: "text-[10px] font-bold uppercase tracking-widest text-accent", children: "Active Path" }), _jsx(SeverityBadge, { severity: chain.impact_esclation })] }), _jsx("h4", { className: "font-bold mb-1 group-hover:text-accent transition-colors", children: chain.name }), _jsx("p", { className: "text-xs text-text-secondary mb-4 leading-relaxed", children: chain.description })] }), _jsxs("button", { onClick: () => handleSimulatePath(idx), disabled: simulatingPath === idx, className: "btn btn-secondary py-2 text-xs flex items-center justify-center gap-2 border-accent/20 hover:bg-accent/10", children: [simulatingPath === idx ? _jsx(RefreshCw, { size: 14, className: "animate-spin" }) : _jsx(Zap, { size: 14, className: "text-accent" }), simulatingPath === idx ? 'Simulating...' : 'Simulate Chain'] })] }, idx))) })] })) : (_jsxs("div", { className: "py-24 text-center", children: [_jsx(RefreshCw, { className: "mx-auto text-accent animate-spin mb-4", size: 32 }), _jsx("p", { className: "text-text-secondary font-mono text-sm animate-pulse", children: "Running heuristic analyzer..." })] })), _jsxs("div", { className: "mt-8 pt-8 border-t border-border/50", children: [_jsxs("h3", { className: "text-lg font-bold mb-4 flex items-center gap-2 uppercase tracking-wide text-accent", children: [_jsx(Crosshair, { size: 20 }), " Runtime Shadow Telemetry"] }), _jsxs("div", { className: "space-y-3 font-mono text-xs", children: [_jsxs("div", { className: "p-4 bg-background-secondary rounded-xl border-l-4 border-severity-high shadow-lg", children: [_jsxs("div", { className: "flex justify-between mb-1", children: [_jsx("span", { className: "text-severity-high font-bold", children: "[INSECURE_STORAGE]" }), _jsx("span", { className: "text-text-tertiary", children: "23:45:12" })] }), _jsxs("p", { className: "text-text-secondary", children: ["SharedPreferences.putString ", '->', " Key: ", _jsx("span", { className: "text-white", children: "auth_token" }), " | Value: ", _jsx("span", { className: "text-white", children: "eyJh..." })] })] }), _jsxs("div", { className: "p-4 bg-background-secondary rounded-xl border-l-4 border-severity-medium shadow-lg", children: [_jsxs("div", { className: "flex justify-between mb-1", children: [_jsx("span", { className: "text-severity-medium font-bold", children: "[SENSITIVE_LOG]" }), _jsx("span", { className: "text-text-tertiary", children: "23:44:55" })] }), _jsxs("p", { className: "text-text-secondary", children: ["Tag: ", _jsx("span", { className: "text-white", children: "GrabApi" }), " | Message: ", _jsxs("span", { className: "text-white", children: ["Executing request to /v1/auth with payload: ", '{"user": "admin"}'] })] })] }), _jsxs("div", { className: "p-4 bg-background-secondary rounded-xl border-l-4 border-severity-low shadow-lg", children: [_jsxs("div", { className: "flex justify-between mb-1", children: [_jsx("span", { className: "text-text-tertiary font-bold", children: "[STATUS]" }), _jsx("span", { className: "text-text-tertiary", children: "23:40:02" })] }), _jsxs("p", { className: "text-text-secondary", children: ["Runtime Shadow monitor active on PID: ", _jsx("span", { className: "text-white", children: "12844" })] })] })] })] })] }) }))] }), _jsx("div", { className: "lg:col-span-4 lg:sticky lg:top-8 h-fit", children: _jsx(AnimatePresence, { mode: "wait", children: selectedFinding ? (_jsxs(motion.div, { initial: { opacity: 0, x: 20 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: 20 }, className: "card bg-background-secondary border-accent/30 overflow-hidden shadow-2xl", children: [_jsxs("div", { className: "p-6 border-b border-border bg-accent/5", children: [_jsxs("div", { className: "flex items-center gap-2 mb-3", children: [_jsx(SeverityBadge, { severity: selectedFinding.severity }), _jsx("span", { className: "text-xs font-mono text-text-tertiary", children: selectedFinding.id })] }), _jsx("h2", { className: "text-2xl font-bold leading-tight", children: selectedFinding.title })] }), _jsxs("div", { className: "p-6 space-y-6", children: [_jsxs("div", { children: [_jsx("label", { className: "text-[10px] font-bold text-text-tertiary uppercase tracking-widest block mb-2", children: "Description" }), _jsx("p", { className: "text-text-secondary leading-relaxed text-sm", children: selectedFinding.description })] }), selectedFinding.file_path && (_jsxs("div", { children: [_jsx("label", { className: "text-[10px] font-bold text-text-tertiary uppercase tracking-widest block mb-2", children: "Affected Asset" }), _jsxs("div", { className: "flex items-center gap-3 p-3 bg-background-tertiary rounded-lg border border-border/50 break-all", children: [_jsx(FileText, { size: 18, className: "text-accent shrink-0" }), _jsx("code", { className: "text-xs text-text-primary whitespace-pre-wrap", children: selectedFinding.file_path })] })] })), _jsxs("div", { className: "pt-6 border-t border-border mt-4 space-y-3", children: [_jsxs("button", { onClick: () => handleGenerateFix(selectedFinding.id), disabled: generatingFix, className: "w-full btn btn-primary flex items-center justify-center gap-2 shadow-lg", children: [generatingFix ? _jsx(RefreshCw, { size: 18, className: "animate-spin" }) : _jsx(Zap, { size: 18 }), generatingFix ? 'Architecting Fix...' : 'Generate AI Fix'] }), _jsxs("button", { onClick: async () => {
-                                                            try {
-                                                                const data = await FBH_API.generatePoC(selectedFinding.id);
-                                                                setAiFix(data.poc);
-                                                                setIsFixModalOpen(true);
-                                                            }
-                                                            catch (err) {
-                                                                alert('Autonomous PoC generation failed for this finding.');
-                                                            }
-                                                        }, className: "w-full btn bg-background-tertiary border-border/50 hover:border-accent/40 flex items-center justify-center gap-2", children: [_jsx(Terminal, { size: 18, strokeWidth: 3, className: "text-accent" }), " Create Autonomous PoC"] }), _jsxs("button", { onClick: () => handleGeneratePoCCommand(selectedFinding.id), className: "w-full btn bg-blue-500/10 border-blue-500/30 text-blue-400 hover:bg-blue-500/20 flex items-center justify-center gap-2", children: [_jsx(PlayCircle, { size: 18 }), " Generate ADB PoC"] }), _jsxs("button", { onClick: () => {
-                                                            setRepeaterInitialData({
-                                                                method: 'GET',
-                                                                url: selectedFinding.location || '',
-                                                                headers: { "Content-Type": "application/json" },
-                                                                body: ''
-                                                            });
-                                                            setIsRepeaterOpen(true);
-                                                        }, className: "w-full btn bg-background-tertiary border-border/50 hover:bg-border flex items-center justify-center gap-2", children: [_jsx(ExternalLink, { size: 18 }), " Send to Repeater"] }), _jsxs("button", { onClick: () => handleVerifyFinding(selectedFinding.id), disabled: verifying, className: "w-full btn bg-severity-low/10 border-severity-low/30 text-severity-low hover:bg-severity-low/20 flex items-center justify-center gap-2", children: [verifying ? _jsx(RefreshCw, { size: 18, className: "animate-spin" }) : _jsx(CheckCircle, { size: 18 }), verifying ? 'Verifying Mitigation...' : 'Verify Mitigation'] }), aiFix && selectedFinding && (_jsxs("button", { onClick: () => handleSubmitPatch(selectedFinding.id, aiFix), disabled: submittingPatch, className: "w-full btn bg-blue-500/10 border-blue-500/30 text-blue-400 hover:bg-blue-500/20 flex items-center justify-center gap-2", children: [submittingPatch ? _jsx(RefreshCw, { size: 18, className: "animate-spin" }) : _jsx(GitPullRequest, { size: 18 }), submittingPatch ? 'Deploying Patch...' : 'Submit Autonomous Patch'] })), _jsxs("button", { onClick: () => handleGenerateWAF(selectedFinding.id), className: "w-full btn bg-purple-500/10 border-purple-500/30 text-purple-400 hover:bg-purple-500/20 flex items-center justify-center gap-2", children: [_jsx(ShieldHalf, { size: 18 }), " Generate WAF Rules"] }), _jsxs("button", { onClick: () => handleGenerateFrida('ssl_pinning_bypass'), disabled: generatingFrida, className: "w-full btn bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 flex items-center justify-center gap-2", children: [generatingFrida ? _jsx(RefreshCw, { size: 18, className: "animate-spin" }) : _jsx(Code, { size: 18 }), generatingFrida ? 'Generating Bypass...' : 'Frida SSL Bypass'] }), _jsxs("button", { onClick: handleGenerateBountyReport, disabled: generatingReport, className: "w-full btn bg-amber-500/10 border-amber-500/30 text-amber-400 hover:bg-amber-500/20 flex items-center justify-center gap-2", children: [generatingReport ? _jsx(RefreshCw, { size: 18, className: "animate-spin" }) : _jsx(Award, { size: 18 }), generatingReport ? 'Generating Report...' : 'Bounty Report (MASVS)'] }), _jsxs("button", { onClick: handleAuditSignatures, disabled: auditingSignatures, className: "w-full btn bg-cyan-500/10 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 flex items-center justify-center gap-2", children: [auditingSignatures ? _jsx(RefreshCw, { size: 18, className: "animate-spin" }) : _jsx(FileSearch, { size: 18 }), auditingSignatures ? 'Auditing Integrity...' : 'Audit Anti-Tamper'] }), _jsxs("button", { onClick: handleGetReflutterBlueprint, disabled: generatingReflutter, className: "w-full btn bg-indigo-500/10 border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/20 flex items-center justify-center gap-2", children: [generatingReflutter ? _jsx(RefreshCw, { size: 18, className: "animate-spin" }) : _jsx(Hammer, { size: 18 }), generatingReflutter ? 'Generating reFlutter Blueprint...' : 'reFlutter Engine Patch'] }), _jsxs("button", { onClick: handleExportNuclei, className: "w-full btn bg-background-tertiary border-border/50 hover:bg-border flex items-center justify-center gap-2", children: [_jsx(Download, { size: 18 }), " Export Nuclei Template"] })] })] })] }, selectedFinding.id)) : (_jsxs("div", { className: "card h-[600px] flex flex-col items-center justify-center text-center p-8 border-dashed border-2 border-border/50 bg-background-secondary/20", children: [_jsx("div", { className: "w-20 h-20 bg-background-tertiary rounded-full flex items-center justify-center mb-6 border border-border", children: _jsx(Database, { size: 32, className: "text-text-tertiary" }) }), _jsx("h3", { className: "text-xl font-bold mb-2", children: "Sentinel Insight" }), _jsx("p", { className: "text-text-tertiary text-sm max-w-[240px]", children: "Select a security finding from the list to view comprehensive vulnerability analysis and remediation steps." })] })) }) })] }), _jsx(AnimatePresence, { children: isFixModalOpen && (_jsxs("div", { className: "fixed inset-0 z-[100] flex items-center justify-center p-4", children: [_jsx(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, onClick: () => setIsFixModalOpen(false), className: "absolute inset-0 bg-black/80 backdrop-blur-md" }), _jsxs(motion.div, { initial: { opacity: 0, scale: 0.9, y: 20 }, animate: { opacity: 1, scale: 1, y: 0 }, exit: { opacity: 0, scale: 0.9, y: 20 }, className: "w-full max-w-4xl bg-background-secondary border border-border rounded-2xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]", children: [_jsxs("div", { className: "p-6 border-b border-border bg-background-tertiary flex items-center justify-between", children: [_jsxs("div", { className: "flex items-center gap-3", children: [_jsx("div", { className: "p-2 rounded-lg bg-accent/10 text-accent", children: _jsx(Terminal, { size: 20 }) }), _jsx("h3", { className: "text-xl font-bold", children: "Red Team Intelligence Output" })] }), _jsx("button", { onClick: () => setIsFixModalOpen(false), className: "p-2 hover:bg-background-secondary rounded-lg text-text-secondary", children: _jsx(ArrowLeft, { size: 24, className: "rotate-180" }) })] }), _jsx("div", { className: "flex-1 overflow-y-auto bg-black/40", children: _jsx(CodeBlock, { code: aiFix || '', language: "markdown" }) }), _jsxs("div", { className: "p-4 bg-background-tertiary border-t border-border flex justify-end gap-3", children: [_jsx("button", { onClick: () => setIsFixModalOpen(false), className: "btn btn-secondary px-6", children: "Dismiss" }), _jsxs("button", { onClick: () => {
-                                                navigator.clipboard.writeText(aiFix || '');
-                                                alert('Intelligence output copied to clipboard');
-                                            }, className: "btn btn-primary px-8 flex items-center gap-2", children: [_jsx(FileText, { size: 18 }), " Copy to Clipboard"] })] })] })] })) }), _jsx(RepeaterModal, { isOpen: isRepeaterOpen, onClose: () => setIsRepeaterOpen(false), initialData: repeaterInitialData })] }));
+    return (_jsxs("div", { className: "space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700", children: [_jsxs("div", { className: "flex flex-col md:flex-row md:items-end justify-between gap-6", children: [_jsxs("div", { className: "flex items-start gap-5", children: [_jsx(Button, { variant: "ghost", size: "icon", onClick: () => navigate('/'), className: "h-12 w-12 border border-border/40 hover:bg-slate-800/50 hover:border-primary/40 shrink-0 transition-all rounded-xl", children: _jsx(ArrowLeft, { size: 22, className: "text-slate-400 group-hover:text-primary" }) }), _jsxs("div", { className: "space-y-1.5", children: [_jsxs("div", { className: "flex items-center gap-3", children: [_jsx(Badge, { variant: "outline", className: "border-primary/30 text-primary bg-primary/5 text-[10px] uppercase font-bold tracking-[0.1em] px-2.5 py-0.5", children: "Operational Intelligence" }), _jsxs("div", { className: "flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-900/50 border border-border/20", children: [_jsx(Activity, { className: "w-3 h-3 text-green-500 animate-pulse" }), _jsx("span", { className: "text-[10px] font-mono text-slate-400 uppercase tracking-widest", children: "Link Secure" })] })] }), _jsxs("h1", { className: "text-4xl font-extrabold tracking-tight text-white flex items-center gap-3", children: [target.name, _jsx("span", { className: "text-slate-700 font-light", children: "/" }), _jsx("span", { className: "text-xl text-slate-500 font-mono font-medium tracking-tighter self-end mb-1", children: target.platform.toUpperCase() })] }), _jsxs("p", { className: "text-sm text-slate-500 font-mono tracking-tighter flex items-center gap-2", children: [_jsx(Fingerprint, { size: 14, className: "text-primary/50" }), target.package] })] })] }), _jsxs("div", { className: "flex items-center gap-4", children: [_jsxs(Button, { variant: "outline", className: "border-border/40 bg-slate-900/40 backdrop-blur-sm hover:bg-slate-800 text-xs gap-2 h-10 px-5 rounded-xl transition-all", children: [_jsx(Download, { size: 15 }), " Export Intel"] }), _jsxs(Button, { className: "bg-primary hover:bg-primary/90 text-white font-bold text-xs gap-2 h-10 px-5 rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] transition-all", children: [_jsx(RefreshCw, { size: 15 }), " Retrigger Recon"] })] })] }), _jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-12 gap-8", children: [_jsxs("div", { className: "lg:col-span-8 flex flex-col gap-8", children: [_jsx("div", { className: "grid grid-cols-2 sm:grid-cols-4 gap-4", children: [
+                                    { label: 'Critical', color: 'red', value: target.stats?.findings_by_severity?.['critical'] || 0, icon: ShieldAlert },
+                                    { label: 'High', color: 'orange', value: target.stats?.findings_by_severity?.['high'] || 0, icon: Zap },
+                                    { label: 'Medium', color: 'yellow', value: target.stats?.findings_by_severity?.['medium'] || 0, icon: AlertTriangle },
+                                    { label: 'Low', color: 'green', value: target.stats?.findings_by_severity?.['low'] || 0, icon: ShieldCheck }
+                                ].map((sev) => (_jsxs(Card, { className: "group border-border/40 bg-slate-900/40 backdrop-blur-md relative overflow-hidden transition-all hover:border-primary/20", children: [_jsx("div", { className: cn("absolute right-[-10%] top-[-20%] opacity-[0.03] group-hover:opacity-[0.08] transition-opacity", sev.color === 'red' ? 'text-red-500' : sev.color === 'orange' ? 'text-orange-500' : sev.color === 'yellow' ? 'text-yellow-500' : 'text-green-500'), children: _jsx(sev.icon, { size: 80 }) }), _jsxs(CardContent, { className: "p-5 flex flex-col items-center justify-center relative z-10", children: [_jsx("div", { className: cn("text-4xl font-black mb-1.5 tabular-nums tracking-tighter", sev.color === 'red' ? "text-red-500" :
+                                                        sev.color === 'orange' ? "text-orange-500" :
+                                                            sev.color === 'yellow' ? "text-yellow-500" : "text-green-500"), children: sev.value }), _jsxs("div", { className: "text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] font-mono", children: [sev.label, " Threats"] })] })] }, sev.label))) }), _jsxs(Tabs, { defaultValue: "findings", className: "w-full", onValueChange: handleTabChange, children: [_jsxs(TabsList, { className: "bg-slate-900/60 border border-border/40 w-full justify-start h-14 p-1.5 mb-8 rounded-2xl backdrop-blur-md", children: [_jsx(TabsTrigger, { value: "findings", className: "data-[state=active]:bg-primary/15 data-[state=active]:text-primary font-bold text-xs uppercase tracking-widest px-8 h-full rounded-xl transition-all", children: "Findings Ledger" }), _jsx(TabsTrigger, { value: "intelligence", className: "data-[state=active]:bg-primary/15 data-[state=active]:text-primary font-bold text-xs uppercase tracking-widest px-8 h-full rounded-xl transition-all", children: "Neural Insights" }), _jsx(TabsTrigger, { value: "history", className: "data-[state=active]:bg-primary/15 data-[state=active]:text-primary font-bold text-xs uppercase tracking-widest px-8 h-full rounded-xl transition-all", children: "Temporal Log" })] }), _jsxs(TabsContent, { value: "findings", className: "space-y-6 m-0 outline-none", children: [_jsxs("div", { className: "relative group", children: [_jsx(Search, { className: "absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-primary transition-all duration-300" }), _jsx(Input, { placeholder: "Filter by vulnerability title, exfil category, or exploit signature...", className: "pl-12 bg-slate-950/60 border-border/40 focus:border-primary/50 text-sm h-12 rounded-2xl transition-all backdrop-blur-sm", value: searchTerm, onChange: (e) => setSearchTerm(e.target.value) })] }), _jsx(ScrollArea, { className: "h-[650px] pr-4 -mr-4", children: _jsxs("div", { className: "space-y-4 pb-4", children: [_jsx(AnimatePresence, { mode: "popLayout", children: filteredFindings.map((finding) => (_jsx(motion.div, { layout: true, initial: { opacity: 0, scale: 0.98 }, animate: { opacity: 1, scale: 1 }, exit: { opacity: 0, scale: 0.98 }, transition: { duration: 0.2 }, children: _jsxs(Card, { className: cn("border-border/40 bg-slate-900/40 backdrop-blur-md cursor-pointer hover:bg-slate-900/60 transition-all duration-500 group relative overflow-hidden rounded-2xl", selectedFinding?.id === finding.id && "border-primary/50 bg-slate-900/80 ring-1 ring-primary/20 shadow-[0_0_30px_rgba(59,130,246,0.15)]"), onClick: () => setSelectedFinding(finding), children: [_jsx("div", { className: cn("absolute left-0 top-0 w-1.5 h-full transition-opacity duration-500", finding.severity.toLowerCase() === 'critical' ? "bg-red-500" :
+                                                                                finding.severity.toLowerCase() === 'high' ? "bg-orange-500" :
+                                                                                    finding.severity.toLowerCase() === 'medium' ? "bg-yellow-500" : "bg-green-500", selectedFinding?.id === finding.id ? "opacity-100" : "opacity-30 group-hover:opacity-70") }), _jsxs(CardHeader, { className: "p-6 pb-2", children: [_jsxs("div", { className: "flex justify-between items-center mb-3", children: [_jsxs("div", { className: "flex items-center gap-4", children: [_jsx(SeverityBadge, { severity: finding.severity }), _jsx(Badge, { variant: "outline", className: "text-[9px] font-mono text-slate-500 uppercase tracking-widest bg-slate-950/50 h-5 px-2 border border-border/20", children: finding.category })] }), _jsxs("div", { className: "flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity", children: [_jsxs("span", { className: "text-[10px] font-mono text-slate-600 uppercase", children: ["Analysis ID: ", finding.id] }), _jsx(ChevronRight, { size: 14, className: "text-slate-600" })] })] }), _jsx(CardTitle, { className: "text-lg font-bold text-white group-hover:text-primary transition-colors leading-snug", children: finding.title })] }), _jsx(CardContent, { className: "p-6 pt-2", children: _jsx("p", { className: "text-xs text-slate-400 line-clamp-2 leading-relaxed font-medium", children: finding.description }) })] }) }, finding.id))) }), filteredFindings.length === 0 && (_jsxs("div", { className: "py-20 flex flex-col items-center justify-center text-center space-y-4 border border-dashed border-border/20 rounded-3xl bg-slate-900/20 backdrop-blur-sm", children: [_jsx("div", { className: "w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-2", children: _jsx(Search, { size: 32, className: "text-slate-600" }) }), _jsx("h3", { className: "text-lg font-bold text-white", children: "No matches detected" }), _jsx("p", { className: "text-xs text-slate-500 px-10", children: "Neural filter did not identify any findings matching your current parameters." }), _jsx(Button, { variant: "ghost", onClick: () => setSearchTerm(''), className: "text-primary hover:bg-primary/10 text-[10px] font-bold uppercase tracking-widest", children: "Reset Filters" })] }))] }) })] }), _jsx(TabsContent, { value: "intelligence", className: "outline-none", children: _jsx(NeuralInsights, {}) }), _jsx(TabsContent, { value: "history", className: "outline-none", children: _jsx(Card, { className: "border-border/40 bg-slate-900/40 backdrop-blur-md rounded-3xl overflow-hidden", children: _jsxs(CardContent, { className: "p-16 text-center space-y-6", children: [_jsx("div", { className: "w-20 h-20 rounded-2xl bg-slate-800/30 flex items-center justify-center mx-auto border border-border/20", children: _jsx(HistoryIcon, { size: 40, className: "text-slate-700 opacity-50" }) }), _jsxs("div", { className: "space-y-2", children: [_jsx("h3", { className: "text-xl font-bold text-white uppercase tracking-[0.2em]", children: "Temporal Isolation" }), _jsx("p", { className: "text-sm text-slate-500 max-w-sm mx-auto leading-relaxed", children: "No retrospective delta snapshots located for this operative package. Execute subsequent audits to generate temporal risk indices." })] })] }) }) })] })] }), _jsx("div", { className: "lg:col-span-4 sticky top-8 h-fit", children: _jsx(AnimatePresence, { mode: "wait", children: selectedFinding ? (_jsx(motion.div, { initial: { opacity: 0, x: 20, y: 10 }, animate: { opacity: 1, x: 0, y: 0 }, exit: { opacity: 0, x: 20, scale: 0.95 }, transition: { type: 'spring', damping: 25, stiffness: 300 }, className: "space-y-6", children: _jsxs(Card, { className: "border-primary/30 bg-slate-950/60 backdrop-blur-xl shadow-2xl overflow-hidden ring-1 ring-primary/20 rounded-3xl relative", children: [_jsx("div", { className: "absolute top-0 right-0 p-6 pointer-events-none", children: _jsxs("div", { className: "bg-slate-950/80 border border-border/40 text-[9px] font-mono text-slate-600 px-2 py-1 rounded-md mb-2 tabular-nums", children: ["ID: ", selectedFinding.id] }) }), _jsxs(CardHeader, { className: "p-8 border-b border-border/20 bg-primary/5", children: [_jsx("div", { className: "mb-5", children: _jsx(SeverityBadge, { severity: selectedFinding.severity }) }), _jsx(CardTitle, { className: "text-2xl font-extrabold leading-tight text-white tracking-tight", children: selectedFinding.title })] }), _jsxs(CardContent, { className: "p-8 space-y-10", children: [_jsxs("div", { className: "space-y-4", children: [_jsx("p", { className: "text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] font-mono", children: "Mission Briefing" }), _jsx("p", { className: "text-sm text-slate-300 leading-relaxed font-medium", children: selectedFinding.description })] }), selectedFinding.file_path && (_jsxs("div", { className: "space-y-4", children: [_jsxs("p", { className: "text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] font-mono flex items-center gap-2", children: [_jsx(FileCode, { size: 14, className: "text-primary" }), " Affected Asset"] }), _jsxs("div", { className: "p-4 bg-slate-950 border border-border/40 rounded-2xl group hover:border-primary/40 transition-all duration-300 relative overflow-hidden", children: [_jsx("div", { className: "absolute inset-0 bg-primary/[0.01] opacity-0 group-hover:opacity-100 transition-opacity" }), _jsx("code", { className: "text-xs text-primary break-all font-mono leading-relaxed relative z-10 selection:bg-primary/20", children: selectedFinding.file_path })] })] })), _jsxs("div", { className: "space-y-4 pt-10 border-t border-border/20", children: [_jsx("p", { className: "text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] font-mono mb-6", children: "Tactical Countermeasures" }), _jsxs("div", { className: "grid grid-cols-1 gap-4", children: [_jsxs(Button, { size: "lg", className: "bg-primary hover:bg-primary/90 text-white font-bold text-xs gap-3 h-14 rounded-2xl shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] transition-all", children: [_jsx("div", { className: "p-1.5 bg-white/10 rounded-lg", children: _jsx(Zap, { size: 18, fill: "currentColor" }) }), "Orchestrate AI Mitigation"] }), _jsxs("div", { className: "grid grid-cols-2 gap-3", children: [_jsxs(Button, { variant: "outline", className: "border-border/40 bg-slate-900/40 hover:bg-slate-800 text-[10px] h-14 rounded-2xl flex-col gap-1 uppercase font-bold tracking-widest transition-all", children: [_jsx(Terminal, { size: 16, className: "text-primary/70" }), " Shadow PoC"] }), _jsxs(Button, { variant: "outline", className: "border-border/40 bg-slate-900/40 hover:bg-slate-800 text-[10px] h-14 rounded-2xl flex-col gap-1 uppercase font-bold tracking-widest transition-all", children: [_jsx(PlayCircle, { size: 16, className: "text-primary/70" }), " ADB Link"] })] }), _jsxs(Button, { variant: "ghost", className: "text-slate-500 hover:text-white hover:bg-white/5 text-[10px] h-12 rounded-xl uppercase font-bold tracking-widest gap-2", onClick: () => toast.info('Request transmitted', { description: 'Replaying exfiltrated packets...' }), children: [_jsx(RefreshCw, { size: 14 }), " Replay Session Trace"] })] })] })] }), _jsxs(CardFooter, { className: "p-6 bg-slate-950/60 border-t border-border/20 flex justify-between items-center rounded-b-3xl", children: [_jsx(Button, { variant: "ghost", size: "sm", className: "text-[10px] uppercase font-bold text-slate-500 hover:text-white h-8 px-4 rounded-lg bg-white/0 hover:bg-white/5", children: "Technical Docs" }), _jsxs("div", { className: "flex items-center gap-2", children: [_jsx("div", { className: "h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" }), _jsx("span", { className: "text-[10px] font-mono font-bold text-green-500 uppercase tracking-tighter", children: "Verified" })] })] })] }) }, selectedFinding.id)) : (_jsxs("div", { className: "h-[600px] flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-border/20 rounded-[2.5rem] bg-slate-900/10 backdrop-blur-sm relative group overflow-hidden", children: [_jsx("div", { className: "absolute inset-0 bg-primary/[0.01] opacity-0 group-hover:opacity-100 transition-opacity" }), _jsxs("div", { className: "mb-8 relative", children: [_jsx(ShieldCheck, { size: 80, className: "text-slate-800 opacity-20 group-hover:opacity-30 transition-opacity duration-700" }), _jsx("div", { className: "absolute inset-0 bg-primary/20 blur-3xl opacity-0 group-hover:opacity-30 transition-opacity duration-700 scale-150" })] }), _jsx("h3", { className: "text-xl font-bold text-slate-500 uppercase tracking-[0.3em] mb-3", children: "Intelligence Hub" }), _jsx("p", { className: "text-sm text-slate-600 max-w-[240px] leading-relaxed font-medium", children: "Select a tactical finding from the ledger to manifest detailed exfil telemetry and mitigation blueprints." }), _jsxs("div", { className: "mt-10 flex gap-2", children: [_jsx("div", { className: "w-1.5 h-1.5 rounded-full bg-slate-800" }), _jsx("div", { className: "w-1.5 h-1.5 rounded-full bg-slate-800 animate-pulse" }), _jsx("div", { className: "w-1.5 h-1.5 rounded-full bg-slate-800" })] })] })) }) })] })] }));
 };
 export default TargetDetail;
 //# sourceMappingURL=TargetDetail.js.map

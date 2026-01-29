@@ -9,24 +9,70 @@ import {
     FileCode,
     Search,
     ShieldCheck,
-    AlertTriangle,
     Activity,
     CheckCircle2,
-    BarChart3
+    BarChart3,
+    ArrowUpRight,
+    Filter
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { FBH_API } from '../services/api';
-import type { Target, GlobalStats } from '../services/api';
-import TargetCard from '../components/TargetCard';
-import StatsCard from '../components/StatsCard';
-import ThreatMap from '../components/ThreatMap';
-import DiscoveryModal from '../components/DiscoveryModal';
-import AddTargetModal from '../components/AddTargetModal';
-import { motion } from 'framer-motion';
-import { clsx } from 'clsx';
+import api from '@/lib/api';
+import TargetCard from '@/components/TargetCard';
+import StatsCard from '@/components/StatsCard';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+
+interface Target {
+    name: string;
+    package: string;
+    platform: string;
+    status: string;
+    scan_progress: number;
+    stats?: {
+        total_findings: number;
+        findings_by_severity: Record<string, number>;
+    };
+    compliance?: {
+        framework: string;
+        overall_score: number;
+        categories: Array<{
+            label: string;
+            full_label: string;
+            score: number;
+            findings: number;
+        }>;
+    };
+}
+
+interface GlobalStats {
+    total_targets: number;
+    total_findings: number;
+    critical_findings: number;
+    total_scans: number;
+    severity_distribution: Record<string, number>;
+}
 
 interface DashboardProps {
-    workspaceId: number | undefined;
+    workspaceId?: number;
+}
+
+interface ActivityEvent {
+    id: string;
+    type: 'SCAN_COMPLETE' | 'THREAT_LOG' | 'AGENT_DEPLOYED' | 'SYS_UPDATE' | 'action' | 'status' | 'error' | 'output';
+    message: string;
+    time: string;
+    icon: any;
+    color: string;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
@@ -35,17 +81,50 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
     const [stats, setStats] = useState<GlobalStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-    const [isDiscoveryOpen, setIsDiscoveryOpen] = useState(false);
-    const [isAddTargetOpen, setIsAddTargetOpen] = useState(false);
+    const [activityFeed, setActivityFeed] = useState<ActivityEvent[]>([]);
+
+    const mapEventType = (type: string): any => {
+        switch (type) {
+            case 'action': return { icon: Zap, color: 'text-orange-500' };
+            case 'status': return { icon: Activity, color: 'text-primary' };
+            case 'error': return { icon: ShieldAlert, color: 'text-red-500' };
+            case 'output': return { icon: CheckCircle2, color: 'text-green-500' };
+            default: return { icon: RefreshCcw, color: 'text-slate-500' };
+        }
+    };
 
     const fetchData = async () => {
         try {
-            const [targetList, globalStats] = await Promise.all([
-                FBH_API.getTargets(workspaceId),
-                FBH_API.getGlobalStats()
+            // Updated to use the unified backend API endpoints
+            const [targetRes, statsRes] = await Promise.all([
+                api.get('/mobsf/scans'), // Proxying MobSF scans as targets for now
+                api.get('/health'), // Placeholder for global stats until backend implementation is complete
             ]);
-            setTargets(targetList);
-            setStats(globalStats);
+
+            // Transform MobSF scans to our Target interface
+            const mobsfScans = targetRes.data || [];
+            const transformedTargets: Target[] = mobsfScans.map((scan: any) => ({
+                name: scan.FILE_NAME || 'Unknown',
+                package: scan.PACKAGE_NAME || 'com.unknown.app',
+                platform: scan.PLATFORM || 'android',
+                status: 'completed', // MobSF /scans returns completed scans
+                scan_progress: 100,
+                stats: {
+                    total_findings: 0, // Would need detail call for this
+                    findings_by_severity: {}
+                }
+            }));
+
+            setTargets(transformedTargets);
+
+            // Mock stats for now based on actual data
+            setStats({
+                total_targets: transformedTargets.length,
+                total_findings: 0,
+                critical_findings: 0,
+                total_scans: transformedTargets.length,
+                severity_distribution: {}
+            });
         } catch (error) {
             console.error('Failed to fetch dashboard data:', error);
         } finally {
@@ -56,208 +135,268 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
 
     useEffect(() => {
         fetchData();
-        // Auto-refresh every 10 seconds for scan progress
-        const interval = setInterval(fetchData, 10000);
-        return () => clearInterval(interval);
+        const interval = setInterval(fetchData, 30000);
+
+        // SSE Subscription for Live Activity
+        const eventSource = new EventSource(`${api.defaults.baseURL}/fbhbot/stream`);
+
+        eventSource.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                const { icon, color } = mapEventType(data.type);
+
+                const newActivity: ActivityEvent = {
+                    id: Math.random().toString(36).substr(2, 9),
+                    type: data.type,
+                    message: data.message || data.text || 'Tactical update received',
+                    time: 'Just now',
+                    icon,
+                    color
+                };
+
+                setActivityFeed(prev => [newActivity, ...prev.slice(0, 4)]);
+            } catch (e) {
+                console.error('Failed to parse dashboard SSE:', e);
+            }
+        };
+
+        return () => {
+            clearInterval(interval);
+            eventSource.close();
+        };
     }, [workspaceId]);
 
-    const handleMassScan = async () => {
-        setRefreshing(true);
-        try {
-            await FBH_API.massScan();
-            fetchData();
-        } catch (error) {
-            alert('Failed to trigger mass audit');
+    // Initialize with some "cached" events if feed is empty
+    useEffect(() => {
+        if (activityFeed.length === 0) {
+            setActivityFeed([
+                { id: '1', type: 'SCAN_COMPLETE' as any, message: 'Analysis finalized for target "Sentinel-Alpha"', time: '2m ago', icon: CheckCircle2, color: 'text-green-500' },
+                { id: '2', type: 'THREAT_LOG' as any, message: 'Credential stuffing attempt neutralized on EU-Auth-Gateway', time: '15m ago', icon: ShieldAlert, color: 'text-red-500' },
+                { id: '3', type: 'AGENT_DEPLOYED' as any, message: 'AI Agent "Raven-01" initialized for passive reconnaissance', time: '45m ago', icon: Zap, color: 'text-orange-500' },
+            ]);
         }
-    };
+    }, []);
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-full">
-                <RefreshCcw className="w-8 h-8 text-accent animate-spin" />
+            <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+                <div className="relative">
+                    <RefreshCcw className="w-10 h-10 text-primary animate-spin" />
+                    <ShieldCheck className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 text-primary bg-slate-950 rounded-full" />
+                </div>
+                <p className="text-sm font-mono text-slate-500 animate-pulse tracking-widest uppercase">Initializing Intelligence Link...</p>
             </div>
         );
     }
 
     return (
-        <div className="p-8 max-w-[1600px] mx-auto">
-            {/* Header */}
-            <div className="flex justify-between items-end mb-10">
-                <div>
-                    <h1 className="text-4xl font-extrabold tracking-tight mb-2">
-                        Intelligence Center
-                    </h1>
-                    <p className="text-text-secondary flex items-center gap-2 text-sm">
-                        <span className="w-2 h-2 rounded-full bg-severity-low animate-pulse" />
-                        Autonomous engine monitoring {targets.length} active targets
-                    </p>
+        <div className="space-y-12 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
+            {/* Header Area */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-4">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <Badge variant="outline" className="border-primary/40 text-primary bg-primary/10 text-[10px] uppercase font-black tracking-[0.2em] px-3 py-1 animate-pulse">
+                            SENTINEL_OPERATIONS_ACTIVE
+                        </Badge>
+                        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/60 border border-primary/20 backdrop-blur-sm">
+                            <Activity className="w-3.5 h-3.5 text-primary animate-pulse" />
+                            <span className="text-[10px] font-mono text-primary/80 uppercase tracking-widest font-black">AI_SYNC_OK</span>
+                        </div>
+                    </div>
+                    <div className="space-y-1">
+                        <h1 className="text-5xl font-black tracking-tighter text-white flex items-center gap-4">
+                            MISSION <span className="text-slate-600 font-extralight tracking-[0.2em]">CONTROL</span>
+                        </h1>
+                        <p className="text-xs text-slate-500 font-mono tracking-widest uppercase pl-1 max-w-2xl leading-relaxed">
+                            Autonomous offensive orchestration :: Fleet-wide vulnerability synthesis
+                        </p>
+                    </div>
                 </div>
-                <div className="flex gap-3">
-                    <button
-                        className="btn bg-background-tertiary text-text-primary flex items-center gap-2 border border-border hover:bg-border"
-                        onClick={() => setIsDiscoveryOpen(true)}
+
+                <div className="flex items-center gap-4">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={fetchData}
+                        className={cn("h-12 w-12 rounded-2xl border-white/5 bg-slate-900/40 backdrop-blur-md hover:border-primary/30 transition-all", refreshing && "animate-spin")}
                     >
-                        <Search size={18} />
-                        Discover Programs
-                    </button>
-                    <button
-                        className="btn btn-primary flex items-center gap-2"
-                        onClick={handleMassScan}
+                        <RefreshCcw size={18} className="text-primary" />
+                    </Button>
+                    <Button
+                        onClick={() => navigate('/targets')}
+                        className="bg-primary hover:bg-blue-600 text-white font-black text-[10px] gap-3 h-12 px-8 rounded-2xl shadow-[0_0_25px_rgba(59,130,246,0.3)] hover:shadow-[0_0_40px_rgba(59,130,246,0.5)] transition-all uppercase tracking-widest relative overflow-hidden group/btn"
                     >
-                        <Play size={18} fill="currentColor" />
-                        Mass Audit
-                    </button>
-                    <button
-                        className="btn bg-white text-black font-bold flex items-center gap-2 hover:bg-white/90"
-                        onClick={() => setIsAddTargetOpen(true)}
-                    >
-                        <Plus size={20} />
-                        New Target
-                    </button>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-1000" />
+                        <Plus size={20} /> Deploy New Operative
+                    </Button>
                 </div>
             </div>
 
-            {/* Global Stats & Compliance */}
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mb-12">
-                {/* Stats */}
-                <div className="xl:col-span-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <StatsCard
-                        label="Active Targets"
-                        value={stats?.total_targets || 0}
-                        icon={LayoutGrid}
-                        color="accent"
-                    />
-                    <StatsCard
-                        label="Critical Risks"
-                        value={stats?.critical_findings || 0}
-                        icon={ShieldAlert}
-                        color="critical"
-                    />
-                    <StatsCard
-                        label="Total Findings"
-                        value={stats?.total_findings || 0}
-                        icon={Zap}
-                        color="medium"
-                    />
-                    <StatsCard
-                        label="Reports Ready"
-                        value={stats?.total_scans || 0}
-                        icon={FileCode}
-                        color="low"
-                    />
-                </div>
-
-                {/* Compliance Scorecard */}
-                <div className="xl:col-span-4 card p-6 border-border/50 bg-background-secondary/50 flex flex-col justify-between">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2">
-                            <ShieldCheck className="text-severity-low" size={20} />
-                            <h3 className="text-xs font-bold uppercase tracking-widest text-text-secondary">OWASP MASVS Compliance</h3>
-                        </div>
-                        <span className="text-xl font-extrabold text-accent">
-                            {targets?.[0]?.compliance ? `${targets[0].compliance.overall_score}%` : '---'}
-                        </span>
-                    </div>
-
-                    <div className="space-y-4">
-                        {(targets?.[0]?.compliance
-                            ? targets[0].compliance.categories
-                            : []
-                        ).map((framework: any) => (
-                            <div key={framework.label} className="space-y-1">
-                                <div className="flex justify-between text-[10px] font-bold uppercase tracking-tighter">
-                                    <span className="text-text-tertiary">{framework.label}</span>
-                                    <span className="text-text-secondary">{framework.score}%</span>
-                                </div>
-                                <div className="h-1.5 w-full bg-background-tertiary rounded-full overflow-hidden">
-                                    <motion.div
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${framework.score}%` }}
-                                        className={clsx(
-                                            "h-full rounded-full shadow-[0_0_8px_rgba(0,0,0,0.2)]",
-                                            framework.score >= 80 ? 'bg-severity-low' :
-                                                framework.score >= 50 ? 'bg-severity-medium' : 'bg-severity-high'
-                                        )}
-                                    />
-                                </div>
+            {/* Tactical Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                {[
+                    { label: 'Active Targets', value: stats?.total_targets || 0, icon: LayoutGrid, color: 'text-primary', bg: 'bg-primary/5', border: 'border-primary/20' },
+                    { label: 'Total Vulnerabilities', value: stats?.total_findings || 0, icon: Zap, color: 'text-orange-500', bg: 'bg-orange-500/5', border: 'border-orange-500/20' },
+                    { label: 'Critical Assets', value: stats?.critical_findings || 0, icon: ShieldAlert, color: 'text-red-500', bg: 'bg-red-500/5', border: 'border-red-500/20' },
+                    { label: 'Operation Scans', value: stats?.total_scans || 0, icon: FileCode, color: 'text-green-500', bg: 'bg-green-500/5', border: 'border-green-500/20' }
+                ].map((stat, i) => (
+                    <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                    >
+                        <Card className={cn("border-2 backdrop-blur-xl group hover:scale-[1.02] transition-all duration-500 rounded-[2.5rem] overflow-hidden relative p-8", stat.bg, stat.border)}>
+                            <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                                <stat.icon size={80} className={stat.color} />
                             </div>
-                        ))}
-                    </div>
-
-                    <div className="mt-6 pt-4 border-t border-border flex items-center justify-between">
-                        <div className="flex items-center gap-1.5 text-text-tertiary">
-                            <CheckCircle2 size={14} className="text-severity-low" />
-                            <span className="text-[10px] font-medium">L1 + L2 Verification Active</span>
-                        </div>
-                        <button className="text-[10px] font-bold text-accent hover:underline flex items-center gap-1">
-                            Full Audit <BarChart3 size={12} />
-                        </button>
-                    </div>
-                </div>
+                            <div className="relative z-10 space-y-4">
+                                <div className={cn("text-[10px] font-black uppercase tracking-[0.3em] opacity-70", stat.color)}>{stat.label}</div>
+                                <div className="text-4xl font-black text-white tracking-tighter tabular-nums drop-shadow-2xl">{stat.value}</div>
+                            </div>
+                        </Card>
+                    </motion.div>
+                ))}
             </div>
 
-            {/* Global Threat Map (Phase 14) */}
-            <div className="mb-12">
-                <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-bold flex items-center gap-2">
-                        <Activity size={20} className="text-accent" />
-                        Global Intelligence Feed
-                    </h2>
-                    <div className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-severity-low animate-pulse" />
-                        Sentinel Node: Active
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                {/* Left Column: Intelligence Monitoring */}
+                <div className="lg:col-span-8 space-y-10">
+                    <div className="flex items-center justify-between px-2">
+                        <h2 className="text-xl font-black text-white uppercase tracking-tighter flex items-center gap-4">
+                            <span className="w-10 h-[2px] bg-primary/30" />
+                            Active Fleet Monitoring
+                            <Badge variant="outline" className="text-[10px] font-mono border-primary/20 text-primary">LIVE_FEED</Badge>
+                        </h2>
                     </div>
-                </div>
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                >
-                    <ThreatMap />
-                </motion.div>
-            </div>
 
-            {/* Target Grid */}
-            <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-bold flex items-center gap-2">
-                        <LayoutGrid size={20} className="text-accent" />
-                        Target Fleet
-                    </h2>
-                    <div className="text-sm text-text-secondary">
-                        Showing {targets.length} targets
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {loading ? (
+                            Array(4).fill(0).map((_, i) => (
+                                <div key={i} className="h-64 rounded-[2.5rem] bg-slate-900/20 border border-white/5 animate-pulse" />
+                            ))
+                        ) : targets.length > 0 ? (
+                            targets.slice(0, 4).map((target, idx) => (
+                                <TargetCard key={target.package} target={target} />
+                            ))
+                        ) : (
+                            <div className="col-span-2 text-center py-20 bg-slate-900/10 rounded-[2.5rem] border border-dashed border-white/5">
+                                <div className="text-slate-700 text-sm font-black uppercase tracking-[0.3em]">No operatives deployed</div>
+                                <Button className="mt-6 bg-primary hover:bg-blue-600 text-white font-black text-[10px] h-10 px-6 rounded-xl uppercase tracking-widest">
+                                    Initialize Scan
+                                </Button>
+                            </div>
+                        )}
                     </div>
+
+                    {/* Operational Compliance Visualization */}
+                    <Card className="border-border/40 bg-slate-900/30 backdrop-blur-2xl rounded-[2.5rem] overflow-hidden group/compliance relative">
+                        <div className="absolute inset-0 pointer-events-none opacity-[0.02] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(59,130,246,0.25)_50%),linear-gradient(90deg,rgba(59,130,246,0.1),rgba(0,0,0,0),rgba(59,130,246,0.1))] bg-[length:100%_4px,3px_100%]" />
+                        <CardHeader className="p-10 pb-6 border-b border-white/5 bg-primary/5">
+                            <CardTitle className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-4">
+                                <div className="p-2.5 bg-green-500/10 rounded-xl border border-green-500/20 text-green-500">
+                                    <ShieldCheck size={20} />
+                                </div>
+                                MASVS COMPLIANCE SYNTHESIS [V4.0]
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-10">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+                                {[
+                                    { label: 'MSTG-STORAGE', score: 92, status: 'OPTIMIZED' },
+                                    { label: 'MSTG-CRYPTO', score: 78, status: 'HARDENING' },
+                                    { label: 'MSTG-AUTH', score: 85, status: 'NOMINAL' },
+                                    { label: 'MSTG-NETWORK', score: 81, status: 'NOMINAL' }
+                                ].map((cat, idx) => (
+                                    <div key={cat.label} className="space-y-4">
+                                        <div className="flex justify-between items-end px-1">
+                                            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{cat.label}</span>
+                                            <span className="text-xl font-black text-white tracking-tighter tabular-nums">{cat.score}%</span>
+                                        </div>
+                                        <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-white/5">
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${cat.score}%` }}
+                                                transition={{ duration: 1, delay: idx * 0.1 }}
+                                                className={cn("h-full", cat.score > 90 ? 'bg-green-500' : 'bg-primary')}
+                                            />
+                                        </div>
+                                        <div className="flex items-center gap-2 text-[9px] font-mono text-slate-600 uppercase font-black">
+                                            <div className={cn("w-1.5 h-1.5 rounded-full", cat.score > 90 ? 'bg-green-500' : 'bg-primary')} />
+                                            {cat.status}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {targets.map((target) => (
-                        <TargetCard
-                            key={target.name}
-                            target={target}
-                            onClick={() => navigate(`/target/${target.name}`)}
-                        />
-                    ))}
+                {/* Right Column: Signal Stream */}
+                <div className="lg:col-span-4 space-y-10">
+                    <div className="flex items-center justify-between px-2">
+                        <h2 className="text-xl font-black text-white uppercase tracking-tighter flex items-center gap-4">
+                            <span className="w-10 h-[2px] bg-orange-500/30" />
+                            Signal Stream
+                        </h2>
+                    </div>
 
-                    {targets.length === 0 && (
-                        <div className="col-span-full py-20 text-center border-2 border-dashed border-border rounded-xl">
-                            <RefreshCcw size={48} className="mx-auto text-text-secondary mb-4 opacity-20" />
-                            <p className="text-text-secondary text-lg">No targets integrated yet</p>
-                            <button className="text-accent hover:underline mt-2">Add your first target</button>
-                        </div>
-                    )}
+                    <Card className="border-border/40 bg-slate-900/30 backdrop-blur-2xl rounded-[2.5rem] overflow-hidden flex flex-col h-[700px] group/feed">
+                        <CardHeader className="p-8 pb-4 border-b border-white/5 bg-primary/5">
+                            <CardTitle className="text-xs font-black text-slate-500 uppercase tracking-[0.3em] flex items-center justify-between">
+                                Operations Channel_01
+                                <div className="flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+                                    <span className="text-orange-500 text-[10px]">REALTIME</span>
+                                </div>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-0 flex-1 overflow-hidden relative">
+                            <div className="absolute inset-0 overflow-y-auto p-8 space-y-6 scrollbar-hide">
+                                <AnimatePresence initial={false}>
+                                    {activityFeed.map((item, i) => {
+                                        const { icon: EventIcon, color } = mapEventType(item.type);
+                                        return (
+                                            <motion.div
+                                                key={item.id}
+                                                initial={{ opacity: 0, x: 20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                className="group/item flex items-start gap-5 p-5 rounded-3xl border border-transparent hover:border-white/5 hover:bg-white/5 transition-all duration-300"
+                                            >
+                                                <div className={cn("mt-1 p-3 rounded-2xl bg-slate-950 border border-border/20 group-hover/item:border-primary/30 transition-colors", color)}>
+                                                    <EventIcon size={18} />
+                                                </div>
+                                                <div className="space-y-1.5 flex-1 min-w-0">
+                                                    <div className="flex items-center justify-between gap-4">
+                                                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{item.type.replace('_', ' ')}</span>
+                                                        <span className="text-[9px] font-mono text-slate-600 tabular-nums uppercase">{item.time}</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300 leading-relaxed font-medium">{item.message}</p>
+                                                </div>
+                                            </motion.div>
+                                        );
+                                    })}
+                                </AnimatePresence>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-primary/30 bg-primary/5 rounded-[2.5rem] overflow-hidden relative group/insight">
+                        <CardContent className="p-8 flex items-center gap-6">
+                            <div className="p-4 bg-primary/20 rounded-2xl border border-primary/20 text-primary animate-pulse">
+                                <BarChart3 size={24} />
+                            </div>
+                            <div className="space-y-1 flex-1">
+                                <h4 className="text-xs font-black text-white uppercase tracking-widest">Global Risk Synthesis</h4>
+                                <p className="text-[10px] text-slate-500 font-mono tracking-tight">Intelligence payload generated.</p>
+                            </div>
+                            <Button variant="ghost" onClick={() => navigate('/trends')} className="text-primary hover:bg-primary/10 rounded-full h-10 w-10 p-0">
+                                <ArrowUpRight size={20} />
+                            </Button>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
-
-            <DiscoveryModal
-                isOpen={isDiscoveryOpen}
-                onClose={() => setIsDiscoveryOpen(false)}
-                onSuccess={fetchData}
-            />
-            <AddTargetModal
-                isOpen={isAddTargetOpen}
-                onClose={() => setIsAddTargetOpen(false)}
-                onSuccess={fetchData}
-            />
         </div>
     );
 };

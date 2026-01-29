@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     ArrowLeft,
@@ -27,48 +27,100 @@ import {
     FileSearch,
     PlayCircle,
     Hammer,
-    Copy
+    Copy,
+    Activity,
+    ShieldCheck,
+    Loader2,
+    BrainCircuit,
+    ShieldAlert,
+    Fingerprint,
+    Network,
+    Share2,
+    ZoomIn,
+    Layers
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FBH_API, type Target, type Finding } from '../services/api';
-import { clsx } from 'clsx';
-import RepeaterModal from '../components/RepeaterModal';
+import api from '@/lib/api';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from '@/components/ui/progress';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 
-const CodeBlock = React.memo(({ code, language }: { code: string, language: string }) => {
-    return (
-        <div className="relative group">
-            <div className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                    onClick={() => navigator.clipboard.writeText(code)}
-                    className="p-1.5 rounded bg-white/10 hover:bg-white/20 text-white/70"
-                >
-                    <Copy size={14} />
-                </button>
-            </div>
-            <pre className="p-4 rounded-xl bg-background-tertiary border border-border/50 font-mono text-xs overflow-x-auto leading-relaxed scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
-                <code className={`language-${language} text-text-primary`}>
-                    {code}
-                </code>
-            </pre>
-        </div>
-    );
-});
+interface IntelNode {
+    id: number;
+    title: string;
+    severity: string;
+}
 
-const SeverityBadge = React.memo(({ severity }: { severity: string }) => {
-    const colors: Record<string, string> = {
-        critical: 'bg-severity-critical/20 text-severity-critical border-severity-critical/30',
-        high: 'bg-severity-high/20 text-severity-high border-severity-high/30',
-        medium: 'bg-severity-medium/20 text-severity-medium border-severity-medium/30',
-        low: 'bg-severity-low/20 text-severity-low border-severity-low/30',
-        info: 'bg-background-tertiary text-text-tertiary border-border'
+interface IntelEdge {
+    source: number;
+    target: number;
+    strength: number;
+}
+
+interface IntelligenceData {
+    nodes: IntelNode[];
+    edges: IntelEdge[];
+}
+
+interface FindingCluster {
+    category: string;
+    findings: Finding[];
+    summary: string;
+    total_impact: string;
+}
+
+// Simplified finding interface to match MobSF integration
+interface Finding {
+    id: string;
+    title: string;
+    description: string;
+    severity: string;
+    category: string;
+    file_path?: string;
+    location?: string;
+}
+
+interface Target {
+    name: string;
+    package: string;
+    platform: string;
+    status: string;
+    scan_progress: number;
+    findings?: Finding[];
+    stats?: {
+        total_findings: number;
+        findings_by_severity: Record<string, number>;
     };
+}
 
+const SeverityBadge = ({ severity }: { severity: string }) => {
+    const sev = severity.toLowerCase();
     return (
-        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${colors[severity.toLowerCase()] || colors.info}`}>
+        <Badge variant="outline" className={cn(
+            "text-[9px] uppercase font-bold tracking-widest h-5",
+            sev === 'critical' && "bg-red-500/10 text-red-500 border-red-500/30",
+            sev === 'high' && "bg-orange-500/10 text-orange-500 border-orange-500/30",
+            sev === 'medium' && "bg-yellow-500/10 text-yellow-500 border-yellow-500/30",
+            sev === 'low' && "bg-green-500/10 text-green-500 border-green-500/30",
+            (sev === 'info' || sev === 'android' || sev === 'ios') && "bg-blue-500/10 text-blue-500 border-blue-500/30"
+        )}>
             {severity}
-        </span>
+        </Badge>
     );
-});
+};
 
 const TargetDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -77,238 +129,96 @@ const TargetDetail: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedFinding, setSelectedFinding] = useState<Finding | null>(null);
-    const [generatingFix, setGeneratingFix] = useState(false);
-    const [aiFix, setAiFix] = useState<string | null>(null);
-    const [isFixModalOpen, setIsFixModalOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState('findings');
+    const [intelligenceLoading, setIntelligenceLoading] = useState(false);
+    const [clusters, setClusters] = useState<FindingCluster[]>([]);
+    const [relationshipGraph, setRelationshipGraph] = useState<IntelligenceData | null>(null);
 
-    const [isRepeaterOpen, setIsRepeaterOpen] = useState(false);
-    const [repeaterInitialData, setRepeaterInitialData] = useState<any>(null);
-
-    const [delta, setDelta] = useState<any>(null);
-    const [isDeltaLoading, setIsDeltaLoading] = useState(false);
-    const [chains, setChains] = useState<any>(null);
-    const [verifying, setVerifying] = useState(false);
-    const [submittingPatch, setSubmittingPatch] = useState(false);
-    const [generatingFrida, setGeneratingFrida] = useState(false);
-    const [generatingReport, setGeneratingReport] = useState(false);
-    const [auditingSignatures, setAuditingSignatures] = useState(false);
-    const [generatingReflutter, setGeneratingReflutter] = useState(false);
-    const [simulatingPath, setSimulatingPath] = useState<number | null>(null);
-    const [activeTab, setActiveTab] = useState<'findings' | 'history' | 'infrastructure' | 'intelligence'>('findings');
-
-    const handleGenerateFix = async (findingId: string) => {
-        setGeneratingFix(true);
+    const fetchIntelligence = async (mode: 'cluster' | 'map') => {
+        if (!target?.name && !target?.package) return;
+        setIntelligenceLoading(true);
         try {
-            const data = await FBH_API.generateFindingFix(findingId);
-            setAiFix(data.fix);
-            setIsFixModalOpen(true);
+            const response = await api.post('/intel/explore', {
+                target: target.name || target.package,
+                query: target.name || target.package,
+                mode
+            });
+            if (mode === 'cluster') setClusters(response.data);
+            else setRelationshipGraph(response.data);
         } catch (error) {
-            console.error('Failed to generate fix:', error);
-            alert('AI engine failed to generate a fix for this finding.');
+            console.error('Intelligence extraction failure:', error);
+            toast.error('Intelligence Offline', {
+                description: 'Failed to synchronize with the neural relationship engine.'
+            });
         } finally {
-            setGeneratingFix(false);
+            setIntelligenceLoading(false);
         }
     };
 
-    const handleVerifyFinding = async (findingId: string) => {
-        setVerifying(true);
-        try {
-            const data = await FBH_API.verifyFinding(findingId);
-            alert(`Verification Results:\n${data.message}`);
-            // Refresh target data
-            if (id) {
-                const updated = await FBH_API.getTargetDetail(id);
-                setTarget(updated);
-            }
-        } catch (error) {
-            console.error('Verification failed:', error);
-            alert('Autonomous verification engine failed to reach the target.');
-        } finally {
-            setVerifying(false);
+    const handleTabChange = (val: string) => {
+        setActiveTab(val);
+        if (val === 'intelligence') {
+            fetchIntelligence('cluster');
+            fetchIntelligence('map');
         }
     };
 
-    const handleSubmitPatch = async (findingId: string, fixCode: string) => {
-        if (!target) return;
-        setSubmittingPatch(true);
-        try {
-            const data = await FBH_API.submitPatch(findingId, fixCode, target.name);
-            alert(`Autonomous Patch Submitted!\nPR Link: ${data.pr_url}\n${data.message}`);
-        } catch (error) {
-            console.error('Patch submission failed:', error);
-            alert('Failed to submit autonomous patch to repository.');
-        } finally {
-            setSubmittingPatch(false);
-        }
-    };
-
-    const handleGenerateWAF = async (findingId: string) => {
-        try {
-            const data = await FBH_API.generateWafRules(findingId);
-            const rulesStr = data.rules.map((r: any) => `--- ${r.platform} ---\n${r.rule}\n`).join('\n');
-            setAiFix(rulesStr); // Reuse fix modal for WAF rules
-            setIsFixModalOpen(true);
-        } catch (error) {
-            console.error('WAF generation failed:', error);
-            alert('Failed to generate perimeter protection rules.');
-        }
-    };
-
-    const handleGenerateFrida = async (type: string) => {
-        setGeneratingFrida(true);
-        try {
-            const data = await FBH_API.generateFridaScript(type);
-            setAiFix(data.script); // Reuse modal for now
-            setIsFixModalOpen(true);
-        } catch (error) {
-            console.error('Frida generation failed:', error);
-            alert('Failed to generate Frida instrumentation script.');
-        } finally {
-            setGeneratingFrida(false);
-        }
-    };
-
-    const handleGenerateBountyReport = async () => {
-        if (!target) return;
-        setGeneratingReport(true);
-        try {
-            const data = await FBH_API.generateBountyReport(target.name);
-            setAiFix(data.report);
-            setIsFixModalOpen(true);
-        } catch (error) {
-            console.error('Report generation failed:', error);
-            alert('Failed to generate professional bounty report.');
-        } finally {
-            setGeneratingReport(false);
-        }
-    };
-
-    const handleGeneratePoCCommand = async (findingId: string) => {
-        try {
-            const data = await FBH_API.generatePoCCommand(findingId);
-            alert(`ADB PoC Command Generated:\n\n${data.poc_command}`);
-        } catch (error) {
-            console.error('PoC generation failed:', error);
-            alert('Failed to generate ADB PoC command.');
-        }
-    };
-
-    const handleAuditSignatures = async () => {
-        if (!target) return;
-        setAuditingSignatures(true);
-        try {
-            const data = await FBH_API.auditSignatures(target.name);
-            alert(`Found ${data.anti_tamper_findings.length} potential integrity checks. Check logs for details.`);
-        } catch (error) {
-            console.error('Signature audit failed:', error);
-            alert('Failed to audit anti-tamper logic.');
-        } finally {
-            setAuditingSignatures(false);
-        }
-    };
-
-    const handleGetReflutterBlueprint = async () => {
-        if (!target) return;
-        setGeneratingReflutter(true);
-        try {
-            const data = await FBH_API.getReflutterBlueprint(target.name);
-            if (data.status === 'success') {
-                const blueprint = data.blueprint;
-                const formatted = `### Flutter Engine Patching Blueprint\n` +
-                    `**Engine Hash**: ${data.engine_hash}\n` +
-                    `**Impact**: ${blueprint.impact}\n\n` +
-                    `**Patching Steps**:\n` +
-                    blueprint.manual_steps.map((s: string) => `- ${s}`).join('\n');
-                setAiFix(formatted);
-                setIsFixModalOpen(true);
-            } else {
-                alert(data.message);
-            }
-        } catch (error) {
-            console.error('Reflutter blueprint failed:', error);
-            alert('Failed to generate reFlutter blueprint.');
-        } finally {
-            setGeneratingReflutter(false);
-        }
-    };
-
-    const handleSimulatePath = (idx: number) => {
-        setSimulatingPath(idx);
-        setTimeout(() => {
-            setSimulatingPath(null);
-            alert("Attack Path Simulation Complete: Vulnerability chain confirmed at step 3. Artifacts generated.");
-        }, 2000);
-    };
-
-    const handleExportNuclei = async () => {
-        if (!target) return;
-        try {
-            await FBH_API.exportNuclei(target.name);
-        } catch (error) {
-            console.error('Nuclei export failed:', error);
-            alert('Failed to export Nuclei templates.');
-        }
-    };
-
-    const handleImportBurp = async (file: File) => {
-        if (!target) return;
-        try {
-            const result = await FBH_API.importBurpXML(target.name, file);
-            alert(result.message);
-            // Refresh target details to show new findings
-            const data = await FBH_API.getTargetDetail(target.name);
-            setTarget(data);
-        } catch (error) {
-            console.error('Burp import failed:', error);
-            alert('Failed to import Burp Suite findings.');
-        }
-    };
-
-    const fetchDelta = async () => {
+    const fetchTargetData = useCallback(async () => {
         if (!id) return;
-        setIsDeltaLoading(true);
+        setLoading(true);
         try {
-            const data = await FBH_API.getDelta(id);
-            setDelta(data);
+            // We use the MobSF report endpoint via our proxy
+            const response = await api.post('/mobsf/report', { hash: id });
+            const data = response.data;
+
+            // Transform MobSF data if needed (MobSF report structure is nested)
+            // This is a simplified transformation for the unified UI
+            const transformedTarget: Target = {
+                name: data.file_name || 'Analysis Target',
+                package: data.package_name || 'com.fbh.target',
+                platform: data.platform || 'mobile',
+                status: 'completed',
+                scan_progress: 100,
+                findings: [
+                    ...(data.findings || []),
+                    // Some MobSF reports put findings in specific sections
+                    ...(data.binary_analysis || []).map((f: any) => ({ ...f, category: 'Binary' })),
+                    ...(data.manifest_analysis || []).map((f: any) => ({ ...f, category: 'Manifest' })),
+                ].map((f: any, idx: number) => ({
+                    id: f.id || `f-${idx}`,
+                    title: f.title || f.name || 'Security Finding',
+                    description: f.description || f.stat || 'No description provided.',
+                    severity: f.severity || 'info',
+                    category: f.category || 'General',
+                    file_path: f.file || f.path
+                })),
+                stats: {
+                    total_findings: 0,
+                    findings_by_severity: {}
+                }
+            };
+
+            // Calculate stats
+            transformedTarget.findings?.forEach(f => {
+                const sev = f.severity.toLowerCase();
+                transformedTarget.stats!.findings_by_severity[sev] = (transformedTarget.stats!.findings_by_severity[sev] || 0) + 1;
+                transformedTarget.stats!.total_findings++;
+            });
+
+            setTarget(transformedTarget);
         } catch (error) {
-            console.error('Failed to fetch delta:', error);
+            console.error('Failed to fetch target detail:', error);
+            toast.error('Mission Failed', {
+                description: 'Failed to exfiltrate analysis data from the vault.'
+            });
         } finally {
-            setIsDeltaLoading(false);
+            setLoading(false);
         }
-    };
-
-    const fetchChains = async () => {
-        if (!id) return;
-        try {
-            const data = await FBH_API.analyzeChains(id);
-            setChains(data);
-        } catch (error) {
-            console.error('Failed to fetch chains:', error);
-        }
-    };
-
-    useEffect(() => {
-        if (activeTab === 'intelligence' && !chains) {
-            fetchChains();
-        }
-    }, [activeTab]);
-
-    useEffect(() => {
-        const fetchTarget = async () => {
-            if (!id) return;
-            try {
-                const data = await FBH_API.getTargetDetail(id);
-                setTarget(data);
-                fetchDelta();
-            } catch (error) {
-                console.error('Failed to fetch target details:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchTarget();
     }, [id]);
+
+    useEffect(() => {
+        fetchTargetData();
+    }, [fetchTargetData]);
 
     const filteredFindings = target?.findings?.filter(f =>
         f.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -316,618 +226,419 @@ const TargetDetail: React.FC = () => {
         f.category?.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
 
+    const NeuralInsights = () => {
+        if (intelligenceLoading) {
+            return (
+                <div className="py-20 flex flex-col items-center justify-center space-y-4">
+                    <BrainCircuit size={48} className="text-primary animate-pulse" />
+                    <p className="text-sm font-mono text-slate-500 animate-pulse tracking-widest uppercase">Syncing Neural Swarm...</p>
+                </div>
+            );
+        }
+
+        return (
+            <div className="space-y-8 animate-in fade-in duration-700">
+                {/* Relationship Graph Visualization */}
+                <Card className="border-border/40 bg-slate-900/40 backdrop-blur-md rounded-3xl overflow-hidden p-8">
+                    <div className="flex justify-between items-center mb-8">
+                        <div>
+                            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                                <Network size={20} className="text-primary" /> Semantic Relationship Map
+                            </h3>
+                            <p className="text-xs text-slate-500 font-mono tracking-tighter mt-1">
+                                AI core identified node clusters through vector embedding distance.
+                            </p>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg border-border/40"><ZoomIn size={14} /></Button>
+                            <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg border-border/40"><Share2 size={14} /></Button>
+                        </div>
+                    </div>
+
+                    <div className="relative h-[400px] bg-slate-950/40 rounded-2xl border border-border/20 overflow-hidden flex items-center justify-center">
+                        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/30 via-transparent to-transparent" />
+
+                        <svg className="absolute inset-0 w-full h-full pointer-events-none">
+                            {relationshipGraph?.edges.map((edge, i) => {
+                                const source = relationshipGraph.nodes.findIndex(n => n.id === edge.source);
+                                const target = relationshipGraph.nodes.findIndex(n => n.id === edge.target);
+                                if (source === -1 || target === -1) return null;
+                                const x1 = 150 + (source % 3) * 200;
+                                const y1 = 100 + Math.floor(source / 3) * 150;
+                                const x2 = 150 + (target % 3) * 200;
+                                const y2 = 100 + Math.floor(target / 3) * 150;
+                                return (
+                                    <line
+                                        key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                                        stroke="currentColor" strokeWidth={1 + edge.strength * 2}
+                                        className="text-primary/30 animate-pulse"
+                                    />
+                                );
+                            })}
+                        </svg>
+
+                        <div className="relative z-10 flex flex-wrap justify-center gap-12 p-8">
+                            {relationshipGraph?.nodes.map((node, i) => (
+                                <motion.div
+                                    key={node.id}
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: i * 0.1 }}
+                                    className={cn(
+                                        "w-32 h-32 rounded-full border-2 flex flex-col items-center justify-center p-4 text-center cursor-pointer transition-all hover:scale-110 relative group bg-slate-900/80 backdrop-blur-xl",
+                                        node.severity.toLowerCase() === 'critical' ? 'border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.2)]' :
+                                            node.severity.toLowerCase() === 'high' ? 'border-orange-500/50 shadow-[0_0_20px_rgba(249,115,22,0.2)]' :
+                                                'border-primary/50 shadow-[0_0_20px_rgba(59,130,246,0.2)]'
+                                    )}
+                                >
+                                    <Fingerprint size={24} className={cn("mb-2", node.severity.toLowerCase() === 'critical' ? 'text-red-500' : 'text-primary')} />
+                                    <span className="text-[10px] font-bold text-white line-clamp-2 leading-tight uppercase font-mono tracking-tighter">
+                                        {node.title.replace('Findings Export:', '')}
+                                    </span>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+                </Card>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {clusters.map((cluster, i) => (
+                        <Card key={i} className="border-border/40 bg-slate-900/40 backdrop-blur-md rounded-3xl overflow-hidden hover:border-primary/30 transition-all group">
+                            <CardHeader className="p-6 pb-2">
+                                <div className="flex justify-between items-start mb-2">
+                                    <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5 text-[9px] uppercase font-bold tracking-widest px-2.5 py-0.5">
+                                        Cluster: {cluster.category}
+                                    </Badge>
+                                    <Layers size={16} className="text-slate-600 group-hover:text-primary transition-colors" />
+                                </div>
+                                <CardTitle className="text-lg font-bold text-white">
+                                    {cluster.findings.length} Linked Indicators
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-6 pt-2 space-y-4">
+                                <p className="text-xs text-slate-400 leading-relaxed italic">
+                                    "{cluster.summary}"
+                                </p>
+                                <div className="p-3 bg-red-500/5 border border-red-500/20 rounded-xl">
+                                    <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest flex items-center gap-2 mb-1">
+                                        <Zap size={12} /> Impact Forecast
+                                    </p>
+                                    <p className="text-xs text-slate-300 font-medium">{cluster.total_impact}</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-screen bg-background-primary">
-                <div className="flex flex-col items-center gap-4">
-                    <RefreshCw className="w-10 h-10 text-accent animate-spin" />
-                    <p className="text-text-secondary font-mono animate-pulse">Decrypting analysis data...</p>
+            <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+                <div className="relative">
+                    <RefreshCw className="w-10 h-10 text-primary animate-spin" />
+                    <Activity className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
                 </div>
+                <p className="text-sm font-mono text-slate-500 animate-pulse tracking-widest uppercase">Decrypting Vault Data...</p>
             </div>
         );
     }
 
     if (!target) {
         return (
-            <div className="p-8 flex flex-col items-center justify-center h-screen text-center">
-                <Shield className="w-16 h-16 text-red-500 mb-4 opacity-50" />
-                <h2 className="text-2xl font-bold mb-2">Target Not Found</h2>
-                <p className="text-text-secondary mb-6">The requested analysis profile could not be located in the vault.</p>
-                <button
-                    onClick={() => navigate('/')}
-                    className="btn btn-secondary flex items-center gap-2"
-                >
-                    <ArrowLeft size={18} /> Back to Dashboard
-                </button>
+            <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
+                <AlertTriangle size={48} className="text-red-500 opacity-50" />
+                <h2 className="text-2xl font-bold text-white">Target Identity Lost</h2>
+                <p className="text-slate-500 max-w-md">The requested target has been purged from the intelligence ledger or the core link is down.</p>
+                <Button variant="outline" onClick={() => navigate('/')} className="gap-2">
+                    <ArrowLeft size={16} /> Return to Center
+                </Button>
             </div>
         );
     }
 
     return (
-        <div className="p-8 max-w-[1600px] mx-auto min-h-screen">
-            {/* Header Navigation */}
-            <div className="flex items-center gap-4 mb-8">
-                <button
-                    onClick={() => navigate('/')}
-                    className="p-2 hover:bg-background-secondary rounded-full transition-colors border border-transparent hover:border-border"
-                >
-                    <ArrowLeft size={24} />
-                </button>
-                <div>
-                    <div className="flex items-center gap-3">
-                        <h1 className="text-3xl font-bold tracking-tight">{target.name}</h1>
-                        <SeverityBadge severity={target.platform} />
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div className="flex items-start gap-5">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => navigate('/')}
+                        className="h-12 w-12 border border-border/40 hover:bg-slate-800/50 hover:border-primary/40 shrink-0 transition-all rounded-xl"
+                    >
+                        <ArrowLeft size={22} className="text-slate-400 group-hover:text-primary" />
+                    </Button>
+                    <div className="space-y-1.5">
+                        <div className="flex items-center gap-3">
+                            <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5 text-[10px] uppercase font-bold tracking-[0.1em] px-2.5 py-0.5">
+                                Operational Intelligence
+                            </Badge>
+                            <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-900/50 border border-border/20">
+                                <Activity className="w-3 h-3 text-green-500 animate-pulse" />
+                                <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Link Secure</span>
+                            </div>
+                        </div>
+                        <h1 className="text-4xl font-extrabold tracking-tight text-white flex items-center gap-3">
+                            {target.name}
+                            <span className="text-slate-700 font-light">/</span>
+                            <span className="text-xl text-slate-500 font-mono font-medium tracking-tighter self-end mb-1">{target.platform.toUpperCase()}</span>
+                        </h1>
+                        <p className="text-sm text-slate-500 font-mono tracking-tighter flex items-center gap-2">
+                            <Fingerprint size={14} className="text-primary/50" />
+                            {target.package}
+                        </p>
                     </div>
-                    <p className="text-text-secondary font-mono text-sm mt-1">{target.package}</p>
                 </div>
 
-                <div className="ml-auto flex items-center gap-3">
-                    <button className="btn btn-secondary flex items-center gap-2 border-border/50 hover:bg-background-secondary">
-                        <Download size={18} /> Export PDF
-                    </button>
-                    <button className="btn btn-primary flex items-center gap-2 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
-                        <RefreshCw size={18} /> Trigger Rescan
-                    </button>
+                <div className="flex items-center gap-4">
+                    <Button variant="outline" className="border-border/40 bg-slate-900/40 backdrop-blur-sm hover:bg-slate-800 text-xs gap-2 h-10 px-5 rounded-xl transition-all">
+                        <Download size={15} /> Export Intel
+                    </Button>
+                    <Button className="bg-primary hover:bg-primary/90 text-white font-bold text-xs gap-2 h-10 px-5 rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] transition-all">
+                        <RefreshCw size={15} /> Retrigger Recon
+                    </Button>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                {/* Main Content: Findings List */}
-                <div className="lg:col-span-8 space-y-6">
-                    {/* Tabs */}
-                    <div className="flex items-center gap-6 border-b border-border mb-6">
-                        <button
-                            onClick={() => setActiveTab('findings')}
-                            className={clsx(
-                                "pb-4 text-sm font-bold transition-all relative",
-                                activeTab === 'findings' ? "text-accent" : "text-text-secondary hover:text-text-primary"
-                            )}
-                        >
-                            Findings ({filteredFindings.length})
-                            {activeTab === 'findings' && <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent" />}
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('history')}
-                            className={clsx(
-                                "pb-4 text-sm font-bold transition-all relative",
-                                activeTab === 'history' ? "text-accent" : "text-text-secondary hover:text-text-primary"
-                            )}
-                        >
-                            Analysis History & Delta
-                            {activeTab === 'history' && <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent" />}
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('infrastructure')}
-                            className={clsx(
-                                "pb-4 text-sm font-bold transition-all relative",
-                                activeTab === 'infrastructure' ? "text-accent" : "text-text-secondary hover:text-text-primary"
-                            )}
-                        >
-                            Infrastructure
-                            {activeTab === 'infrastructure' && <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent" />}
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('intelligence')}
-                            className={clsx(
-                                "pb-4 text-sm font-bold transition-all relative",
-                                activeTab === 'intelligence' ? "text-accent" : "text-text-secondary hover:text-text-primary"
-                            )}
-                        >
-                            Intelligence & Chains
-                            {activeTab === 'intelligence' && <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent" />}
-                        </button>
+                {/* Left: Findings & Tabs */}
+                <div className="lg:col-span-8 flex flex-col gap-8">
+                    {/* Stats Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        {[
+                            { label: 'Critical', color: 'red', value: target.stats?.findings_by_severity?.['critical'] || 0, icon: ShieldAlert },
+                            { label: 'High', color: 'orange', value: target.stats?.findings_by_severity?.['high'] || 0, icon: Zap },
+                            { label: 'Medium', color: 'yellow', value: target.stats?.findings_by_severity?.['medium'] || 0, icon: AlertTriangle },
+                            { label: 'Low', color: 'green', value: target.stats?.findings_by_severity?.['low'] || 0, icon: ShieldCheck }
+                        ].map((sev) => (
+                            <Card key={sev.label} className="group border-border/40 bg-slate-900/40 backdrop-blur-md relative overflow-hidden transition-all hover:border-primary/20">
+                                <div className={cn("absolute right-[-10%] top-[-20%] opacity-[0.03] group-hover:opacity-[0.08] transition-opacity", sev.color === 'red' ? 'text-red-500' : sev.color === 'orange' ? 'text-orange-500' : sev.color === 'yellow' ? 'text-yellow-500' : 'text-green-500')}>
+                                    <sev.icon size={80} />
+                                </div>
+                                <CardContent className="p-5 flex flex-col items-center justify-center relative z-10">
+                                    <div className={cn(
+                                        "text-4xl font-black mb-1.5 tabular-nums tracking-tighter",
+                                        sev.color === 'red' ? "text-red-500" :
+                                            sev.color === 'orange' ? "text-orange-500" :
+                                                sev.color === 'yellow' ? "text-yellow-500" : "text-green-500"
+                                    )}>
+                                        {sev.value}
+                                    </div>
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] font-mono">{sev.label} Threats</div>
+                                </CardContent>
+                            </Card>
+                        ))}
                     </div>
 
-                    {activeTab === 'findings' && (
-                        <>
-                            {/* Stats Overview */}
-                            <div className="grid grid-cols-4 gap-4">
-                                {['Critical', 'High', 'Medium', 'Low'].map((sev) => {
-                                    const count = target.stats?.findings_by_severity?.[sev.toLowerCase()] || 0;
-                                    return (
-                                        <div key={sev} className="card p-4 flex flex-col items-center justify-center text-center border-border/50 bg-background-secondary/50">
-                                            <div className={clsx(
-                                                "text-2xl font-bold mb-1",
-                                                sev === 'Critical' ? 'text-severity-critical' :
-                                                    sev === 'High' ? 'text-severity-high' :
-                                                        sev === 'Medium' ? 'text-severity-medium' : 'text-severity-low'
-                                            )}>
-                                                {count}
-                                            </div>
-                                            <div className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{sev}</div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
+                    <Tabs defaultValue="findings" className="w-full" onValueChange={handleTabChange}>
+                        <TabsList className="bg-slate-900/60 border border-border/40 w-full justify-start h-14 p-1.5 mb-8 rounded-2xl backdrop-blur-md">
+                            <TabsTrigger value="findings" className="data-[state=active]:bg-primary/15 data-[state=active]:text-primary font-bold text-xs uppercase tracking-widest px-8 h-full rounded-xl transition-all">Findings Ledger</TabsTrigger>
+                            <TabsTrigger value="intelligence" className="data-[state=active]:bg-primary/15 data-[state=active]:text-primary font-bold text-xs uppercase tracking-widest px-8 h-full rounded-xl transition-all">Neural Insights</TabsTrigger>
+                            <TabsTrigger value="history" className="data-[state=active]:bg-primary/15 data-[state=active]:text-primary font-bold text-xs uppercase tracking-widest px-8 h-full rounded-xl transition-all">Temporal Log</TabsTrigger>
+                        </TabsList>
 
-                            {/* Search & Filter */}
-                            <div className="relative">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary" size={18} />
-                                <input
-                                    type="text"
-                                    placeholder="Search findings by title, category, or description..."
-                                    className="w-full bg-background-secondary border border-border rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all"
+                        <TabsContent value="findings" className="space-y-6 m-0 outline-none">
+                            <div className="relative group">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-primary transition-all duration-300" />
+                                <Input
+                                    placeholder="Filter by vulnerability title, exfil category, or exploit signature..."
+                                    className="pl-12 bg-slate-950/60 border-border/40 focus:border-primary/50 text-sm h-12 rounded-2xl transition-all backdrop-blur-sm"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </div>
 
-                            {/* Findings List */}
-                            <div className="space-y-4">
-                                {filteredFindings.length > 0 ? (
-                                    filteredFindings.map((finding) => (
-                                        <motion.div
-                                            key={finding.id}
-                                            layout
-                                            onClick={() => setSelectedFinding(finding)}
-                                            className={clsx(
-                                                "card relative p-5 cursor-pointer transition-all border-l-4 group",
-                                                selectedFinding?.id === finding.id
-                                                    ? "bg-background-tertiary border-accent shadow-lg scale-[1.01] z-10"
-                                                    : "bg-background-secondary/50 border-transparent hover:border-accent/30 hover:bg-background-tertiary/50"
-                                            )}
-                                        >
-                                            <div className="flex justify-between items-start">
-                                                <div className="flex-1">
-                                                    <div className="flex items-center gap-3 mb-2">
-                                                        <SeverityBadge severity={finding.severity} />
-                                                        <span className="text-xs font-mono text-text-tertiary">{finding.category}</span>
-                                                    </div>
-                                                    <h3 className="text-lg font-bold group-hover:text-accent transition-colors">{finding.title}</h3>
-                                                    <div className="flex items-center gap-4 mt-3">
-                                                        <div className="flex items-center gap-1.5 text-text-tertiary text-xs">
-                                                            <div className="w-1 h-1 rounded-full bg-text-tertiary" />
-                                                            {finding.location}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <ChevronRight
-                                                    size={18}
-                                                    className={clsx(
-                                                        "text-text-tertiary transition-transform duration-300",
-                                                        selectedFinding?.id === finding.id ? "rotate-90 text-accent" : "group-hover:translate-x-1"
+                            <ScrollArea className="h-[650px] pr-4 -mr-4">
+                                <div className="space-y-4 pb-4">
+                                    <AnimatePresence mode="popLayout">
+                                        {filteredFindings.map((finding) => (
+                                            <motion.div
+                                                key={finding.id}
+                                                layout
+                                                initial={{ opacity: 0, scale: 0.98 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                exit={{ opacity: 0, scale: 0.98 }}
+                                                transition={{ duration: 0.2 }}
+                                            >
+                                                <Card
+                                                    className={cn(
+                                                        "border-border/40 bg-slate-900/40 backdrop-blur-md cursor-pointer hover:bg-slate-900/60 transition-all duration-500 group relative overflow-hidden rounded-2xl",
+                                                        selectedFinding?.id === finding.id && "border-primary/50 bg-slate-900/80 ring-1 ring-primary/20 shadow-[0_0_30px_rgba(59,130,246,0.15)]"
                                                     )}
-                                                />
-                                            </div>
-
-                                            {selectedFinding?.id === finding.id && (
-                                                <motion.div
-                                                    layoutId="active-indicator"
-                                                    className="absolute inset-y-0 left-0 w-1 bg-accent"
-                                                />
-                                            )}
-                                        </motion.div>
-                                    ))
-                                ) : (
-                                    <div className="text-center py-20 bg-background-secondary/30 rounded-2xl border border-dashed border-border flex flex-col items-center gap-4">
-                                        <Search className="w-12 h-12 text-text-tertiary opacity-30" />
-                                        <div className="max-w-[300px]">
-                                            <h3 className="text-xl font-medium text-text-secondary">No findings match your search</h3>
-                                            <p className="text-text-tertiary mt-2">Try adjusting your filters or search terms</p>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </>
-                    )}
-
-                    {activeTab === 'history' && (
-                        <div className="space-y-6">
-                            {delta ? (
-                                <>
-                                    <div className="grid grid-cols-3 gap-6">
-                                        <div className="card p-6 border-severity-critical/20 bg-severity-critical/5">
-                                            <div className="text-3xl font-bold text-severity-critical mb-1">{delta.stats.count_new}</div>
-                                            <div className="text-xs font-bold text-text-tertiary uppercase tracking-widest">New Vulnerabilities</div>
-                                        </div>
-                                        <div className="card p-6 border-severity-low/20 bg-severity-low/5">
-                                            <div className="text-3xl font-bold text-severity-low mb-1">{delta.stats.count_resolved}</div>
-                                            <div className="text-xs font-bold text-text-tertiary uppercase tracking-widest">Resolved Findings</div>
-                                        </div>
-                                        <div className="card p-6 border-border bg-background-tertiary font-mono">
-                                            <div className="text-3xl font-bold mb-1">{delta.stats.count_persistent}</div>
-                                            <div className="text-xs font-bold text-text-tertiary uppercase tracking-widest">Persistent Issues</div>
-                                        </div>
-                                    </div>
-
-                                    {delta.new.length > 0 && (
-                                        <div className="space-y-3">
-                                            <h4 className="text-sm font-bold flex items-center gap-2 text-severity-critical">
-                                                <AlertTriangle size={16} /> New Security Regressions
-                                            </h4>
-                                            {delta.new.map((f: any) => (
-                                                <div key={f.id} className="p-3 bg-severity-critical/5 border border-severity-critical/20 rounded-lg flex items-center justify-between">
-                                                    <span className="text-sm font-medium">{f.title}</span>
-                                                    <SeverityBadge severity={f.severity} />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    {delta.resolved.length > 0 && (
-                                        <div className="space-y-3">
-                                            <h4 className="text-sm font-bold flex items-center gap-2 text-severity-low">
-                                                <Shield size={16} /> Verified Mitigations
-                                            </h4>
-                                            {delta.resolved.map((f: any) => (
-                                                <div key={f.id} className="p-3 bg-severity-low/5 border border-severity-low/20 rounded-lg flex items-center justify-between">
-                                                    <span className="text-sm font-medium">{f.title}</span>
-                                                    <div className="text-[10px] font-bold text-severity-low uppercase">Resolved</div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </>
-                            ) : (
-                                <div className="text-center py-20 bg-background-secondary/30 rounded-2xl border border-dashed border-border flex flex-col items-center gap-4">
-                                    <HistoryIcon className="w-12 h-12 text-text-tertiary opacity-30" />
-                                    <div className="max-w-[300px]">
-                                        <h3 className="text-xl font-medium text-text-secondary">Insufficient History</h3>
-                                        <p className="text-text-tertiary mt-2">Generate at least two analysis snapshots to enable automated delta tracking and regression analysis.</p>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    {activeTab === 'infrastructure' && (
-                        <div className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {target.findings?.filter(f => f.category === 'OSINT').map((asset) => (
-                                    <div key={asset.id} className="card p-5 border-border/50 bg-background-secondary/30 hover:bg-background-secondary transition-all group">
-                                        <div className="flex items-start gap-4">
-                                            <div className="p-3 rounded-xl bg-accent/10 text-accent group-hover:bg-accent group-hover:text-white transition-all">
-                                                <Server size={24} />
-                                            </div>
-                                            <div className="flex-1 overflow-hidden">
-                                                <h4 className="font-bold text-lg truncate mb-1">{asset.location || asset.title}</h4>
-                                                <p className="text-xs text-text-tertiary font-mono mb-4">{asset.category} Asset Found via Sentinel</p>
-
-                                                <div className="space-y-2">
-                                                    <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
-                                                        <span>Exposure Risk</span>
-                                                        <span className={clsx(asset.severity === 'high' ? 'text-severity-high' : 'text-severity-low')}>
-                                                            {asset.severity}
-                                                        </span>
-                                                    </div>
-                                                    <div className="h-1 w-full bg-background-tertiary rounded-full">
-                                                        <div className={clsx("h-full rounded-full", asset.severity === 'high' ? 'bg-severity-high w-3/4' : 'bg-severity-low w-1/4')} />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-
-                                {target.findings?.filter(f => f.category === 'OSINT').length === 0 && (
-                                    <div className="col-span-full py-20 text-center border-2 border-dashed border-border rounded-xl">
-                                        <Globe size={48} className="mx-auto text-text-secondary mb-4 opacity-20" />
-                                        <p className="text-text-secondary text-lg">No internet-exposed assets identified by OSINT Sentinel</p>
-                                        <button className="text-accent hover:underline mt-2 flex items-center gap-1 mx-auto text-sm font-bold">
-                                            <Zap size={14} /> Trigger Shodan Recon
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    {activeTab === 'intelligence' && (
-                        <div className="space-y-6">
-                            <div className="card p-6 bg-background-tertiary/20 border-accent/20 border-dashed">
-                                <div className="flex items-center gap-4 mb-6">
-                                    <div className="p-3 rounded-2xl bg-accent/10 text-accent border border-accent/30 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
-                                        <Terminal size={32} />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-bold tracking-tight">Autonomous Red Team Sentinel</h3>
-                                        <p className="text-sm text-text-tertiary">Real-time attack path simulation and offensive intelligence</p>
-                                    </div>
-                                </div>
-
-                                {chains ? (
-                                    <div className="space-y-6">
-                                        <div className="p-5 rounded-xl bg-background-secondary border border-border font-mono text-sm whitespace-pre-wrap leading-relaxed">
-                                            <div className="flex items-center gap-2 text-accent mb-2">
-                                                <Info size={14} /> AI SITUATION SUMMARY
-                                            </div>
-                                            {chains.summary}
-                                        </div>
-
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            {chains.chains.map((chain: any, idx: number) => (
-                                                <div key={idx} className="card p-4 bg-background-secondary/50 border-accent/30 flex flex-col justify-between group hover:border-accent">
-                                                    <div>
-                                                        <div className="flex items-center justify-between mb-2">
-                                                            <span className="text-[10px] font-bold uppercase tracking-widest text-accent">Active Path</span>
-                                                            <SeverityBadge severity={chain.impact_esclation} />
+                                                    onClick={() => setSelectedFinding(finding)}
+                                                >
+                                                    <div className={cn(
+                                                        "absolute left-0 top-0 w-1.5 h-full transition-opacity duration-500",
+                                                        finding.severity.toLowerCase() === 'critical' ? "bg-red-500" :
+                                                            finding.severity.toLowerCase() === 'high' ? "bg-orange-500" :
+                                                                finding.severity.toLowerCase() === 'medium' ? "bg-yellow-500" : "bg-green-500",
+                                                        selectedFinding?.id === finding.id ? "opacity-100" : "opacity-30 group-hover:opacity-70"
+                                                    )} />
+                                                    <CardHeader className="p-6 pb-2">
+                                                        <div className="flex justify-between items-center mb-3">
+                                                            <div className="flex items-center gap-4">
+                                                                <SeverityBadge severity={finding.severity} />
+                                                                <Badge variant="outline" className="text-[9px] font-mono text-slate-500 uppercase tracking-widest bg-slate-950/50 h-5 px-2 border border-border/20">
+                                                                    {finding.category}
+                                                                </Badge>
+                                                            </div>
+                                                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <span className="text-[10px] font-mono text-slate-600 uppercase">Analysis ID: {finding.id}</span>
+                                                                <ChevronRight size={14} className="text-slate-600" />
+                                                            </div>
                                                         </div>
-                                                        <h4 className="font-bold mb-1 group-hover:text-accent transition-colors">{chain.name}</h4>
-                                                        <p className="text-xs text-text-secondary mb-4 leading-relaxed">{chain.description}</p>
-                                                    </div>
-                                                    <button
-                                                        onClick={() => handleSimulatePath(idx)}
-                                                        disabled={simulatingPath === idx}
-                                                        className="btn btn-secondary py-2 text-xs flex items-center justify-center gap-2 border-accent/20 hover:bg-accent/10"
-                                                    >
-                                                        {simulatingPath === idx ? <RefreshCw size={14} className="animate-spin" /> : <Zap size={14} className="text-accent" />}
-                                                        {simulatingPath === idx ? 'Simulating...' : 'Simulate Chain'}
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="py-24 text-center">
-                                        <RefreshCw className="mx-auto text-accent animate-spin mb-4" size={32} />
-                                        <p className="text-text-secondary font-mono text-sm animate-pulse">Running heuristic analyzer...</p>
-                                    </div>
-                                )}
+                                                        <CardTitle className="text-lg font-bold text-white group-hover:text-primary transition-colors leading-snug">
+                                                            {finding.title}
+                                                        </CardTitle>
+                                                    </CardHeader>
+                                                    <CardContent className="p-6 pt-2">
+                                                        <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed font-medium">
+                                                            {finding.description}
+                                                        </p>
+                                                    </CardContent>
+                                                </Card>
+                                            </motion.div>
+                                        ))}
+                                    </AnimatePresence>
 
-                                <div className="mt-8 pt-8 border-t border-border/50">
-                                    <h3 className="text-lg font-bold mb-4 flex items-center gap-2 uppercase tracking-wide text-accent">
-                                        <Crosshair size={20} /> Runtime Shadow Telemetry
-                                    </h3>
-                                    <div className="space-y-3 font-mono text-xs">
-                                        <div className="p-4 bg-background-secondary rounded-xl border-l-4 border-severity-high shadow-lg">
-                                            <div className="flex justify-between mb-1">
-                                                <span className="text-severity-high font-bold">[INSECURE_STORAGE]</span>
-                                                <span className="text-text-tertiary">23:45:12</span>
+                                    {filteredFindings.length === 0 && (
+                                        <div className="py-20 flex flex-col items-center justify-center text-center space-y-4 border border-dashed border-border/20 rounded-3xl bg-slate-900/20 backdrop-blur-sm">
+                                            <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-2">
+                                                <Search size={32} className="text-slate-600" />
                                             </div>
-                                            <p className="text-text-secondary">SharedPreferences.putString {'->'} Key: <span className="text-white">auth_token</span> | Value: <span className="text-white">eyJh...</span></p>
+                                            <h3 className="text-lg font-bold text-white">No matches detected</h3>
+                                            <p className="text-xs text-slate-500 px-10">Neural filter did not identify any findings matching your current parameters.</p>
+                                            <Button variant="ghost" onClick={() => setSearchTerm('')} className="text-primary hover:bg-primary/10 text-[10px] font-bold uppercase tracking-widest">
+                                                Reset Filters
+                                            </Button>
                                         </div>
-                                        <div className="p-4 bg-background-secondary rounded-xl border-l-4 border-severity-medium shadow-lg">
-                                            <div className="flex justify-between mb-1">
-                                                <span className="text-severity-medium font-bold">[SENSITIVE_LOG]</span>
-                                                <span className="text-text-tertiary">23:44:55</span>
-                                            </div>
-                                            <p className="text-text-secondary">Tag: <span className="text-white">GrabApi</span> | Message: <span className="text-white">Executing request to /v1/auth with payload: {'{"user": "admin"}'}</span></p>
-                                        </div>
-                                        <div className="p-4 bg-background-secondary rounded-xl border-l-4 border-severity-low shadow-lg">
-                                            <div className="flex justify-between mb-1">
-                                                <span className="text-text-tertiary font-bold">[STATUS]</span>
-                                                <span className="text-text-tertiary">23:40:02</span>
-                                            </div>
-                                            <p className="text-text-secondary">Runtime Shadow monitor active on PID: <span className="text-white">12844</span></p>
-                                        </div>
-                                    </div>
+                                    )}
                                 </div>
-                            </div>
-                        </div>
-                    )}
+                            </ScrollArea>
+                        </TabsContent>
+
+                        <TabsContent value="intelligence" className="outline-none">
+                            <NeuralInsights />
+                        </TabsContent>
+
+                        <TabsContent value="history" className="outline-none">
+                            <Card className="border-border/40 bg-slate-900/40 backdrop-blur-md rounded-3xl overflow-hidden">
+                                <CardContent className="p-16 text-center space-y-6">
+                                    <div className="w-20 h-20 rounded-2xl bg-slate-800/30 flex items-center justify-center mx-auto border border-border/20">
+                                        <HistoryIcon size={40} className="text-slate-700 opacity-50" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <h3 className="text-xl font-bold text-white uppercase tracking-[0.2em]">Temporal Isolation</h3>
+                                        <p className="text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">No retrospective delta snapshots located for this operative package. Execute subsequent audits to generate temporal risk indices.</p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+                    </Tabs>
                 </div>
 
-                {/* Sidebar: Detail View */}
-                <div className="lg:col-span-4 lg:sticky lg:top-8 h-fit">
+                {/* Right: Detail Sidebar */}
+                <div className="lg:col-span-4 sticky top-8 h-fit">
                     <AnimatePresence mode="wait">
                         {selectedFinding ? (
                             <motion.div
                                 key={selectedFinding.id}
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: 20 }}
-                                className="card bg-background-secondary border-accent/30 overflow-hidden shadow-2xl"
+                                initial={{ opacity: 0, x: 20, y: 10 }}
+                                animate={{ opacity: 1, x: 0, y: 0 }}
+                                exit={{ opacity: 0, x: 20, scale: 0.95 }}
+                                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                                className="space-y-6"
                             >
-                                <div className="p-6 border-b border-border bg-accent/5">
-                                    <div className="flex items-center gap-2 mb-3">
-                                        <SeverityBadge severity={selectedFinding.severity} />
-                                        <span className="text-xs font-mono text-text-tertiary">{selectedFinding.id}</span>
-                                    </div>
-                                    <h2 className="text-2xl font-bold leading-tight">{selectedFinding.title}</h2>
-                                </div>
-                                <div className="p-6 space-y-6">
-                                    <div>
-                                        <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest block mb-2">Description</label>
-                                        <p className="text-text-secondary leading-relaxed text-sm">
-                                            {selectedFinding.description}
-                                        </p>
-                                    </div>
-
-                                    {selectedFinding.file_path && (
-                                        <div>
-                                            <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest block mb-2">Affected Asset</label>
-                                            <div className="flex items-center gap-3 p-3 bg-background-tertiary rounded-lg border border-border/50 break-all">
-                                                <FileText size={18} className="text-accent shrink-0" />
-                                                <code className="text-xs text-text-primary whitespace-pre-wrap">{selectedFinding.file_path}</code>
-                                            </div>
+                                <Card className="border-primary/30 bg-slate-950/60 backdrop-blur-xl shadow-2xl overflow-hidden ring-1 ring-primary/20 rounded-3xl relative">
+                                    <div className="absolute top-0 right-0 p-6 pointer-events-none">
+                                        <div className="bg-slate-950/80 border border-border/40 text-[9px] font-mono text-slate-600 px-2 py-1 rounded-md mb-2 tabular-nums">
+                                            ID: {selectedFinding.id}
                                         </div>
-                                    )}
+                                    </div>
+                                    <CardHeader className="p-8 border-b border-border/20 bg-primary/5">
+                                        <div className="mb-5">
+                                            <SeverityBadge severity={selectedFinding.severity} />
+                                        </div>
+                                        <CardTitle className="text-2xl font-extrabold leading-tight text-white tracking-tight">
+                                            {selectedFinding.title}
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="p-8 space-y-10">
+                                        <div className="space-y-4">
+                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] font-mono">Mission Briefing</p>
+                                            <p className="text-sm text-slate-300 leading-relaxed font-medium">
+                                                {selectedFinding.description}
+                                            </p>
+                                        </div>
 
-                                    <div className="pt-6 border-t border-border mt-4 space-y-3">
-                                        <button
-                                            onClick={() => handleGenerateFix(selectedFinding.id)}
-                                            disabled={generatingFix}
-                                            className="w-full btn btn-primary flex items-center justify-center gap-2 shadow-lg"
-                                        >
-                                            {generatingFix ? <RefreshCw size={18} className="animate-spin" /> : <Zap size={18} />}
-                                            {generatingFix ? 'Architecting Fix...' : 'Generate AI Fix'}
-                                        </button>
-
-                                        <button
-                                            onClick={async () => {
-                                                try {
-                                                    const data = await FBH_API.generatePoC(selectedFinding.id);
-                                                    setAiFix(data.poc);
-                                                    setIsFixModalOpen(true);
-                                                } catch (err) {
-                                                    alert('Autonomous PoC generation failed for this finding.');
-                                                }
-                                            }}
-                                            className="w-full btn bg-background-tertiary border-border/50 hover:border-accent/40 flex items-center justify-center gap-2"
-                                        >
-                                            <Terminal size={18} strokeWidth={3} className="text-accent" /> Create Autonomous PoC
-                                        </button>
-
-                                        <button
-                                            onClick={() => handleGeneratePoCCommand(selectedFinding.id)}
-                                            className="w-full btn bg-blue-500/10 border-blue-500/30 text-blue-400 hover:bg-blue-500/20 flex items-center justify-center gap-2"
-                                        >
-                                            <PlayCircle size={18} /> Generate ADB PoC
-                                        </button>
-
-                                        <button
-                                            onClick={() => {
-                                                setRepeaterInitialData({
-                                                    method: 'GET',
-                                                    url: selectedFinding.location || '',
-                                                    headers: { "Content-Type": "application/json" },
-                                                    body: ''
-                                                });
-                                                setIsRepeaterOpen(true);
-                                            }}
-                                            className="w-full btn bg-background-tertiary border-border/50 hover:bg-border flex items-center justify-center gap-2"
-                                        >
-                                            <ExternalLink size={18} /> Send to Repeater
-                                        </button>
-                                        <button
-                                            onClick={() => handleVerifyFinding(selectedFinding.id)}
-                                            disabled={verifying}
-                                            className="w-full btn bg-severity-low/10 border-severity-low/30 text-severity-low hover:bg-severity-low/20 flex items-center justify-center gap-2"
-                                        >
-                                            {verifying ? <RefreshCw size={18} className="animate-spin" /> : <CheckCircle size={18} />}
-                                            {verifying ? 'Verifying Mitigation...' : 'Verify Mitigation'}
-                                        </button>
-
-                                        {aiFix && selectedFinding && (
-                                            <button
-                                                onClick={() => handleSubmitPatch(selectedFinding.id, aiFix)}
-                                                disabled={submittingPatch}
-                                                className="w-full btn bg-blue-500/10 border-blue-500/30 text-blue-400 hover:bg-blue-500/20 flex items-center justify-center gap-2"
-                                            >
-                                                {submittingPatch ? <RefreshCw size={18} className="animate-spin" /> : <GitPullRequest size={18} />}
-                                                {submittingPatch ? 'Deploying Patch...' : 'Submit Autonomous Patch'}
-                                            </button>
+                                        {selectedFinding.file_path && (
+                                            <div className="space-y-4">
+                                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] font-mono flex items-center gap-2">
+                                                    <FileCode size={14} className="text-primary" /> Affected Asset
+                                                </p>
+                                                <div className="p-4 bg-slate-950 border border-border/40 rounded-2xl group hover:border-primary/40 transition-all duration-300 relative overflow-hidden">
+                                                    <div className="absolute inset-0 bg-primary/[0.01] opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                    <code className="text-xs text-primary break-all font-mono leading-relaxed relative z-10 selection:bg-primary/20">
+                                                        {selectedFinding.file_path}
+                                                    </code>
+                                                </div>
+                                            </div>
                                         )}
 
-                                        <button
-                                            onClick={() => handleGenerateWAF(selectedFinding.id)}
-                                            className="w-full btn bg-purple-500/10 border-purple-500/30 text-purple-400 hover:bg-purple-500/20 flex items-center justify-center gap-2"
-                                        >
-                                            <ShieldHalf size={18} /> Generate WAF Rules
-                                        </button>
-
-                                        <button
-                                            onClick={() => handleGenerateFrida('ssl_pinning_bypass')}
-                                            disabled={generatingFrida}
-                                            className="w-full btn bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 flex items-center justify-center gap-2"
-                                        >
-                                            {generatingFrida ? <RefreshCw size={18} className="animate-spin" /> : <Code size={18} />}
-                                            {generatingFrida ? 'Generating Bypass...' : 'Frida SSL Bypass'}
-                                        </button>
-
-                                        <button
-                                            onClick={handleGenerateBountyReport}
-                                            disabled={generatingReport}
-                                            className="w-full btn bg-amber-500/10 border-amber-500/30 text-amber-400 hover:bg-amber-500/20 flex items-center justify-center gap-2"
-                                        >
-                                            {generatingReport ? <RefreshCw size={18} className="animate-spin" /> : <Award size={18} />}
-                                            {generatingReport ? 'Generating Report...' : 'Bounty Report (MASVS)'}
-                                        </button>
-
-                                        <button
-                                            onClick={handleAuditSignatures}
-                                            disabled={auditingSignatures}
-                                            className="w-full btn bg-cyan-500/10 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 flex items-center justify-center gap-2"
-                                        >
-                                            {auditingSignatures ? <RefreshCw size={18} className="animate-spin" /> : <FileSearch size={18} />}
-                                            {auditingSignatures ? 'Auditing Integrity...' : 'Audit Anti-Tamper'}
-                                        </button>
-
-                                        <button
-                                            onClick={handleGetReflutterBlueprint}
-                                            disabled={generatingReflutter}
-                                            className="w-full btn bg-indigo-500/10 border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/20 flex items-center justify-center gap-2"
-                                        >
-                                            {generatingReflutter ? <RefreshCw size={18} className="animate-spin" /> : <Hammer size={18} />}
-                                            {generatingReflutter ? 'Generating reFlutter Blueprint...' : 'reFlutter Engine Patch'}
-                                        </button>
-
-                                        <button
-                                            onClick={handleExportNuclei}
-                                            className="w-full btn bg-background-tertiary border-border/50 hover:bg-border flex items-center justify-center gap-2"
-                                        >
-                                            <Download size={18} /> Export Nuclei Template
-                                        </button>
-                                    </div>
-                                </div>
+                                        <div className="space-y-4 pt-10 border-t border-border/20">
+                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] font-mono mb-6">Tactical Countermeasures</p>
+                                            <div className="grid grid-cols-1 gap-4">
+                                                <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold text-xs gap-3 h-14 rounded-2xl shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] transition-all">
+                                                    <div className="p-1.5 bg-white/10 rounded-lg"><Zap size={18} fill="currentColor" /></div>
+                                                    Orchestrate AI Mitigation
+                                                </Button>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <Button variant="outline" className="border-border/40 bg-slate-900/40 hover:bg-slate-800 text-[10px] h-14 rounded-2xl flex-col gap-1 uppercase font-bold tracking-widest transition-all">
+                                                        <Terminal size={16} className="text-primary/70" /> Shadow PoC
+                                                    </Button>
+                                                    <Button variant="outline" className="border-border/40 bg-slate-900/40 hover:bg-slate-800 text-[10px] h-14 rounded-2xl flex-col gap-1 uppercase font-bold tracking-widest transition-all">
+                                                        <PlayCircle size={16} className="text-primary/70" /> ADB Link
+                                                    </Button>
+                                                </div>
+                                                <Button variant="ghost" className="text-slate-500 hover:text-white hover:bg-white/5 text-[10px] h-12 rounded-xl uppercase font-bold tracking-widest gap-2" onClick={() => toast.info('Request transmitted', { description: 'Replaying exfiltrated packets...' })}>
+                                                    <RefreshCw size={14} /> Replay Session Trace
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                    <CardFooter className="p-6 bg-slate-950/60 border-t border-border/20 flex justify-between items-center rounded-b-3xl">
+                                        <Button variant="ghost" size="sm" className="text-[10px] uppercase font-bold text-slate-500 hover:text-white h-8 px-4 rounded-lg bg-white/0 hover:bg-white/5">
+                                            Technical Docs
+                                        </Button>
+                                        <div className="flex items-center gap-2">
+                                            <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+                                            <span className="text-[10px] font-mono font-bold text-green-500 uppercase tracking-tighter">Verified</span>
+                                        </div>
+                                    </CardFooter>
+                                </Card>
                             </motion.div>
                         ) : (
-                            <div className="card h-[600px] flex flex-col items-center justify-center text-center p-8 border-dashed border-2 border-border/50 bg-background-secondary/20">
-                                <div className="w-20 h-20 bg-background-tertiary rounded-full flex items-center justify-center mb-6 border border-border">
-                                    <Database size={32} className="text-text-tertiary" />
+                            <div className="h-[600px] flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-border/20 rounded-[2.5rem] bg-slate-900/10 backdrop-blur-sm relative group overflow-hidden">
+                                <div className="absolute inset-0 bg-primary/[0.01] opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="mb-8 relative">
+                                    <ShieldCheck size={80} className="text-slate-800 opacity-20 group-hover:opacity-30 transition-opacity duration-700" />
+                                    <div className="absolute inset-0 bg-primary/20 blur-3xl opacity-0 group-hover:opacity-30 transition-opacity duration-700 scale-150" />
                                 </div>
-                                <h3 className="text-xl font-bold mb-2">Sentinel Insight</h3>
-                                <p className="text-text-tertiary text-sm max-w-[240px]">
-                                    Select a security finding from the list to view comprehensive vulnerability analysis and remediation steps.
-                                </p>
+                                <h3 className="text-xl font-bold text-slate-500 uppercase tracking-[0.3em] mb-3">Intelligence Hub</h3>
+                                <p className="text-sm text-slate-600 max-w-[240px] leading-relaxed font-medium">Select a tactical finding from the ledger to manifest detailed exfil telemetry and mitigation blueprints.</p>
+                                <div className="mt-10 flex gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-slate-800" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-slate-800 animate-pulse" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-slate-800" />
+                                </div>
                             </div>
                         )}
                     </AnimatePresence>
                 </div>
             </div>
-
-            {/* AI Fix / PoC Modal */}
-            <AnimatePresence>
-                {isFixModalOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setIsFixModalOpen(false)}
-                            className="absolute inset-0 bg-black/80 backdrop-blur-md"
-                        />
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="w-full max-w-4xl bg-background-secondary border border-border rounded-2xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
-                        >
-                            <div className="p-6 border-b border-border bg-background-tertiary flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-lg bg-accent/10 text-accent">
-                                        <Terminal size={20} />
-                                    </div>
-                                    <h3 className="text-xl font-bold">Red Team Intelligence Output</h3>
-                                </div>
-                                <button
-                                    onClick={() => setIsFixModalOpen(false)}
-                                    className="p-2 hover:bg-background-secondary rounded-lg text-text-secondary"
-                                >
-                                    <ArrowLeft size={24} className="rotate-180" />
-                                </button>
-                            </div>
-                            <div className="flex-1 overflow-y-auto bg-black/40">
-                                <CodeBlock code={aiFix || ''} language="markdown" />
-                            </div>
-                            <div className="p-4 bg-background-tertiary border-t border-border flex justify-end gap-3">
-                                <button
-                                    onClick={() => setIsFixModalOpen(false)}
-                                    className="btn btn-secondary px-6"
-                                >
-                                    Dismiss
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        navigator.clipboard.writeText(aiFix || '');
-                                        alert('Intelligence output copied to clipboard');
-                                    }}
-                                    className="btn btn-primary px-8 flex items-center gap-2"
-                                >
-                                    <FileText size={18} /> Copy to Clipboard
-                                </button>
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
-
-            {/* Repeater Modal */}
-            <RepeaterModal
-                isOpen={isRepeaterOpen}
-                onClose={() => setIsRepeaterOpen(false)}
-                initialData={repeaterInitialData}
-            />
         </div>
     );
 };

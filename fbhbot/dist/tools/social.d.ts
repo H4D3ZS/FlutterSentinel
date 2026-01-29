@@ -18,6 +18,7 @@ export declare function generateSpearphishingCampaign(context: {
         eml_file: string;
         html_file: string;
     };
+    generative: string;
     operational_security: {
         score: string;
         recommendation: string;

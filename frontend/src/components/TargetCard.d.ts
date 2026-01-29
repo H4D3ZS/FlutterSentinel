@@ -1,5 +1,15 @@
 import React from 'react';
-import type { Target } from '../services/api';
+interface Target {
+    name: string;
+    package: string;
+    platform: string;
+    status: string;
+    scan_progress: number;
+    stats?: {
+        total_findings: number;
+        findings_by_severity: Record<string, number>;
+    };
+}
 interface TargetCardProps {
     target: Target;
     onClick?: () => void;

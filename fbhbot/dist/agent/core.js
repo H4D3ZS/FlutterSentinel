@@ -37,6 +37,13 @@ export class FBHBotAgent {
                 }
             },
             {
+                name: "fbh_master_scan",
+                description: "The Singularity Engine: Executes a full end-to-end autonomous bounty hunt pipeline (Acquisition -> Discovery -> Analysis -> Chain -> Report).",
+                execute: async (args) => {
+                    return await fbhTools.masterScan(args.target);
+                }
+            },
+            {
                 name: "fbh_scan",
                 description: "Perform deep security analysis on a target.",
                 execute: async (args) => {
@@ -492,6 +499,99 @@ export class FBHBotAgent {
                 }
             },
             {
+                name: "fbh_mobile_audit",
+                description: "Tactical Mobile Auditor: Deep static analysis of APK/IPA files including Intent injection, SSL pinning detection, and secret discovery.",
+                execute: async (args) => {
+                    return await fbhTools.auditMobile(args);
+                }
+            },
+            {
+                name: "fbh_secret_validate",
+                description: "Tactical Secret Validator: Verify discovered credentials (Google API keys, AWS, Stripe, etc.) against real APIs to prove impact.",
+                execute: async (args) => {
+                    const { validateSecret } = await import("../tools/validation.js");
+                    return await validateSecret(args);
+                }
+            },
+            {
+                name: "fbh_acquire",
+                description: "App Acquisition Engine: Autonomously download APK/IPA binaries from Play Store/App Store or extract from device via ADB.",
+                execute: async (args) => {
+                    return await fbhTools.acquire(args.package_id, args.platform);
+                }
+            },
+            {
+                name: "fbh_exploit_chain",
+                description: "Tactical Exploit Engine: Analyze discovered vulnerabilities and autonomously chain them into high-impact exploit paths with PoC reports.",
+                execute: async (args) => {
+                    const { buildExploitChain } = await import("../tools/exploit_chains.js");
+                    return await buildExploitChain(args);
+                }
+            },
+            {
+                name: "fbh_web_recon",
+                description: "Universal Web Surface Discovery: Find subdomains, cloud buckets, and endpoints for a given domain.",
+                execute: async (args) => {
+                    return await fbhTools.webRecon(args);
+                }
+            },
+            {
+                name: "fbh_web_scan",
+                description: "Tactical Web Scanner: Automated vulnerability discovery for web targets (XSS, SQLi, SSRF, Header Audit).",
+                execute: async (args) => {
+                    return await fbhTools.webScan(args);
+                }
+            },
+            {
+                name: "fbh_web_active_scan",
+                description: "Proactive Vulnerability Scanner: Template-based active probing for high-impact flaws (Nuclei integration).",
+                execute: async (args) => {
+                    return await fbhTools.webActiveScan(args);
+                }
+            },
+            {
+                name: "fbh_infra_audit",
+                description: "Infrastructure Intelligence: Deep service fingerprinting, port scanning, and banner grabbing.",
+                execute: async (args) => {
+                    return await fbhTools.infraAudit(args);
+                }
+            },
+            {
+                name: "fbh_sigint_recon",
+                description: "Global Signal Intelligence: LLM-driven internet-scale discovery for shadow assets and deployments.",
+                execute: async (args) => {
+                    return await fbhTools.sigintRecon(args);
+                }
+            },
+            {
+                name: "fbh_hexstrike_analyze",
+                description: "AI Strategic Intelligence: Analyze target surface using 150+ security tools and AI-driven goal generation.",
+                execute: async (args) => {
+                    return await fbhTools.hexstrikeAnalyze(args);
+                }
+            },
+            {
+                name: "fbh_payload_generate",
+                description: "Red Team Payload Forge: Generate initial access lures (LNK, HTML Smuggling) with custom commands or payloads.",
+                execute: async (args) => {
+                    return await fbhTools.generatePayload(args);
+                }
+            },
+            {
+                name: "fbh_master_scan",
+                description: "The Singularity Engine: Executes a full end-to-end autonomous multi-surface hunt pipeline (Web + Mobile + Cloud).",
+                execute: async (args) => {
+                    return await fbhTools.masterScan(args.target);
+                }
+            },
+            {
+                name: "fbh_flutter_audit",
+                description: "Deep Flutter Prober: Analyzes Dart AOT snapshots via Blutter and Gitleaks to extract hidden logic and secrets.",
+                execute: async (args) => {
+                    return await fbhTools.auditFlutter(args);
+                }
+            },
+            {
                 name: "fbh_submit_bounty",
                 description: "Synthesize mission data into a professional Bug Bounty report and execute tactical submission.",
                 execute: async (args) => {
@@ -502,6 +602,70 @@ export class FBHBotAgent {
                     if (!mission)
                         return { status: "error", message: "Mission not found." };
                     return await submitBounty(mission, args.platform);
+                }
+            },
+            {
+                name: "fbh_webview_deep_probe",
+                description: "Deep Behavioral WebView Intelligence: Detects complex URL validation bypasses and dangerous JS bridge exposures in Android/iOS source code.",
+                execute: async (args) => {
+                    const { webviewDeepProbe } = await import("../tools/webview_deep_probe.js");
+                    return await webviewDeepProbe({ source_dir: args.source_dir });
+                }
+            },
+            {
+                name: "fbh_deeplink_deep_probe",
+                description: "Deep Forensic Deep Link Intelligence: Detects externally triggerable intent-based vulnerabilities and unvalidated parameter flows to dangerous sinks.",
+                execute: async (args) => {
+                    const { deeplinkDeepProbe } = await import("../tools/deeplink_deep_probe.js");
+                    return await deeplinkDeepProbe({ source_dir: args.source_dir });
+                }
+            },
+            {
+                name: "fbh_secret_validator",
+                description: "Deep Secret Intelligence: Validates discovered API keys (Google, Stripe, GitHub, etc.) against real APIs to verify impact.",
+                execute: async (args) => {
+                    const { validateSecret } = await import("../tools/secret_validator.js");
+                    return await validateSecret({ type: args.type, value: args.value });
+                }
+            },
+            {
+                name: "fbh_crypto_audit",
+                description: "Cryptography Intelligence: Detects weak algorithms (MD5, DES, RC4), hardcoded keys, and insecure random number generation in source code.",
+                execute: async (args) => {
+                    const { analyzeCrypto } = await import("../tools/crypto_analyzer.js");
+                    return await analyzeCrypto({ source_dir: args.source_dir });
+                }
+            },
+            {
+                name: "fbh_ssl_pin_detect",
+                description: "SSL Pinning Intelligence: Scans for certificate pinning implementations and provides tactical bypass PoCs.",
+                execute: async (args) => {
+                    const { detectSSLPinning } = await import("../tools/ssl_pin_detector.js");
+                    return await detectSSLPinning({ source_dir: args.source_dir });
+                }
+            },
+            {
+                name: "fbh_source_audit",
+                description: "Advanced Source Auditor: Performs entropy-based secret discovery and scans for sensitive logic/debug patterns in code.",
+                execute: async (args) => {
+                    const { auditSourceCode } = await import("../tools/source_auditor.js");
+                    return await auditSourceCode({ source_dir: args.source_dir });
+                }
+            },
+            {
+                name: "fbh_payload_mutate",
+                description: "The Mutation Engine: Systematically transform exploit payloads using advanced encodings and obfuscation techniques for filter evasion.",
+                execute: async (args) => {
+                    return await fbhTools.payloadMutate(args);
+                }
+            },
+            {
+                name: "fbh_intel_explore",
+                description: "Sovereign Intelligence Explorer: Analyze and cluster findings for a target to discover patterns, estimate total impact, and map semantic relationships between discoveries.",
+                execute: async (args) => {
+                    const { exploreIntelligence } = await import("../tools/intelligence_explorer.js");
+                    const apiKey = settings?.google_api_key || process.env.GOOGLE_API_KEY;
+                    return await exploreIntelligence({ ...args }, this.memory);
                 }
             }
         ];
@@ -542,8 +706,21 @@ export class FBHBotAgent {
             missionId
         }));
         agentEvents.emitEvent({ type: "status", message: `Mission initiated for goal: ${goal}` });
-        await this.agent.prompt(goal);
-        await this.agent.waitForIdle();
+        if (!process.env.GOOGLE_API_KEY && !options?.settings?.google_api_key) {
+            const errorMsg = "CRITICAL: Mission stalled. Missing GOOGLE_API_KEY for autonomous reasoning engine.";
+            log.error(errorMsg);
+            agentEvents.emitEvent({ type: "status", message: errorMsg });
+            agentEvents.emitEvent({ type: "output", message: "Deployment Aborted: Missing AI Credentials. Please configure GOOGLE_API_KEY in .env or Settings." });
+            return "Mission failed: Missing credentials.";
+        }
+        try {
+            await this.agent.prompt(goal);
+            await this.agent.waitForIdle();
+        }
+        catch (promptErr) {
+            log.error(`Agent prompt loop failure: ${promptErr}`);
+            return `Mission error: ${promptErr}`;
+        }
         // Final response from agent state or events
         const lastMessage = this.agent.state.messages.filter(m => m.role === "assistant").pop();
         const responseText = !lastMessage ? "Mission completed with no final report." :

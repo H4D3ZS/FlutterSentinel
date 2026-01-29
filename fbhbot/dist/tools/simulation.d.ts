@@ -9,6 +9,6 @@ export declare function simulateAdversaryBehavior(context: {
     status: string;
     profile: "generic_admin" | "apt28" | "apt29" | "insider_threat";
     active_nodes: string[];
-    intensity: "high" | "low" | "medium";
+    intensity: "low" | "medium" | "high";
     message: string;
 }>;

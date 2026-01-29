@@ -601,6 +601,70 @@ export class FBHBotAgent {
                     if (!mission) return { status: "error", message: "Mission not found." };
                     return await submitBounty(mission, args.platform);
                 }
+            },
+            {
+                name: "fbh_webview_deep_probe",
+                description: "Deep Behavioral WebView Intelligence: Detects complex URL validation bypasses and dangerous JS bridge exposures in Android/iOS source code.",
+                execute: async (args: { source_dir: string }) => {
+                    const { webviewDeepProbe } = await import("../tools/webview_deep_probe.js");
+                    return await webviewDeepProbe({ source_dir: args.source_dir });
+                }
+            },
+            {
+                name: "fbh_deeplink_deep_probe",
+                description: "Deep Forensic Deep Link Intelligence: Detects externally triggerable intent-based vulnerabilities and unvalidated parameter flows to dangerous sinks.",
+                execute: async (args: { source_dir: string }) => {
+                    const { deeplinkDeepProbe } = await import("../tools/deeplink_deep_probe.js");
+                    return await deeplinkDeepProbe({ source_dir: args.source_dir });
+                }
+            },
+            {
+                name: "fbh_secret_validator",
+                description: "Deep Secret Intelligence: Validates discovered API keys (Google, Stripe, GitHub, etc.) against real APIs to verify impact.",
+                execute: async (args: { type: string, value: string }) => {
+                    const { validateSecret } = await import("../tools/secret_validator.js");
+                    return await validateSecret({ type: args.type, value: args.value });
+                }
+            },
+            {
+                name: "fbh_crypto_audit",
+                description: "Cryptography Intelligence: Detects weak algorithms (MD5, DES, RC4), hardcoded keys, and insecure random number generation in source code.",
+                execute: async (args: { source_dir: string }) => {
+                    const { analyzeCrypto } = await import("../tools/crypto_analyzer.js");
+                    return await analyzeCrypto({ source_dir: args.source_dir });
+                }
+            },
+            {
+                name: "fbh_ssl_pin_detect",
+                description: "SSL Pinning Intelligence: Scans for certificate pinning implementations and provides tactical bypass PoCs.",
+                execute: async (args: { source_dir: string }) => {
+                    const { detectSSLPinning } = await import("../tools/ssl_pin_detector.js");
+                    return await detectSSLPinning({ source_dir: args.source_dir });
+                }
+            },
+            {
+                name: "fbh_source_audit",
+                description: "Advanced Source Auditor: Performs entropy-based secret discovery and scans for sensitive logic/debug patterns in code.",
+                execute: async (args: { source_dir: string }) => {
+                    const { auditSourceCode } = await import("../tools/source_auditor.js");
+                    return await auditSourceCode({ source_dir: args.source_dir });
+                }
+            },
+            {
+                name: "fbh_payload_mutate",
+                description: "The Mutation Engine: Systematically transform exploit payloads using advanced encodings and obfuscation techniques for filter evasion.",
+                execute: async (args: { payload: string, technique: string }) => {
+                    return await fbhTools.payloadMutate(args);
+                }
+            },
+            {
+                name: "fbh_intel_explore",
+                description: "Sovereign Intelligence Explorer: Analyze and cluster findings for a target to discover patterns, estimate total impact, and map semantic relationships between discoveries.",
+                execute: async (args: { target?: string, query?: string, mode: "cluster" | "map" }) => {
+                    const { exploreIntelligence } = await import("../tools/intelligence_explorer.js");
+                    const apiKey = settings?.google_api_key || process.env.GOOGLE_API_KEY;
+                    return await exploreIntelligence({ ...args }, this.memory);
+                }
             }
         ];
     }
