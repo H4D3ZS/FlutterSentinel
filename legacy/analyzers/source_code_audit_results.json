@@ -1,0 +1,896 @@
+{
+  "debug": [
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali/androidx/constraintlayout/motion/widget/MotionLayout.smali",
+      "match": "DebugMode",
+      "line": 11867,
+      "context": "    return-void\n.end method\n\n.method public setDebugMode(I)V\n    .locals 0\n\n    .line 1"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/androidx/window/embedding/EmbeddingCompat.smali",
+      "match": "DEBUG:Z = true",
+      "line": 66,
+      "context": "    .end annotation\n.end field\n\n.field public static final DEBUG:Z = true\n\n\n# instance fields"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/androidx/loader/app/LoaderManager.smali",
+      "match": "enableDebug",
+      "line": 27,
+      "context": "    return-void\n.end method\n\n.method public static enableDebugLogging(Z)V\n    .locals 0\n\n    .line 1"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/androidx/fragment/app/FragmentManager.smali",
+      "match": "enableDebug",
+      "line": 732,
+      "context": "    return-void\n.end method\n\n.method public static enableDebugLogging(Z)V\n    .locals 0\n    .annotation runtime Ljava/lang/Deprecated;\n    .end annotation"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/Branch.smali",
+      "match": "DebugMode",
+      "line": 5592,
+      "context": "\n    .line 10\n    .line 11\n    const-string v0, \"You\\'re currently in deep link debug mode. Please comment out \\'setDeepLinkDebugMode\\' to receive the deep link parameters from a real Branch link\"\n\n    .line 12\n    .line 13"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/Branch.smali",
+      "match": "DebugMode",
+      "line": 5988,
+      "context": "\n    .line 12\n    .line 13\n    const-string v0, \"You\\'re currently in deep link debug mode. Please comment out \\'setDeepLinkDebugMode\\' to receive the deep link parameters from a real Branch link\"\n\n    .line 14\n    .line 15"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/Branch.smali",
+      "match": "DebugMode",
+      "line": 8244,
+      "context": "    return-void\n.end method\n\n.method public setDeepLinkDebugMode(Lorg/json/JSONObject;)V\n    .locals 0\n\n    .line 1"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/LinkingValidatorConstants.smali",
+      "match": "debugButton3Text:Ljava/lang/String; = \"Ensure that your code checks for $web-only in the link data, and if it is true",
+      "line": 17,
+      "context": "\n.field public static final debugButton2Text:Ljava/lang/String; = \"Ensure that you\\u2019ve added a unique Branch URI scheme to the dashboard and Android Manifest\"\n\n.field public static final debugButton3Text:Ljava/lang/String; = \"Ensure that your code checks for $web-only in the link data, and if it is true routes the user to the mobile web\"\n\n.field public static final debugButton4Text:Ljava/lang/String; = \"Ensure that your code gracefully handles missing or invalid deep link data like taking them to the home screen\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/LinkingValidatorConstants.smali",
+      "match": "debugButton6Text:Ljava/lang/String; = \"Ensure that you are calling reInit() inside of onNewIntent() after checking if branch_force_new_session is true",
+      "line": 23,
+      "context": "\n.field public static final debugButton5Text:Ljava/lang/String; = \"Ensure that you are initializing Branch inside of onStart() and that the code is called anytime the app enters the foreground\"\n\n.field public static final debugButton6Text:Ljava/lang/String; = \"Ensure that you are calling reInit() inside of onNewIntent() after checking if branch_force_new_session is true\"\n\n.field public static final deeplinkPathKey:Ljava/lang/String; = \"$deeplink_path\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/kotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererImpl.smali",
+      "match": "DebugMode",
+      "line": 4134,
+      "context": "\n    .line 122\n    .line 123\n    invoke-virtual {p0}, Lkotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererImpl;->getDebugMode()Z\n\n    .line 124\n    .line 125"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/kotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererImpl.smali",
+      "match": "DebugMode",
+      "line": 9004,
+      "context": "    return-object v0\n.end method\n\n.method public getDebugMode()Z\n    .locals 1\n\n    iget-object v0, p0, Lkotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererImpl;->a:Lkotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererOptionsImpl;"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/kotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererImpl.smali",
+      "match": "DebugMode",
+      "line": 9009,
+      "context": "\n    iget-object v0, p0, Lkotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererImpl;->a:Lkotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererOptionsImpl;\n\n    invoke-virtual {v0}, Lkotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererOptionsImpl;->getDebugMode()Z\n\n    move-result v0\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/kotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererImpl.smali",
+      "match": "DebugMode",
+      "line": 13312,
+      "context": "    return-void\n.end method\n\n.method public setDebugMode(Z)V\n    .locals 1\n\n    iget-object v0, p0, Lkotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererImpl;->a:Lkotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererOptionsImpl;"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/kotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererImpl.smali",
+      "match": "DebugMode",
+      "line": 13317,
+      "context": "\n    iget-object v0, p0, Lkotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererImpl;->a:Lkotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererOptionsImpl;\n\n    invoke-virtual {v0, p1}, Lkotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererOptionsImpl;->setDebugMode(Z)V\n\n    return-void\n.end method"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/kotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererImpl.smali",
+      "match": "DebugMode",
+      "line": 13618,
+      "context": "\n    .line 4\n    .line 5\n    invoke-virtual {p0}, Lkotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererImpl;->getDebugMode()Z\n\n    .line 6\n    .line 7"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/kotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererImpl.smali",
+      "match": "DebugMode",
+      "line": 13881,
+      "context": "    .line 8\n    .line 9\n    .line 10\n    invoke-virtual {p0}, Lkotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererImpl;->getDebugMode()Z\n\n    .line 11\n    .line 12"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/kotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererImpl.smali",
+      "match": "DebugMode",
+      "line": 14006,
+      "context": "    .line 8\n    .line 9\n    .line 10\n    invoke-virtual {p0}, Lkotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererImpl;->getDebugMode()Z\n\n    .line 11\n    .line 12"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/kotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererOptions.smali",
+      "match": "DebugMode",
+      "line": 20,
+      "context": "    .end annotation\n.end method\n\n.method public abstract getDebugMode()Z\n.end method\n\n.method public abstract getEnhancedTypes()Z"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/kotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererOptions.smali",
+      "match": "DebugMode",
+      "line": 54,
+      "context": "    .end param\n.end method\n\n.method public abstract setDebugMode(Z)V\n.end method\n\n.method public abstract setExcludedTypeAnnotationClasses(Ljava/util/Set;)V"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/kotlin/reflect/jvm/internal/impl/renderer/DescriptorRenderer.smali",
+      "match": "DebugMode",
+      "line": 507,
+      "context": "    const/4 v0, 0x1\n\n    .line 7\n    invoke-interface {p0, v0}, Lkotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererOptions;->setDebugMode(Z)V\n\n    .line 8\n    .line 9"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/kotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererOptionsImpl.smali",
+      "match": "debugMode",
+      "line": 291,
+      "context": "\n    .line 83\n    .line 84\n    const-string v9, \"debugMode\"\n\n    .line 85\n    .line 86"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/kotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererOptionsImpl.smali",
+      "match": "DebugMode",
+      "line": 295,
+      "context": "\n    .line 85\n    .line 86\n    const-string v10, \"getDebugMode()Z\"\n\n    .line 87\n    .line 88"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/kotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererOptionsImpl.smali",
+      "match": "DebugMode",
+      "line": 3319,
+      "context": "    return-object v0\n.end method\n\n.method public getDebugMode()Z\n    .locals 3\n\n    .line 1"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/kotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererOptionsImpl.smali",
+      "match": "DebugMode",
+      "line": 5247,
+      "context": "    return-void\n.end method\n\n.method public setDebugMode(Z)V\n    .locals 3\n\n    .line 1"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/kotlin/reflect/jvm/internal/impl/types/FlexibleTypeImpl.smali",
+      "match": "DebugMode",
+      "line": 470,
+      "context": "    .line 9\n    .line 10\n    .line 11\n    invoke-interface {p2}, Lkotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererOptions;->getDebugMode()Z\n\n    .line 12\n    .line 13"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/kotlin/reflect/jvm/internal/impl/load/java/lazy/types/RawTypeImpl.smali",
+      "match": "DebugMode",
+      "line": 716,
+      "context": "    move-result-object v1\n\n    .line 27\n    invoke-interface {p2}, Lkotlin/reflect/jvm/internal/impl/renderer/DescriptorRendererOptions;->getDebugMode()Z\n\n    .line 28\n    .line 29"
+    }
+  ],
+  "secrets": [
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali/androidx/camera/core/impl/b.smali",
+      "match": "token=\"\n\n    .line 27\n    .line 28\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 29\n    .line 30\n    .line 31\n    iget-object v1, p0, Landroidx/camera/core/impl/b;->c:Ljava/lang/Object;\n\n    .line 32\n    .line 33\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;\n\n    .line 34\n    .line 35\n    .line 36\n    const-string v1, \"",
+      "line": 370,
+      "context": "    .line 24\n    .line 25\n    .line 26\n    const-string v1, \", token=\"\n\n    .line 27\n    .line 28"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braze/requests/framework/g.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 14\n    iget-object v2, p0, Lcom/braze/requests/framework/g;->h:Ljava/lang/String;\n\n    .line 15\n    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 16\n    const-string v2, \"",
+      "line": 1774,
+      "context": "    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;\n\n    .line 13\n    const-string v2, \"\\n            |lastSdkAuthFailedToken=\"\n\n    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braze/requests/framework/g.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 32\n    iget-object p1, p0, Lcom/braze/requests/framework/g;->a:Lcom/braze/dispatch/h;\n\n    .line 33\n    iget-object p1, p1, Lcom/braze/dispatch/h;->a:Lcom/braze/managers/y0;\n\n    .line 34\n    iget-object p1, p1, Lcom/braze/managers/y0;->u:Lcom/braze/storage/t0;\n\n    .line 35\n    iget-object p1, p1, Lcom/braze/storage/t0;->d:Landroid/content/SharedPreferences;\n\n    .line 36\n    const-string p2, \"",
+      "line": 1848,
+      "context": "    invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;\n\n    .line 31\n    const-string p1, \"\\n            |currentSdkAuthToken=\"\n\n    invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braintreepayments/api/core/BraintreeApiConfiguration.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v2, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 362,
+      "context": "\n    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V\n\n    const-string v3, \"BraintreeApiConfiguration(accessToken=\"\n\n    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/mint/MintApiRoute$PutUserSettings.smali",
+      "match": "password=\"\n\n    invoke-virtual {v10, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v10, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 1155,
+      "context": "\n    invoke-virtual {v10, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", password=\"\n\n    invoke-virtual {v10, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/mint/MintApiRoute$ValidatePasswordToken.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v4, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v4, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 579,
+      "context": "\n    invoke-virtual {v4, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", mfaToken=\"\n\n    invoke-virtual {v4, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/mint/MintApiRoute$RefreshToken.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 476,
+      "context": "\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", refreshToken=\"\n\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/mint/MintApiRoute$PutOrangePortDriveBy.smali",
+      "match": "password=\"\n\n    invoke-virtual {v7, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v7, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 962,
+      "context": "\n    invoke-virtual {v7, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", password=\"\n\n    invoke-virtual {v7, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/mint/MintApiRoute$Login.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v5, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 682,
+      "context": "\n    invoke-virtual {v5, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", mfaToken=\"\n\n    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/mint/MintApiRoute$Login.smali",
+      "match": "password=\"\n\n    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v5, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 676,
+      "context": "\n    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", password=\"\n\n    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/mint/MintApiRoute$PutUserPassword.smali",
+      "match": "password=\"\n\n    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v6, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 755,
+      "context": "\n    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", password=\"\n\n    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/mint/MintApiRoute$ValidatePasswordTokenByUsername.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v4, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v4, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 579,
+      "context": "\n    invoke-virtual {v4, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", mfaToken=\"\n\n    invoke-virtual {v4, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/mint/MintApiRoute$AutoLoginToken.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v2, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 359,
+      "context": "\n    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V\n\n    const-string v3, \"AutoLoginToken(autoLoginToken=\"\n\n    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/mint/MintApiRoute$PostPayPalBilling.smali",
+      "match": "token=\"\n\n    invoke-virtual {v12, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v12, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 1381,
+      "context": "\n    invoke-virtual {v12, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", token=\"\n\n    invoke-virtual {v12, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/mint/MintApiRoute$MFAUserValidateToken.smali",
+      "match": "token=\"\n\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 476,
+      "context": "\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", token=\"\n\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/mint/MintApiRoute$LoginUsername.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v5, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 682,
+      "context": "\n    invoke-virtual {v5, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", mfaToken=\"\n\n    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/mint/MintApiRoute$LoginUsername.smali",
+      "match": "password=\"\n\n    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v5, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 676,
+      "context": "\n    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", password=\"\n\n    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/mint/MintApiRoute$MFAUserVerify.smali",
+      "match": "token=\"\n\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 476,
+      "context": "\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", token=\"\n\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/mint/MintApiRoute$RegisterPushToken.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 476,
+      "context": "\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", pushToken=\"\n\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/device_mgmt/MhiDeviceApiRoute$Login.smali",
+      "match": "password=\"\n\n    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v5, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 691,
+      "context": "\n    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", password=\"\n\n    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/accounts/AccountsApiRoute$PostPayPalBillingNoAcc.smali",
+      "match": "token=\"\n\n    invoke-virtual {v11, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v11, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 1296,
+      "context": "\n    invoke-virtual {v11, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", token=\"\n\n    invoke-virtual {v11, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/accounts/AccountsApiRoute$Login.smali",
+      "match": "password=\"\n\n    invoke-virtual {v4, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v4, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 547,
+      "context": "\n    invoke-virtual {v4, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", password=\"\n\n    invoke-virtual {v4, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/accounts/AccountsApiRoute$PutPortDriveBy.smali",
+      "match": "password=\"\n\n    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v6, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 847,
+      "context": "\n    invoke-virtual {v6, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", password=\"\n\n    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/accounts/AccountsApiRoute$PostPortDriveBy.smali",
+      "match": "password=\"\n\n    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v6, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 847,
+      "context": "\n    invoke-virtual {v6, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", password=\"\n\n    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/accounts/AccountsApiRoute$PostPayPalBilling.smali",
+      "match": "token=\"\n\n    invoke-virtual {v11, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v11, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 1296,
+      "context": "\n    invoke-virtual {v11, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", token=\"\n\n    invoke-virtual {v11, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/accounts/AccountsApiRoute$PutOrangePortDriveBy.smali",
+      "match": "password=\"\n\n    invoke-virtual {v7, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v7, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 962,
+      "context": "\n    invoke-virtual {v7, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", password=\"\n\n    invoke-virtual {v7, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/accounts/AccountsApiRoute$PostOrangePortDriveBy.smali",
+      "match": "password=\"\n\n    invoke-virtual {v7, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v7, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 962,
+      "context": "\n    invoke-virtual {v7, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", password=\"\n\n    invoke-virtual {v7, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/accounts/AccountsApiRoute$RegisterPushToken.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 476,
+      "context": "\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", pushToken=\"\n\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/ecomm/EcommApiRoute$PostPurchaseCheckout.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    move-object/from16 v1, v16\n\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v1, \"",
+      "line": 2903,
+      "context": "\n    invoke-virtual {v0, v14}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v1, \", ccToken=\"\n\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/sims/SimsApiRoute$PostTrialOrder.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v0, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v1, \"",
+      "line": 2498,
+      "context": "\n    invoke-virtual {v0, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v1, \", ccToken=\"\n\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/sims/SimsApiRoute$PostTrialOrder.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    move-object/from16 v1, v19\n\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v1, \"",
+      "line": 2582,
+      "context": "\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v1, \", queueToken=\"\n\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/sims/SimsApiRoute$PostPortIn.smali",
+      "match": "password=\"\n\n    invoke-virtual {v8, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v8, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 1077,
+      "context": "\n    invoke-virtual {v8, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", password=\"\n\n    invoke-virtual {v8, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/sims/SimsApiRoute$PostEcommCheckout.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v0, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v1, \"",
+      "line": 2453,
+      "context": "\n    invoke-virtual {v0, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v1, \", ccToken=\"\n\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/sims/SimsApiRoute$PostPortInOrange.smali",
+      "match": "password=\"\n\n    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v6, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 841,
+      "context": "\n    invoke-virtual {v6, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", password=\"\n\n    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/sims/SimsApiRoute$PostActivateESIMPurple.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v15, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v15, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 1782,
+      "context": "\n    invoke-virtual {v15, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", ccToken=\"\n\n    invoke-virtual {v15, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/sims/SimsApiRoute$PostActivateESIMPurple.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v15, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v15, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 1824,
+      "context": "\n    invoke-virtual {v15, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", queueToken=\"\n\n    invoke-virtual {v15, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/sims/SimsApiRoute$PostActivateESIMPurpleDeferred.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v13, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v13, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 1667,
+      "context": "\n    invoke-virtual {v13, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", ccToken=\"\n\n    invoke-virtual {v13, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/sims/SimsApiRoute$PostActivateESIMPurpleDeferred.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v13, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v13, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 1709,
+      "context": "\n    invoke-virtual {v13, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", queueToken=\"\n\n    invoke-virtual {v13, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/sims/SimsApiRoute$PostActivate.smali",
+      "match": "password=\"\n\n    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v6, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 853,
+      "context": "\n    invoke-virtual {v6, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", password=\"\n\n    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/sims/SimsApiRoute$PostEsimCampusCheckout.smali",
+      "match": "Token=\"\n\n    invoke-virtual {v13, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v13, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 1602,
+      "context": "\n    invoke-virtual {v13, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", ccToken=\"\n\n    invoke-virtual {v13, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/sims/SimsApiRoute$PostTrialPortIn.smali",
+      "match": "password=\"\n\n    invoke-virtual {v8, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v8, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 1077,
+      "context": "\n    invoke-virtual {v8, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \", password=\"\n\n    invoke-virtual {v8, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/google/firebase/installations/a.smali",
+      "match": "token=\"\n\n    .line 7\n    .line 8\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 9\n    .line 10\n    .line 11\n    iget-object v1, p0, Lcom/google/firebase/installations/a;->a:Ljava/lang/String;\n\n    .line 12\n    .line 13\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 14\n    .line 15\n    .line 16\n    const-string v1, \"",
+      "line": 289,
+      "context": "    .line 4\n    .line 5\n    .line 6\n    const-string v1, \"InstallationTokenResult{token=\"\n\n    .line 7\n    .line 8"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/google/firebase/installations/local/a.smali",
+      "match": "Token=\"\n\n    .line 27\n    .line 28\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 29\n    .line 30\n    .line 31\n    iget-object v1, p0, Lcom/google/firebase/installations/local/a;->c:Ljava/lang/String;\n\n    .line 32\n    .line 33\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 34\n    .line 35\n    .line 36\n    const-string v1, \"",
+      "line": 689,
+      "context": "    .line 24\n    .line 25\n    .line 26\n    const-string v1, \", authToken=\"\n\n    .line 27\n    .line 28"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/google/firebase/installations/local/a.smali",
+      "match": "Token=\"\n\n    .line 37\n    .line 38\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 39\n    .line 40\n    .line 41\n    iget-object v1, p0, Lcom/google/firebase/installations/local/a;->d:Ljava/lang/String;\n\n    .line 42\n    .line 43\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 44\n    .line 45\n    .line 46\n    const-string v1, \"",
+      "line": 707,
+      "context": "    .line 34\n    .line 35\n    .line 36\n    const-string v1, \", refreshToken=\"\n\n    .line 37\n    .line 38"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/google/firebase/installations/remote/a.smali",
+      "match": "Token=\"\n\n    .line 27\n    .line 28\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 29\n    .line 30\n    .line 31\n    iget-object v1, p0, Lcom/google/firebase/installations/remote/a;->c:Ljava/lang/String;\n\n    .line 32\n    .line 33\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 34\n    .line 35\n    .line 36\n    const-string v1, \"",
+      "line": 606,
+      "context": "    .line 24\n    .line 25\n    .line 26\n    const-string v1, \", refreshToken=\"\n\n    .line 27\n    .line 28"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/google/firebase/installations/remote/a.smali",
+      "match": "Token=\"\n\n    .line 37\n    .line 38\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 39\n    .line 40\n    .line 41\n    iget-object v1, p0, Lcom/google/firebase/installations/remote/a;->d:Lcom/google/firebase/installations/remote/TokenResult;\n\n    .line 42\n    .line 43\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;\n\n    .line 44\n    .line 45\n    .line 46\n    const-string v1, \"",
+      "line": 624,
+      "context": "    .line 34\n    .line 35\n    .line 36\n    const-string v1, \", authToken=\"\n\n    .line 37\n    .line 38"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/google/firebase/installations/remote/b.smali",
+      "match": "token=\"\n\n    .line 7\n    .line 8\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 9\n    .line 10\n    .line 11\n    iget-object v1, p0, Lcom/google/firebase/installations/remote/b;->a:Ljava/lang/String;\n\n    .line 12\n    .line 13\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 14\n    .line 15\n    .line 16\n    const-string v1, \"",
+      "line": 357,
+      "context": "    .line 4\n    .line 5\n    .line 6\n    const-string v1, \"TokenResult{token=\"\n\n    .line 7\n    .line 8"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/google/firebase/crashlytics/internal/common/a.smali",
+      "match": "Token=\"\n\n    .line 27\n    .line 28\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 29\n    .line 30\n    .line 31\n    iget-object v1, p0, Lcom/google/firebase/crashlytics/internal/common/a;->c:Ljava/lang/String;\n\n    .line 32\n    .line 33\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 34\n    .line 35\n    .line 36\n    const-string v1, \"",
+      "line": 382,
+      "context": "    .line 24\n    .line 25\n    .line 26\n    const-string v1, \", firebaseAuthenticationToken=\"\n\n    .line 27\n    .line 28"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/google/firebase/crashlytics/internal/model/a.smali",
+      "match": "Token=\"\n\n    .line 57\n    .line 58\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 59\n    .line 60\n    .line 61\n    iget-object v1, p0, Lcom/google/firebase/crashlytics/internal/model/a;->g:Ljava/lang/String;\n\n    .line 62\n    .line 63\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 64\n    .line 65\n    .line 66\n    const-string v1, \"",
+      "line": 1083,
+      "context": "    .line 54\n    .line 55\n    .line 56\n    const-string v1, \", firebaseAuthenticationToken=\"\n\n    .line 57\n    .line 58"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes3/com/google/android/gms/search/GoogleNowAuthState.smali",
+      "match": "Token = \"\n\n    .line 40\n    .line 41\n    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 42\n    .line 43\n    .line 44\n    invoke-virtual {v6, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 45\n    .line 46\n    .line 47\n    const-string v0, \"",
+      "line": 188,
+      "context": "    .line 37\n    .line 38\n    .line 39\n    const-string v0, \"\\nmAccessToken = \"\n\n    .line 40\n    .line 41"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes3/com/google/android/libraries/places/internal/zzne.smali",
+      "match": "Token=\"\n\n    .line 165\n    .line 166\n    invoke-virtual {v8, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 167\n    .line 168\n    .line 169\n    invoke-virtual {v8, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 170\n    .line 171\n    .line 172\n    const-string v0, \"",
+      "line": 935,
+      "context": "    .line 162\n    .line 163\n    .line 164\n    const-string v0, \", sessionToken=\"\n\n    .line 165\n    .line 166"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes3/com/google/android/libraries/places/internal/zzna.smali",
+      "match": "Token=\"\n\n    .line 417\n    .line 418\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 419\n    .line 420\n    .line 421\n    move-object/from16 v1, v29\n\n    .line 422\n    .line 423\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 424\n    .line 425\n    .line 426\n    const-string v1, \"",
+      "line": 2120,
+      "context": "    .line 414\n    .line 415\n    .line 416\n    const-string v1, \", autocompleteSessionToken=\"\n\n    .line 417\n    .line 418"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes3/com/google/android/libraries/places/api/net/zzh.smali",
+      "match": "Token=\"\n\n    .line 82\n    .line 83\n    invoke-virtual {v5, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 84\n    .line 85\n    .line 86\n    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 87\n    .line 88\n    .line 89\n    const-string v0, \"",
+      "line": 570,
+      "context": "    .line 79\n    .line 80\n    .line 81\n    const-string v1, \", cancellationToken=\"\n\n    .line 82\n    .line 83"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes3/com/google/android/libraries/places/api/net/zzq.smali",
+      "match": "Token=\"\n\n    .line 82\n    .line 83\n    invoke-virtual {v4, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 84\n    .line 85\n    .line 86\n    invoke-virtual {v4, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 87\n    .line 88\n    .line 89\n    const-string v0, \"",
+      "line": 562,
+      "context": "    .line 79\n    .line 80\n    .line 81\n    const-string v1, \", cancellationToken=\"\n\n    .line 82\n    .line 83"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes3/com/google/android/libraries/places/api/net/zzn.smali",
+      "match": "Token=\"\n\n    .line 40\n    .line 41\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 42\n    .line 43\n    .line 44\n    invoke-virtual {v3, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 45\n    .line 46\n    .line 47\n    const-string v0, \"",
+      "line": 302,
+      "context": "    .line 37\n    .line 38\n    .line 39\n    const-string v0, \", cancellationToken=\"\n\n    .line 40\n    .line 41"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes3/com/google/android/libraries/places/api/net/zzk.smali",
+      "match": "Token=\"\n\n    .line 221\n    .line 222\n    invoke-virtual {v13, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 223\n    .line 224\n    .line 225\n    invoke-virtual {v13, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 226\n    .line 227\n    .line 228\n    const-string v4, \"",
+      "line": 1514,
+      "context": "    .line 218\n    .line 219\n    .line 220\n    const-string v5, \", sessionToken=\"\n\n    .line 221\n    .line 222"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes3/com/google/android/libraries/places/api/net/zzk.smali",
+      "match": "Token=\"\n\n    .line 269\n    .line 270\n    invoke-virtual {v13, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 271\n    .line 272\n    .line 273\n    invoke-virtual {v13, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 274\n    .line 275\n    .line 276\n    const-string v1, \"",
+      "line": 1598,
+      "context": "    .line 266\n    .line 267\n    .line 268\n    const-string v2, \", cancellationToken=\"\n\n    .line 269\n    .line 270"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes3/com/google/android/libraries/places/api/net/zzt.smali",
+      "match": "Token=\"\n\n    .line 271\n    .line 272\n    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 273\n    .line 274\n    .line 275\n    invoke-virtual {v0, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 276\n    .line 277\n    .line 278\n    const-string v2, \"",
+      "line": 2033,
+      "context": "    .line 268\n    .line 269\n    .line 270\n    const-string v2, \"SearchByTextRequest{cancellationToken=\"\n\n    .line 271\n    .line 272"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes3/com/google/android/libraries/places/api/net/zzx.smali",
+      "match": "Token=\"\n\n    .line 243\n    .line 244\n    invoke-virtual {v13, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 245\n    .line 246\n    .line 247\n    invoke-virtual {v13, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 248\n    .line 249\n    .line 250\n    const-string v3, \"",
+      "line": 1577,
+      "context": "    .line 240\n    .line 241\n    .line 242\n    const-string v4, \", cancellationToken=\"\n\n    .line 243\n    .line 244"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes3/com/google/android/libraries/places/api/net/zze.smali",
+      "match": "Token=\"\n\n    .line 83\n    .line 84\n    invoke-virtual {v8, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 85\n    .line 86\n    .line 87\n    invoke-virtual {v8, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 88\n    .line 89\n    .line 90\n    const-string v0, \"",
+      "line": 627,
+      "context": "    .line 80\n    .line 81\n    .line 82\n    const-string v0, \", sessionToken=\"\n\n    .line 83\n    .line 84"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes3/com/google/android/libraries/places/api/net/zze.smali",
+      "match": "Token=\"\n\n    .line 91\n    .line 92\n    invoke-virtual {v8, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 93\n    .line 94\n    .line 95\n    invoke-virtual {v8, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 96\n    .line 97\n    .line 98\n    const-string v0, \"",
+      "line": 641,
+      "context": "    .line 88\n    .line 89\n    .line 90\n    const-string v0, \", cancellationToken=\"\n\n    .line 91\n    .line 92"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes3/com/google/android/libraries/places/api/net/zzb.smali",
+      "match": "Token=\"\n\n    .line 82\n    .line 83\n    invoke-virtual {v5, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 84\n    .line 85\n    .line 86\n    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 87\n    .line 88\n    .line 89\n    const-string v0, \"",
+      "line": 570,
+      "context": "    .line 79\n    .line 80\n    .line 81\n    const-string v1, \", cancellationToken=\"\n\n    .line 82\n    .line 83"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes3/com/google/android/libraries/places/api/auth/zzd.smali",
+      "match": "Token=\"\n\n    .line 53\n    .line 54\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 55\n    .line 56\n    .line 57\n    invoke-virtual {v3, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 58\n    .line 59\n    .line 60\n    const-string v0, \"",
+      "line": 389,
+      "context": "    .line 50\n    .line 51\n    .line 52\n    const-string v0, \", appCheckToken=\"\n\n    .line 53\n    .line 54"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/org/jsoup/parser/HtmlTreeBuilder.smali",
+      "match": "Token=\"\n\n    .line 7\n    .line 8\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 9\n    .line 10\n    .line 11\n    iget-object v1, p0, Lorg/jsoup/parser/d;->currentToken:Lorg/jsoup/parser/Token;\n\n    .line 12\n    .line 13\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;\n\n    .line 14\n    .line 15\n    .line 16\n    const-string v1, \"",
+      "line": 7509,
+      "context": "    .line 4\n    .line 5\n    .line 6\n    const-string v1, \"TreeBuilder{currentToken=\"\n\n    .line 7\n    .line 8"
+    }
+  ],
+  "endpoints": [
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braze/Braze.smali",
+      "match": "https://www.braze.com/docs/user_guide/administrative/access_braze/sdk_endpoints",
+      "line": 7021,
+      "context": "    .locals 1\n\n    .line 1\n    const-string v0, \"**  https://www.braze.com/docs/user_guide/administrative/access_braze/sdk_endpoints  **\"\n\n    .line 2\n    .line 3"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braze/Braze.smali",
+      "match": "https://www.braze.com/docs/developer_guide/platform_integration_guides/android/initial_sdk_setup/android_sdk_integration/",
+      "line": 14444,
+      "context": "    .locals 1\n\n    .line 1\n    const-string v0, \"The Braze SDK is not integrated correctly. Please visit https://www.braze.com/docs/developer_guide/platform_integration_guides/android/initial_sdk_setup/android_sdk_integration/\"\n\n    .line 2\n    .line 3"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/ultramobile/mint/AppConstantsKt.smali",
+      "match": "https://www.mintmobile.com/help/device-protection",
+      "line": 72,
+      "context": "    .end annotation\n.end field\n\n.field public static final URL_ALLSTATE_LEARN_MORE:Ljava/lang/String; = \"https://www.mintmobile.com/help/device-protection\"\n    .annotation build Lorg/jetbrains/annotations/NotNull;\n    .end annotation\n.end field"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/com/ultramobile/mint/fragments/settings/DeviceProtectionFragment.smali",
+      "match": "https://www.mintmobile.com/help/device-protection",
+      "line": 588,
+      "context": "    .line 4\n    .line 5\n    .line 6\n    const-string p1, \"https://www.mintmobile.com/help/device-protection\"\n\n    .line 7\n    .line 8"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/com/ultramobile/mint/fragments/popups/InfoModalFragment$setClickableHelpCenter$tcSpan$1.smali",
+      "match": "https://www.mintmobile.com/help/device-protection",
+      "line": 82,
+      "context": "\n    .line 7\n    .line 8\n    const-string v0, \"https://www.mintmobile.com/help/device-protection\"\n\n    .line 9\n    .line 10"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/CustomDomainCheck.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#section-configure-app\\",
+      "line": 44,
+      "context": "\n    .line 11\n    .line 12\n    const-string v2, \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#section-configure-app\\\">More info</a>\"\n\n    .line 13\n    .line 14"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/AppLinksCheck.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=%3C!%2D%2D%20Branch%20App%20Links%20%2D%20Live,%3C/intent%2Dfilter%3E\\",
+      "line": 44,
+      "context": "\n    .line 11\n    .line 12\n    const-string v2, \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=%3C!%2D%2D%20Branch%20App%20Links%20%2D%20Live,%3C/intent%2Dfilter%3E\\\">More info</a>\"\n\n    .line 13\n    .line 14"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/IntegrationValidator.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#section-load-branch",
+      "line": 315,
+      "context": "\n    .line 54\n    .line 55\n    const-string v1, \"https://help.branch.io/developers-hub/docs/android-basic-integration#section-load-branch\"\n\n    .line 56\n    .line 57"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/IntegrationValidator.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#section-configure-app",
+      "line": 397,
+      "context": "\n    .line 96\n    .line 97\n    const-string v2, \"https://help.branch.io/developers-hub/docs/android-basic-integration#section-configure-app\"\n\n    .line 98\n    .line 99"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/IntegrationValidator.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#section-configure-branch-dashboard",
+      "line": 475,
+      "context": "\n    .line 136\n    .line 137\n    const-string v1, \"https://help.branch.io/developers-hub/docs/android-basic-integration#section-configure-branch-dashboard\"\n\n    .line 138\n    .line 139"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/BranchInstanceCreationValidatorCheck.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=Branch.getAutoInstance(this)\\",
+      "line": 40,
+      "context": "\n    .line 11\n    .line 12\n    const-string v2, \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=Branch.getAutoInstance(this)\\\">More info</a>\"\n\n    .line 13\n    .line 14"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/DefaultDomainsCheck.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#4-configure-app:~:text=%3C!%2D%2D%20Branch%20App%20Links%20%2D%20Live,%3C/intent%2Dfilter%3E\\",
+      "line": 44,
+      "context": "\n    .line 11\n    .line 12\n    const-string v2, \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#4-configure-app:~:text=%3C!%2D%2D%20Branch%20App%20Links%20%2D%20Live,%3C/intent%2Dfilter%3E\\\">More info</a>\"\n\n    .line 13\n    .line 14"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/URISchemeCheck.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#4-configure-app:~:text=%3Cintent%2Dfilter%3E%0A%09%09%09%09%3C!%2D%2D%20If,/%3E%0A%09%09%09%3C/intent%2Dfilter%3E\\",
+      "line": 66,
+      "context": "\n    .line 19\n    .line 20\n    const-string v1, \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#4-configure-app:~:text=%3Cintent%2Dfilter%3E%0A%09%09%09%09%3C!%2D%2D%20If,/%3E%0A%09%09%09%3C/intent%2Dfilter%3E\\\">More info</a>\"\n\n    .line 21\n    .line 22"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/URISchemeCheck.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#1-configure-branch-dashboard:~:text=%22Android%20URI%20Scheme%22\\",
+      "line": 74,
+      "context": "\n    .line 23\n    .line 24\n    const-string v2, \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#1-configure-branch-dashboard:~:text=%22Android%20URI%20Scheme%22\\\">More info</a>\"\n\n    .line 25\n    .line 26"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/AlternateDomainsCheck.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=The%20%2Dalternate.app.link%20domain%20associated%20with%20your%20app\\",
+      "line": 44,
+      "context": "\n    .line 11\n    .line 12\n    const-string v2, \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=The%20%2Dalternate.app.link%20domain%20associated%20with%20your%20app\\\">More info</a>\"\n\n    .line 13\n    .line 14"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/PackageNameCheck.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=package%3D%22com.example.android%22\\",
+      "line": 44,
+      "context": "\n    .line 11\n    .line 12\n    const-string v2, \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=package%3D%22com.example.android%22\\\">More info</a>\"\n\n    .line 13\n    .line 14"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/BranchKeysValidatorCheck.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=%3C!%2D%2D%20REPLACE%20%60BranchKey%60%20with,%22key_test_XXX%22%20/%3E\\",
+      "line": 40,
+      "context": "\n    .line 11\n    .line 12\n    const-string v2, \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=%3C!%2D%2D%20REPLACE%20%60BranchKey%60%20with,%22key_test_XXX%22%20/%3E\\\">More info</a>\"\n\n    .line 13\n    .line 14"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/IntegrationValidatorConstants.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=The%20%2Dalternate.app.link%20domain%20associated%20with%20your%20app\\",
+      "line": 7,
+      "context": "\n\n# static fields\n.field public static final alternateDomainsMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=The%20%2Dalternate.app.link%20domain%20associated%20with%20your%20app\\\">More info</a>\"\n\n.field public static final appLinksMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=%3C!%2D%2D%20Branch%20App%20Links%20%2D%20Live,%3C/intent%2Dfilter%3E\\\">More info</a>\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/IntegrationValidatorConstants.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=%3C!%2D%2D%20Branch%20App%20Links%20%2D%20Live,%3C/intent%2Dfilter%3E\\",
+      "line": 9,
+      "context": "# static fields\n.field public static final alternateDomainsMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=The%20%2Dalternate.app.link%20domain%20associated%20with%20your%20app\\\">More info</a>\"\n\n.field public static final appLinksMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=%3C!%2D%2D%20Branch%20App%20Links%20%2D%20Live,%3C/intent%2Dfilter%3E\\\">More info</a>\"\n\n.field public static final branchInstanceCreationMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=Branch.getAutoInstance(this)\\\">More info</a>\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/IntegrationValidatorConstants.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=Branch.getAutoInstance(this)\\",
+      "line": 11,
+      "context": "\n.field public static final appLinksMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=%3C!%2D%2D%20Branch%20App%20Links%20%2D%20Live,%3C/intent%2Dfilter%3E\\\">More info</a>\"\n\n.field public static final branchInstanceCreationMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=Branch.getAutoInstance(this)\\\">More info</a>\"\n\n.field public static final branchKeysMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=%3C!%2D%2D%20REPLACE%20%60BranchKey%60%20with,%22key_test_XXX%22%20/%3E\\\">More info</a>\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/IntegrationValidatorConstants.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=%3C!%2D%2D%20REPLACE%20%60BranchKey%60%20with,%22key_test_XXX%22%20/%3E\\",
+      "line": 13,
+      "context": "\n.field public static final branchInstanceCreationMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=Branch.getAutoInstance(this)\\\">More info</a>\"\n\n.field public static final branchKeysMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=%3C!%2D%2D%20REPLACE%20%60BranchKey%60%20with,%22key_test_XXX%22%20/%3E\\\">More info</a>\"\n\n.field public static final checkmark:Ljava/lang/String; = \"\\u2705\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/IntegrationValidatorConstants.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#section-configure-app\\",
+      "line": 17,
+      "context": "\n.field public static final checkmark:Ljava/lang/String; = \"\\u2705\"\n\n.field public static final customDomainMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#section-configure-app\\\">More info</a>\"\n\n.field public static final defaultDomainsMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#4-configure-app:~:text=%3C!%2D%2D%20Branch%20App%20Links%20%2D%20Live,%3C/intent%2Dfilter%3E\\\">More info</a>\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/IntegrationValidatorConstants.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#4-configure-app:~:text=%3C!%2D%2D%20Branch%20App%20Links%20%2D%20Live,%3C/intent%2Dfilter%3E\\",
+      "line": 19,
+      "context": "\n.field public static final customDomainMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#section-configure-app\\\">More info</a>\"\n\n.field public static final defaultDomainsMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#4-configure-app:~:text=%3C!%2D%2D%20Branch%20App%20Links%20%2D%20Live,%3C/intent%2Dfilter%3E\\\">More info</a>\"\n\n.field public static final packageNameMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=package%3D%22com.example.android%22\\\">More info</a>\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/IntegrationValidatorConstants.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=package%3D%22com.example.android%22\\",
+      "line": 21,
+      "context": "\n.field public static final defaultDomainsMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#4-configure-app:~:text=%3C!%2D%2D%20Branch%20App%20Links%20%2D%20Live,%3C/intent%2Dfilter%3E\\\">More info</a>\"\n\n.field public static final packageNameMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=package%3D%22com.example.android%22\\\">More info</a>\"\n\n.field public static final uriSchemeAppMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#4-configure-app:~:text=%3Cintent%2Dfilter%3E%0A%09%09%09%09%3C!%2D%2D%20If,/%3E%0A%09%09%09%3C/intent%2Dfilter%3E\\\">More info</a>\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/IntegrationValidatorConstants.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#4-configure-app:~:text=%3Cintent%2Dfilter%3E%0A%09%09%09%09%3C!%2D%2D%20If,/%3E%0A%09%09%09%3C/intent%2Dfilter%3E\\",
+      "line": 23,
+      "context": "\n.field public static final packageNameMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#:~:text=package%3D%22com.example.android%22\\\">More info</a>\"\n\n.field public static final uriSchemeAppMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#4-configure-app:~:text=%3Cintent%2Dfilter%3E%0A%09%09%09%09%3C!%2D%2D%20If,/%3E%0A%09%09%09%3C/intent%2Dfilter%3E\\\">More info</a>\"\n\n.field public static final uriSchemeDashboardMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#1-configure-branch-dashboard:~:text=%22Android%20URI%20Scheme%22\\\">More info</a>\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/validators/IntegrationValidatorConstants.smali",
+      "match": "https://help.branch.io/developers-hub/docs/android-basic-integration#1-configure-branch-dashboard:~:text=%22Android%20URI%20Scheme%22\\",
+      "line": 25,
+      "context": "\n.field public static final uriSchemeAppMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#4-configure-app:~:text=%3Cintent%2Dfilter%3E%0A%09%09%09%09%3C!%2D%2D%20If,/%3E%0A%09%09%09%3C/intent%2Dfilter%3E\\\">More info</a>\"\n\n.field public static final uriSchemeDashboardMoreInfoDocsLink:Ljava/lang/String; = \"<a href=\\\"https://help.branch.io/developers-hub/docs/android-basic-integration#1-configure-branch-dashboard:~:text=%22Android%20URI%20Scheme%22\\\">More info</a>\"\n\n.field public static final xmark:Ljava/lang/String; = \"\\u274c\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/lib/android/paypal/com/magnessdk/c$h$d.smali",
+      "match": "https://c.paypal.com/r/v1/device/mg-audit",
+      "line": 57,
+      "context": "\n    new-instance v0, Llib/android/paypal/com/magnessdk/c$h$d;\n\n    const-string v1, \"https://c.paypal.com/r/v1/device/mg-audit\"\n\n    const-string v2, \"AUDIT_JSON_URL\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/lib/android/paypal/com/magnessdk/c$h$d.smali",
+      "match": "https://c.paypal.com/r/v1/device/client-metadata",
+      "line": 69,
+      "context": "\n    new-instance v1, Llib/android/paypal/com/magnessdk/c$h$d;\n\n    const-string v2, \"https://c.paypal.com/r/v1/device/client-metadata\"\n\n    const-string v4, \"DEVICE_INFO_URL\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/lib/android/paypal/com/magnessdk/c$h$d.smali",
+      "match": "https://c.paypal.com/r/v1/device/mg",
+      "line": 93,
+      "context": "\n    new-instance v4, Llib/android/paypal/com/magnessdk/c$h$d;\n\n    const-string v6, \"https://c.paypal.com/r/v1/device/mg\"\n\n    const-string v8, \"PRODUCTION_JSON_URL\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/lib/android/paypal/com/magnessdk/c$h$d.smali",
+      "match": "https://c.sandbox.paypal.com/r/v1/device/client-metadata",
+      "line": 129,
+      "context": "\n    new-instance v10, Llib/android/paypal/com/magnessdk/c$h$d;\n\n    const-string v12, \"https://c.sandbox.paypal.com/r/v1/device/client-metadata\"\n\n    const-string v14, \"SANDBOX_DEVICE_INFO_URL\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/lib/android/paypal/com/magnessdk/c$h$d.smali",
+      "match": "https://c.sandbox.paypal.com/r/v1/device/mg-audit",
+      "line": 149,
+      "context": "\n    move/from16 v17, v5\n\n    const-string v5, \"https://c.sandbox.paypal.com/r/v1/device/mg-audit\"\n\n    invoke-direct {v12, v14, v3, v5}, Llib/android/paypal/com/magnessdk/c$h$d;-><init>(Ljava/lang/String;ILjava/lang/String;)V\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/lib/android/paypal/com/magnessdk/a.smali",
+      "match": "https://c.paypal.com/r/v1/device/mg-audit",
+      "line": 15,
+      "context": "\n.field public static final d:Ljava/lang/String; = \"production\"\n\n.field public static final e:Ljava/lang/String; = \"https://c.paypal.com/r/v1/device/mg-audit\"\n\n.field public static final f:Ljava/lang/String; = \"999\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/lib/android/paypal/com/magnessdk/a.smali",
+      "match": "https://c.paypal.com/r/v1/device/client-metadata",
+      "line": 19,
+      "context": "\n.field public static final f:Ljava/lang/String; = \"999\"\n\n.field public static final g:Ljava/lang/String; = \"https://c.paypal.com/r/v1/device/client-metadata\"\n\n.field public static final h:Ljava/lang/String; = \"https://b.stats.paypal.com/counter.cgi\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/lib/android/paypal/com/magnessdk/a.smali",
+      "match": "https://c.paypal.com/r/v1/device/mg",
+      "line": 23,
+      "context": "\n.field public static final h:Ljava/lang/String; = \"https://b.stats.paypal.com/counter.cgi\"\n\n.field public static final i:Ljava/lang/String; = \"https://c.paypal.com/r/v1/device/mg\"\n\n.field public static final j:Ljava/lang/String; = \"https://www.paypalobjects.com/rdaAssets/magnes/magnes_android_rac.json\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/lib/android/paypal/com/magnessdk/a.smali",
+      "match": "https://c.sandbox.paypal.com/r/v1/device/mg-audit",
+      "line": 29,
+      "context": "\n.field public static final k:Ljava/lang/String; = \"https://www.paypalobjects.com/rdaAssets/magnes/magnes_android_rec.json\"\n\n.field public static final l:Ljava/lang/String; = \"https://c.sandbox.paypal.com/r/v1/device/mg-audit\"\n\n.field public static final m:Ljava/lang/String; = \"https://c.sandbox.paypal.com/r/v1/device/client-metadata\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/lib/android/paypal/com/magnessdk/a.smali",
+      "match": "https://c.sandbox.paypal.com/r/v1/device/client-metadata",
+      "line": 31,
+      "context": "\n.field public static final l:Ljava/lang/String; = \"https://c.sandbox.paypal.com/r/v1/device/mg-audit\"\n\n.field public static final m:Ljava/lang/String; = \"https://c.sandbox.paypal.com/r/v1/device/client-metadata\"\n\n.field public static final n:Ljava/lang/String; = \"https://c.sandbox.paypal.com/r/v1/device/mg\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes6/lib/android/paypal/com/magnessdk/a.smali",
+      "match": "https://c.sandbox.paypal.com/r/v1/device/mg",
+      "line": 33,
+      "context": "\n.field public static final m:Ljava/lang/String; = \"https://c.sandbox.paypal.com/r/v1/device/client-metadata\"\n\n.field public static final n:Ljava/lang/String; = \"https://c.sandbox.paypal.com/r/v1/device/mg\"\n\n.field public static final o:Ljava/lang/String; = \"5.5.1.release\"\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/res/values/strings.xml",
+      "match": "https://mintmobile.com/help/device-protection/</string>",
+      "line": 859,
+      "context": "    <string name=\"delete\">delete</string>\n    <string name=\"delivery_address\">Delivery address</string>\n    <string name=\"dest_title\">destination title</string>\n    <string name=\"device_protection_learnmore_url\">https://mintmobile.com/help/device-protection/</string>\n    <string name=\"device_purchase_url\">https://www.mintmobile.com/devices/qualify/?utm_source=app&amp;utm_medium=account_mgmt&amp;utm_campaign=shop_devices/</string>\n    <string name=\"devices_api_url\">https://assets.mintmobile.com/devices.json</string>\n    <string name=\"did_you_lost_sim\">Did you lose or damage your SIM card? No problem, order a new SIM card.</string>"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/res/values/strings.xml",
+      "match": "https://www.mintmobile.com/devices/qualify/?utm_source=app&amp;utm_medium=account_mgmt&amp;utm_campaign=shop_devices/</string>",
+      "line": 860,
+      "context": "    <string name=\"delivery_address\">Delivery address</string>\n    <string name=\"dest_title\">destination title</string>\n    <string name=\"device_protection_learnmore_url\">https://mintmobile.com/help/device-protection/</string>\n    <string name=\"device_purchase_url\">https://www.mintmobile.com/devices/qualify/?utm_source=app&amp;utm_medium=account_mgmt&amp;utm_campaign=shop_devices/</string>\n    <string name=\"devices_api_url\">https://assets.mintmobile.com/devices.json</string>\n    <string name=\"did_you_lost_sim\">Did you lose or damage your SIM card? No problem, order a new SIM card.</string>\n    <string name=\"dollar\">$</string>"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/res/values/strings.xml",
+      "match": "https://assets.mintmobile.com/devices.json</string>",
+      "line": 861,
+      "context": "    <string name=\"dest_title\">destination title</string>\n    <string name=\"device_protection_learnmore_url\">https://mintmobile.com/help/device-protection/</string>\n    <string name=\"device_purchase_url\">https://www.mintmobile.com/devices/qualify/?utm_source=app&amp;utm_medium=account_mgmt&amp;utm_campaign=shop_devices/</string>\n    <string name=\"devices_api_url\">https://assets.mintmobile.com/devices.json</string>\n    <string name=\"did_you_lost_sim\">Did you lose or damage your SIM card? No problem, order a new SIM card.</string>\n    <string name=\"dollar\">$</string>\n    <string name=\"ecomm_and_target_plans_item_footer_new\">\"Upfront payment of $45 for 3-month plan (equiv. to $15/mo.) req'd. New customer offer first 3 months only; then full-price plan options available. Taxes &amp; fees extra. Customers who use over 35GB a month may notice reduced data speeds for the rest of their monthly cycle in certain locations when our network is busy. Includes up to 10GB hotspot. Videos stream at ~480p. See terms.\"</string>"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/res/values/strings.xml",
+      "match": "https://assets.mintmobile.com/data/devices_esim.json</string>",
+      "line": 905,
+      "context": "    <string name=\"error_payment_removal_unable\">You need a payment method on your account to have a Mint Family. To remove, you first need to delete your family.</string>\n    <string name=\"error_payment_unable_charge\">This payment method was declined by your financial institution and cannot be used. Please review the information and try again.</string>\n    <string name=\"error_request_code_invalid\">Request code cannot be Integer.MIN_VALUE</string>\n    <string name=\"esim_devices_api_url\">https://assets.mintmobile.com/data/devices_esim.json</string>\n    <string name=\"esim_install_step_1\">Go to <b>Network &amp; Internet</b> in your device Settings</string>\n    <string name=\"esim_install_step_2\">Tap on <b>Add Mobile Network</b> (the + icon)</string>\n    <string name=\"esim_install_step_3\">Select <b>Download a SIM instead</b>\" \"</string>"
+    }
+  ],
+  "api_keys": [
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braze/configuration/BrazeConfig$Builder.smali",
+      "match": "apiKey=\"\n\n    .line 4\n    .line 5\n    invoke-direct {v0, v1}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V\n\n    .line 6\n    .line 7\n    .line 8\n    iget-object v1, p0, Lcom/braze/configuration/BrazeConfig$Builder;->apiKey:Ljava/lang/String;\n\n    .line 9\n    .line 10\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 11\n    .line 12\n    .line 13\n    const-string v1, \"",
+      "line": 3878,
+      "context": "\n    .line 2\n    .line 3\n    const-string v1, \"Builder(apiKey=\"\n\n    .line 4\n    .line 5"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braze/configuration/BrazeConfig$Builder.smali",
+      "match": "apiKey=\"\n\n    .line 4\n    .line 5\n    invoke-direct {v0, v1}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V\n\n    .line 6\n    .line 7\n    .line 8\n    iget-object v1, p0, Lcom/braze/configuration/BrazeConfig$Builder;->apiKey:Ljava/lang/String;\n\n    .line 9\n    .line 10\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 11\n    .line 12\n    .line 13\n    const-string v1, \"",
+      "line": 3878,
+      "context": "\n    .line 2\n    .line 3\n    const-string v1, \"Builder(apiKey=\"\n\n    .line 4\n    .line 5"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braze/configuration/BrazeConfig$Builder.smali",
+      "match": "apiKey=\"\n\n    .line 4\n    .line 5\n    invoke-direct {v0, v1}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V\n\n    .line 6\n    .line 7\n    .line 8\n    iget-object v1, p0, Lcom/braze/configuration/BrazeConfig$Builder;->apiKey:Ljava/lang/String;\n\n    .line 9\n    .line 10\n    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    .line 11\n    .line 12\n    .line 13\n    const-string v1, \"",
+      "line": 3878,
+      "context": "\n    .line 2\n    .line 3\n    const-string v1, \"Builder(apiKey=\"\n\n    .line 4\n    .line 5"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braintreepayments/api/core/VisaCheckoutConfiguration.smali",
+      "match": "apiKey=\"\n\n    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 506,
+      "context": "\n    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V\n\n    const-string v4, \"VisaCheckoutConfiguration(apiKey=\"\n\n    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braintreepayments/api/core/VisaCheckoutConfiguration.smali",
+      "match": "apiKey=\"\n\n    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 506,
+      "context": "\n    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V\n\n    const-string v4, \"VisaCheckoutConfiguration(apiKey=\"\n\n    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braintreepayments/api/core/VisaCheckoutConfiguration.smali",
+      "match": "apiKey=\"\n\n    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n\n    const-string v0, \"",
+      "line": 506,
+      "context": "\n    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V\n\n    const-string v4, \"VisaCheckoutConfiguration(apiKey=\"\n\n    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes3/com/google/android/libraries/places/internal/zzey.smali",
+      "match": "AIzaSyDgmW4ZMvNblSXqMOgsbY8uRrTnfR3E7pY",
+      "line": 106,
+      "context": "    move-result-object v3\n\n    .line 35\n    const-string v4, \"AIzaSyDgmW4ZMvNblSXqMOgsbY8uRrTnfR3E7pY\"\n\n    .line 36\n    .line 37"
+    }
+  ],
+  "firebase": [
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/ultramobile/mint/R$string.smali",
+      "match": "firebase_database_url",
+      "line": 533,
+      "context": "\n.field public static fcc_sim_swap_fragment_title:I = 0x7f150399\n\n.field public static firebase_database_url:I = 0x7f15039b\n\n.field public static forgot_password_validation_footer:I = 0x7f15039c\n"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/google/firebase/FirebaseOptions.smali",
+      "match": "firebase_database_url",
+      "line": 213,
+      "context": "    move-result-object v3\n\n    .line 28\n    const-string p0, \"firebase_database_url\"\n\n    .line 29\n    .line 30"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/res/values/public.xml",
+      "match": "firebase_database_url",
+      "line": 12767,
+      "context": "    <public type=\"string\" name=\"fcc_sim_swap_fragment_text\" id=\"0x7f150398\" />\n    <public type=\"string\" name=\"fcc_sim_swap_fragment_title\" id=\"0x7f150399\" />\n    <public type=\"string\" name=\"fcm_fallback_notification_channel_label\" id=\"0x7f15039a\" />\n    <public type=\"string\" name=\"firebase_database_url\" id=\"0x7f15039b\" />\n    <public type=\"string\" name=\"forgot_password_validation_footer\" id=\"0x7f15039c\" />\n    <public type=\"string\" name=\"fox_support_agent\" id=\"0x7f15039d\" />\n    <public type=\"string\" name=\"fragment_maintenance_call\" id=\"0x7f15039e\" />"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/res/values/strings.xml",
+      "match": "firebaseio.com",
+      "line": 935,
+      "context": "    <string name=\"fcc_sim_swap_fragment_text\">\"Number Lock helps prevent unauthorized users from hijacking your SIM, your number and ultimately your account. Once it's on, turning it off requires a one-time password be sent to your phone number or email address (that's been on your account for at least 30 days) to confirm it's you.\"</string>\n    <string name=\"fcc_sim_swap_fragment_title\">Number Lock</string>\n    <string name=\"fcm_fallback_notification_channel_label\">Miscellaneous</string>\n    <string name=\"firebase_database_url\">https://mint-sim-app.firebaseio.com</string>\n    <string name=\"forgot_password_validation_footer\">\"\u2022 This code expires in 30 mins.\n\u2022 For Kid\u2019s Plans, codes are sent to the parent\u2019s email.\n\u2022 Didn\u2019t receive a code? Call Care at (800) 683\u20137392\"</string>"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/res/values/strings.xml",
+      "match": "firebase_database_url",
+      "line": 935,
+      "context": "    <string name=\"fcc_sim_swap_fragment_text\">\"Number Lock helps prevent unauthorized users from hijacking your SIM, your number and ultimately your account. Once it's on, turning it off requires a one-time password be sent to your phone number or email address (that's been on your account for at least 30 days) to confirm it's you.\"</string>\n    <string name=\"fcc_sim_swap_fragment_title\">Number Lock</string>\n    <string name=\"fcm_fallback_notification_channel_label\">Miscellaneous</string>\n    <string name=\"firebase_database_url\">https://mint-sim-app.firebaseio.com</string>\n    <string name=\"forgot_password_validation_footer\">\"\u2022 This code expires in 30 mins.\n\u2022 For Kid\u2019s Plans, codes are sent to the parent\u2019s email.\n\u2022 Didn\u2019t receive a code? Call Care at (800) 683\u20137392\"</string>"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/res/raw/firebase_common_keep.xml",
+      "match": "firebase_database_url",
+      "line": 3,
+      "context": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources xmlns:tools=\"http://schemas.android.com/tools\"\n    tools:keep=\"@string/google_app_id,@string/gcm_defaultSenderId,@string/google_api_key,@string/firebase_database_url,@string/ga_trackingId,@string/google_storage_bucket,@string/project_id\" />"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/res/raw/firebase_common_keep.xml",
+      "match": "firebase_database_url,@string/ga_trackingId,@string/google_storage_bucket",
+      "line": 3,
+      "context": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources xmlns:tools=\"http://schemas.android.com/tools\"\n    tools:keep=\"@string/google_app_id,@string/gcm_defaultSenderId,@string/google_api_key,@string/firebase_database_url,@string/ga_trackingId,@string/google_storage_bucket,@string/project_id\" />"
+    }
+  ],
+  "auth_bypass": [
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/com/ultramobile/mint/util/FoxHelpManager.smali",
+      "match": "isAuthenticated = true",
+      "line": 211,
+      "context": "\n    .line 8\n    .line 9\n    const-string v1, \"^^BrandMessengerManager isAuthenticated = true - before\"\n\n    .line 10\n    .line 11"
+    },
+    {
+      "file": "/Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/com/ultramobile/mint/util/FoxHelpManager.smali",
+      "match": "isAuthenticated = true",
+      "line": 316,
+      "context": "\n    .line 15\n    .line 16\n    const-string v1, \"^^BrandMessengerManager isAuthenticated = true\"\n\n    .line 17\n    .line 18"
+    }
+  ]
+}

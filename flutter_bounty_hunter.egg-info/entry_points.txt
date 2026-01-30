@@ -1,0 +1,2 @@
+[console_scripts]
+fbh = fbh.cli.main:main

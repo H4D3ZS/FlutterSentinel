@@ -1,0 +1,22 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Globe, MapPin, Activity, ShieldAlert } from 'lucide-react';
+import { clsx } from 'clsx';
+const ThreatMap = () => {
+    // Threats will be populated by live telemetry in future updates
+    const threats = [];
+    const getSeverityColor = (sev) => {
+        switch (sev) {
+            case 'critical': return 'text-severity-critical';
+            case 'high': return 'text-severity-high';
+            case 'medium': return 'text-severity-medium';
+            case 'low': return 'text-severity-low';
+            default: return 'text-accent';
+        }
+    };
+    return (_jsxs("div", { className: "relative w-full h-[400px] bg-background-tertiary/20 rounded-2xl overflow-hidden border border-border border-dashed group", children: [_jsx("div", { className: "absolute inset-0 opacity-10 pointer-events-none", style: { backgroundImage: 'radial-gradient(circle, var(--text-tertiary) 1px, transparent 1px)', backgroundSize: '30px 30px' } }), _jsx("div", { className: "absolute inset-0 flex items-center justify-center opacity-5", children: _jsx(Globe, { size: 300, strokeWidth: 0.5 }) }), _jsxs("div", { className: "absolute top-4 left-4 z-10", children: [_jsxs("div", { className: "flex items-center gap-2 mb-1", children: [_jsx(Activity, { size: 18, className: "text-accent animate-pulse" }), _jsx("h3", { className: "text-sm font-bold uppercase tracking-widest text-text-primary", children: "Global Attack Surface" })] }), _jsx("p", { className: "text-[10px] text-text-tertiary", children: "Real-time Sentinel Intelligence Tracking" })] }), threats.map((threat) => (_jsx(motion.div, { initial: { scale: 0, opacity: 0 }, animate: { scale: 1, opacity: 1 }, transition: { delay: Math.random() * 2 }, className: "absolute", style: { top: threat.lat, left: threat.lng }, children: _jsxs("div", { className: "relative group cursor-pointer", children: [_jsx("div", { className: clsx("absolute -inset-2 rounded-full animate-ping opacity-20", threat.severity === 'critical' ? 'bg-severity-critical' : 'bg-accent') }), _jsx("div", { className: clsx("relative w-3 h-3 rounded-full border-2 border-background-primary shadow-[0_0_10px_rgba(0,0,0,0.5)]", threat.status === 'breached' ? 'bg-severity-critical animate-bounce' :
+                                threat.severity === 'critical' ? 'bg-severity-critical' : 'bg-accent') }), _jsx("div", { className: "absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-20", children: _jsxs("div", { className: "bg-background-secondary border border-border rounded-lg p-2 shadow-2xl min-w-[150px]", children: [_jsxs("div", { className: "flex items-center justify-between mb-1", children: [_jsx("span", { className: "text-[9px] font-bold uppercase text-text-tertiary", children: "Target" }), _jsx(ShieldAlert, { size: 10, className: getSeverityColor(threat.severity) })] }), _jsx("div", { className: "text-xs font-bold text-text-primary mb-1 underline decoration-accent/30", children: threat.targetName }), _jsxs("div", { className: "flex items-center justify-between", children: [_jsx("span", { className: clsx("text-[9px] font-bold uppercase", getSeverityColor(threat.severity)), children: threat.severity }), _jsx("span", { className: "text-[9px] text-text-tertiary", children: threat.status })] })] }) })] }) }, threat.id))), _jsxs("div", { className: "absolute bottom-4 right-4 bg-background-secondary/50 backdrop-blur-md border border-border rounded-lg p-2 flex gap-4", children: [_jsxs("div", { className: "flex items-center gap-1.5", children: [_jsx("div", { className: "w-2 h-2 rounded-full bg-severity-critical" }), _jsx("span", { className: "text-[9px] font-bold uppercase text-text-tertiary", children: "Critical" })] }), _jsxs("div", { className: "flex items-center gap-1.5", children: [_jsx("div", { className: "w-2 h-2 rounded-full bg-accent" }), _jsx("span", { className: "text-[9px] font-bold uppercase text-text-tertiary", children: "Monitored" })] }), _jsxs("div", { className: "flex items-center gap-1.5", children: [_jsx("div", { className: "w-2 h-2 rounded-full bg-severity-low" }), _jsx("span", { className: "text-[9px] font-bold uppercase text-text-tertiary", children: "Healthy" })] })] })] }));
+};
+export default ThreatMap;
+//# sourceMappingURL=ThreatMap.js.map

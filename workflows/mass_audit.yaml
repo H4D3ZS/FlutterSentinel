@@ -1,0 +1,6 @@
+name: mass_audit
+description: Standard mass audit workflow for all targets
+modules:
+  - name: quick
+  - name: source_code
+  - name: apk

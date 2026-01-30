@@ -1,0 +1,42 @@
+{
+  "commerce_api": {
+    "endpoint": "https://commerce-api.ultramobile.com",
+    "accessible": false,
+    "data_exposed": false,
+    "findings": []
+  },
+  "google_api_key": {
+    "key": "AIzaSyAANh4HS0IRZMpx...",
+    "valid": false,
+    "accessible_apis": []
+  },
+  "firebase_database": {
+    "url": "https://mint-sim-app.firebaseio.com",
+    "accessible": false,
+    "exposed_data": []
+  },
+  "braintree_api": {
+    "endpoints_found": 3,
+    "accessible": false,
+    "findings": [
+      {
+        "endpoint": "Production",
+        "url": "https://payments.braintree-api.com",
+        "status": 404,
+        "accessible": false
+      },
+      {
+        "endpoint": "Sandbox",
+        "url": "https://payments.sandbox.braintree-api.com",
+        "status": 404,
+        "accessible": false
+      }
+    ]
+  },
+  "smartystreets_api": {
+    "endpoint": "https://us-street.api.smartystreets.com",
+    "accessible": false,
+    "requires_auth": true,
+    "status_code": 404
+  }
+}

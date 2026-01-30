@@ -1,0 +1,504 @@
+
+╔══════════════════════════════════════════════════════════════════╗
+║  COMPREHENSIVE SOURCE CODE AUDIT                                ║
+║  Real Bug Bounty Methodology                                    ║
+╚══════════════════════════════════════════════════════════════════╝
+        
+[*] Target: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled
+[*] Starting deep source code analysis...
+
+[*] Found 52192 Smali files
+[*] Found 2096 XML files
+
+[*] Scanning for vulnerabilities...
+
+    Progress: 0/54288 files scanned...
+    Progress: 1000/54288 files scanned...
+    Progress: 2000/54288 files scanned...
+    Progress: 3000/54288 files scanned...
+    Progress: 4000/54288 files scanned...
+    Progress: 5000/54288 files scanned...
+    Progress: 6000/54288 files scanned...
+    Progress: 7000/54288 files scanned...
+    Progress: 8000/54288 files scanned...
+    Progress: 9000/54288 files scanned...
+    Progress: 10000/54288 files scanned...
+    Progress: 11000/54288 files scanned...
+    Progress: 12000/54288 files scanned...
+    Progress: 13000/54288 files scanned...
+    Progress: 14000/54288 files scanned...
+    Progress: 15000/54288 files scanned...
+    Progress: 16000/54288 files scanned...
+    Progress: 17000/54288 files scanned...
+    Progress: 18000/54288 files scanned...
+    Progress: 19000/54288 files scanned...
+    Progress: 20000/54288 files scanned...
+    Progress: 21000/54288 files scanned...
+    Progress: 22000/54288 files scanned...
+    Progress: 23000/54288 files scanned...
+    Progress: 24000/54288 files scanned...
+    Progress: 25000/54288 files scanned...
+    Progress: 26000/54288 files scanned...
+    Progress: 27000/54288 files scanned...
+    Progress: 28000/54288 files scanned...
+    Progress: 29000/54288 files scanned...
+    Progress: 30000/54288 files scanned...
+    Progress: 31000/54288 files scanned...
+    Progress: 32000/54288 files scanned...
+    Progress: 33000/54288 files scanned...
+    Progress: 34000/54288 files scanned...
+    Progress: 35000/54288 files scanned...
+    Progress: 36000/54288 files scanned...
+    Progress: 37000/54288 files scanned...
+    Progress: 38000/54288 files scanned...
+    Progress: 39000/54288 files scanned...
+    Progress: 40000/54288 files scanned...
+    Progress: 41000/54288 files scanned...
+    Progress: 42000/54288 files scanned...
+    Progress: 43000/54288 files scanned...
+    Progress: 44000/54288 files scanned...
+    Progress: 45000/54288 files scanned...
+    Progress: 46000/54288 files scanned...
+    Progress: 47000/54288 files scanned...
+    Progress: 48000/54288 files scanned...
+    Progress: 49000/54288 files scanned...
+    Progress: 50000/54288 files scanned...
+    Progress: 51000/54288 files scanned...
+    Progress: 52000/54288 files scanned...
+    Progress: 53000/54288 files scanned...
+    Progress: 54000/54288 files scanned...
+
+[+] Scan complete!
+
+======================================================================
+VULNERABILITY FINDINGS
+======================================================================
+
+[!] Found 147 potential vulnerabilities!
+
+
+======================================================================
+🔴 DEBUG: 26 findings
+======================================================================
+
+Finding #1:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali/androidx/constraintlayout/motion/widget/MotionLayout.smali
+  Line: 11867
+  Match: DebugMode
+  Context:
+        return-void
+    .end method
+    
+
+Finding #2:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/androidx/window/embedding/EmbeddingCompat.smali
+  Line: 66
+  Match: DEBUG:Z = true
+  Context:
+        .end annotation
+    .end field
+    
+
+Finding #3:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/androidx/loader/app/LoaderManager.smali
+  Line: 27
+  Match: enableDebug
+  Context:
+        return-void
+    .end method
+    
+
+Finding #4:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/androidx/fragment/app/FragmentManager.smali
+  Line: 732
+  Match: enableDebug
+  Context:
+        return-void
+    .end method
+    
+
+Finding #5:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/io/branch/referral/Branch.smali
+  Line: 5592
+  Match: DebugMode
+  Context:
+    
+        .line 10
+        .line 11
+
+  ... and 21 more
+
+
+======================================================================
+🔴 SECRETS: 64 findings
+======================================================================
+
+Finding #1:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali/androidx/camera/core/impl/b.smali
+  Line: 370
+  Match: token="
+
+    .line 27
+    .line 28
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 29
+    .line 30
+    .line 31
+    iget-object v1, p0, Landroidx/camera/core/impl/b;->c:Ljava/lang/Object;
+
+    .line 32
+    .line 33
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+
+    .line 34
+    .line 35
+    .line 36
+    const-string v1, "
+  Context:
+        .line 24
+        .line 25
+        .line 26
+
+Finding #2:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braze/requests/framework/g.smali
+  Line: 1774
+  Match: Token="
+
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 14
+    iget-object v2, p0, Lcom/braze/requests/framework/g;->h:Ljava/lang/String;
+
+    .line 15
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 16
+    const-string v2, "
+  Context:
+        invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
+    
+        .line 13
+
+Finding #3:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braze/requests/framework/g.smali
+  Line: 1848
+  Match: Token="
+
+    invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 32
+    iget-object p1, p0, Lcom/braze/requests/framework/g;->a:Lcom/braze/dispatch/h;
+
+    .line 33
+    iget-object p1, p1, Lcom/braze/dispatch/h;->a:Lcom/braze/managers/y0;
+
+    .line 34
+    iget-object p1, p1, Lcom/braze/managers/y0;->u:Lcom/braze/storage/t0;
+
+    .line 35
+    iget-object p1, p1, Lcom/braze/storage/t0;->d:Landroid/content/SharedPreferences;
+
+    .line 36
+    const-string p2, "
+  Context:
+        invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+    
+        .line 31
+
+Finding #4:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braintreepayments/api/core/BraintreeApiConfiguration.smali
+  Line: 362
+  Match: Token="
+
+    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v2, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string v0, "
+  Context:
+    
+        invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+    
+
+Finding #5:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/ultramobile/mint/api/mint/MintApiRoute$PutUserSettings.smali
+  Line: 1155
+  Match: password="
+
+    invoke-virtual {v10, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v10, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string v0, "
+  Context:
+    
+        invoke-virtual {v10, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    
+
+  ... and 59 more
+
+
+======================================================================
+🔴 ENDPOINTS: 41 findings
+======================================================================
+
+Finding #1:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braze/Braze.smali
+  Line: 7021
+  Match: https://www.braze.com/docs/user_guide/administrative/access_braze/sdk_endpoints
+  Context:
+        .locals 1
+    
+        .line 1
+
+Finding #2:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braze/Braze.smali
+  Line: 14444
+  Match: https://www.braze.com/docs/developer_guide/platform_integration_guides/android/initial_sdk_setup/android_sdk_integration/
+  Context:
+        .locals 1
+    
+        .line 1
+
+Finding #3:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/ultramobile/mint/AppConstantsKt.smali
+  Line: 72
+  Match: https://www.mintmobile.com/help/device-protection
+  Context:
+        .end annotation
+    .end field
+    
+
+Finding #4:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/com/ultramobile/mint/fragments/settings/DeviceProtectionFragment.smali
+  Line: 588
+  Match: https://www.mintmobile.com/help/device-protection
+  Context:
+        .line 4
+        .line 5
+        .line 6
+
+Finding #5:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/com/ultramobile/mint/fragments/popups/InfoModalFragment$setClickableHelpCenter$tcSpan$1.smali
+  Line: 82
+  Match: https://www.mintmobile.com/help/device-protection
+  Context:
+    
+        .line 7
+        .line 8
+
+  ... and 36 more
+
+
+======================================================================
+🔴 API KEYS: 7 findings
+======================================================================
+
+Finding #1:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braze/configuration/BrazeConfig$Builder.smali
+  Line: 3878
+  Match: apiKey="
+
+    .line 4
+    .line 5
+    invoke-direct {v0, v1}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
+
+    .line 6
+    .line 7
+    .line 8
+    iget-object v1, p0, Lcom/braze/configuration/BrazeConfig$Builder;->apiKey:Ljava/lang/String;
+
+    .line 9
+    .line 10
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 11
+    .line 12
+    .line 13
+    const-string v1, "
+  Context:
+    
+        .line 2
+        .line 3
+
+Finding #2:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braze/configuration/BrazeConfig$Builder.smali
+  Line: 3878
+  Match: apiKey="
+
+    .line 4
+    .line 5
+    invoke-direct {v0, v1}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
+
+    .line 6
+    .line 7
+    .line 8
+    iget-object v1, p0, Lcom/braze/configuration/BrazeConfig$Builder;->apiKey:Ljava/lang/String;
+
+    .line 9
+    .line 10
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 11
+    .line 12
+    .line 13
+    const-string v1, "
+  Context:
+    
+        .line 2
+        .line 3
+
+Finding #3:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braze/configuration/BrazeConfig$Builder.smali
+  Line: 3878
+  Match: apiKey="
+
+    .line 4
+    .line 5
+    invoke-direct {v0, v1}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
+
+    .line 6
+    .line 7
+    .line 8
+    iget-object v1, p0, Lcom/braze/configuration/BrazeConfig$Builder;->apiKey:Ljava/lang/String;
+
+    .line 9
+    .line 10
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 11
+    .line 12
+    .line 13
+    const-string v1, "
+  Context:
+    
+        .line 2
+        .line 3
+
+Finding #4:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braintreepayments/api/core/VisaCheckoutConfiguration.smali
+  Line: 506
+  Match: apiKey="
+
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string v0, "
+  Context:
+    
+        invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+    
+
+Finding #5:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/braintreepayments/api/core/VisaCheckoutConfiguration.smali
+  Line: 506
+  Match: apiKey="
+
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string v0, "
+  Context:
+    
+        invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+    
+
+  ... and 2 more
+
+
+======================================================================
+🔴 FIREBASE: 7 findings
+======================================================================
+
+Finding #1:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes2/com/ultramobile/mint/R$string.smali
+  Line: 533
+  Match: firebase_database_url
+  Context:
+    
+    .field public static fcc_sim_swap_fragment_title:I = 0x7f150399
+    
+
+Finding #2:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes4/com/google/firebase/FirebaseOptions.smali
+  Line: 213
+  Match: firebase_database_url
+  Context:
+        move-result-object v3
+    
+        .line 28
+
+Finding #3:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/res/values/public.xml
+  Line: 12767
+  Match: firebase_database_url
+  Context:
+        <public type="string" name="fcc_sim_swap_fragment_text" id="0x7f150398" />
+        <public type="string" name="fcc_sim_swap_fragment_title" id="0x7f150399" />
+        <public type="string" name="fcm_fallback_notification_channel_label" id="0x7f15039a" />
+
+Finding #4:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/res/values/strings.xml
+  Line: 935
+  Match: firebaseio.com
+  Context:
+        <string name="fcc_sim_swap_fragment_text">"Number Lock helps prevent unauthorized users from hijacking your SIM, your number and ultimately your account. Once it's on, turning it off requires a one-time password be sent to your phone number or email address (that's been on your account for at least 30 days) to confirm it's you."</string>
+        <string name="fcc_sim_swap_fragment_title">Number Lock</string>
+        <string name="fcm_fallback_notification_channel_label">Miscellaneous</string>
+
+Finding #5:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/res/values/strings.xml
+  Line: 935
+  Match: firebase_database_url
+  Context:
+        <string name="fcc_sim_swap_fragment_text">"Number Lock helps prevent unauthorized users from hijacking your SIM, your number and ultimately your account. Once it's on, turning it off requires a one-time password be sent to your phone number or email address (that's been on your account for at least 30 days) to confirm it's you."</string>
+        <string name="fcc_sim_swap_fragment_title">Number Lock</string>
+        <string name="fcm_fallback_notification_channel_label">Miscellaneous</string>
+
+  ... and 2 more
+
+
+======================================================================
+🔴 AUTH BYPASS: 2 findings
+======================================================================
+
+Finding #1:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/com/ultramobile/mint/util/FoxHelpManager.smali
+  Line: 211
+  Match: isAuthenticated = true
+  Context:
+    
+        .line 8
+        .line 9
+
+Finding #2:
+  File: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/data/apks/mint_mobile_decompiled/smali_classes5/com/ultramobile/mint/util/FoxHelpManager.smali
+  Line: 316
+  Match: isAuthenticated = true
+  Context:
+    
+        .line 15
+        .line 16
+
+
+[+] Detailed report saved to: source_code_audit_results.json
+
+======================================================================
+NEXT STEPS
+======================================================================
+
+Priority Review:
+1. Check API_KEYS - Test if they work
+2. Check FIREBASE - Look for open databases
+3. Check ENDPOINTS - Test /admin, /internal URLs
+4. Check PAYMENT logic - Look for bypasses
+5. Check AUTH_BYPASS - Client-side validation issues
+
+Remember:
+- Finding != Vulnerability
+- Always test if keys/endpoints actually work
+- Understand the context and impact
+- Report responsibly

@@ -1,0 +1,20 @@
+id: generic-api-idor
+info:
+  name: Generic API IDOR Pattern
+  author: sovereign
+  severity: medium
+  description: Detecting patterns in URLs that may indicate IDOR vulnerabilities.
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/api/v1/user/{{id}}"
+      - "{{BaseURL}}/api/v2/account/{{id}}"
+    payloads:
+      id:
+        - "1"
+        - "0"
+        - "9999"
+    matchers:
+      - type: status
+        status:
+          - 200

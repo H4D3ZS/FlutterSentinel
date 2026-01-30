@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: flutter-bounty-hunter
+Version: 5.4.0
+Requires-Dist: django>=4.0
+Requires-Dist: requests
+Requires-Dist: pyjwt
+Requires-Dist: beautifulsoup4
+Requires-Dist: google-play-scraper
+Dynamic: requires-dist
