@@ -12,14 +12,15 @@ import { ExploitForge } from '@/components/ExploitForge';
 import {
   Cpu, Database, LogOut, Shield, Target,
   Settings as SettingsIcon, Terminal as TerminalIcon,
-  ChevronsUp, Upload, Hammer
+  ChevronsUp, Upload, Hammer, Brain
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { HexStrikeIntel } from '@/components/HexStrikeIntel';
 
-type TabType = 'mobile' | 'scans' | 'exploit' | 'targets' | 'terminal' | 'settings' | 'upgrade';
+type TabType = 'mobile' | 'scans' | 'exploit' | 'targets' | 'terminal' | 'settings' | 'upgrade' | 'sovereign';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('fbh_token'));
@@ -53,6 +54,7 @@ function App() {
     terminal: { title: 'COMMAND_CENTER', description: '// Web domain recon and mission control' },
     settings: { title: 'SYS_CONFIG', description: '// Configure API keys and system parameters' },
     upgrade: { title: 'UPGRADE_ARSENAL', description: '// Enhance offensive capabilities' },
+    sovereign: { title: 'SOVEREIGN_INTEL', description: '// HexStrike AI infrastructure reconnaissance' },
   };
 
   return (
@@ -110,6 +112,9 @@ function App() {
               </TabsTrigger>
               <TabsTrigger value="terminal" className="rounded-none px-3 data-[state=active]:bg-primary data-[state=active]:text-black font-bold text-[10px] uppercase tracking-widest h-full text-primary">
                 <TerminalIcon className="mr-1" size={12} /> CMD
+              </TabsTrigger>
+              <TabsTrigger value="sovereign" className="rounded-none px-3 data-[state=active]:bg-primary data-[state=active]:text-black font-bold text-[10px] uppercase tracking-widest h-full text-primary">
+                <Brain className="mr-1" size={12} /> INTEL
               </TabsTrigger>
               <TabsTrigger value="settings" className="rounded-none px-3 data-[state=active]:bg-primary data-[state=active]:text-black font-bold text-[10px] uppercase tracking-widest h-full text-primary">
                 <SettingsIcon className="mr-1" size={12} /> CFG
@@ -180,6 +185,11 @@ function App() {
                 </div>
               </div>
             </div>
+          </TabsContent>
+
+          {/* Sovereign Intel Tab */}
+          <TabsContent value="sovereign" className="animate-in fade-in slide-in-from-bottom-4 duration-700 outline-none">
+            <HexStrikeIntel />
           </TabsContent>
 
           {/* Settings Tab */}

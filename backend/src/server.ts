@@ -14,12 +14,18 @@ import { fileURLToPath } from 'url';
 import { exec } from 'child_process';
 import util from 'util';
 const execPromise = util.promisify(exec);
+import { HexStrikeManager } from './services/hexstrike-manager.js';
+import axios from 'axios';
 import { AuthService } from './auth/auth-service.js';
 import { authMiddleware, adminMiddleware } from './middleware/auth.js';
 import { mobsfService } from './api/mobsf-service.js';
 import { settingsService } from './api/settings-service.js';
 import { ipaService } from './api/ipa-service.js';
 import type { LoginRequest, RegisterRequest } from './types/auth.js';
+import { FBHBotClient } from './infrastructure/external/fbhbot-client.js';
+import http from 'http';
+
+const fbhbotService = new FBHBotClient();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -593,12 +599,122 @@ app.post('/api/ipa/download', authMiddleware, async (req: Request, res: Response
     }
 });
 
+import { ReportEngine } from './services/report-engine.js';
+
+// ============================================================================
+// HEXSTRIKE FUSION ROUTES
+// ============================================================================
+
+import { SwarmCoordinator } from './services/swarm-coordinator.js';
+
+const hexStrikeManager = HexStrikeManager.getInstance();
+const reportEngine = new ReportEngine(hexStrikeManager);
+const swarmCoordinator = new SwarmCoordinator(hexStrikeManager, fbhbotService);
+
+// ==========================================
+// REPORTING API
+// ==========================================
+app.post('/api/report/generate', async (req: Request, res: Response) => {
+    try {
+        const { target, data } = req.body;
+        if (!target) return res.status(400).json({ error: 'Target is required' });
+
+        const report = await reportEngine.generateReport(target, data);
+        res.json({ success: true, report });
+    } catch (error: any) {
+        console.error('Report Generation Error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+/**
+ * POST /api/hexstrike/control
+ * Start/Stop the HexStrike sidecar
+ */
+app.post('/api/hexstrike/control', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { action } = req.body;
+        const manager = HexStrikeManager.getInstance();
+
+        if (action === 'start') {
+            const success = await manager.startServer();
+            if (success) {
+                res.json({ success: true, message: 'HexStrike server started', baseUrl: manager.getBaseUrl() });
+            } else {
+                res.status(500).json({ error: 'Failed to start HexStrike server' });
+            }
+        } else if (action === 'stop') {
+            manager.stopServer();
+            res.json({ success: true, message: 'HexStrike server stopped' });
+        } else if (action === 'status') {
+            res.json({
+                running: manager.isRunning(),
+                baseUrl: manager.getBaseUrl()
+            });
+        } else {
+            res.status(400).json({ error: 'Invalid action. Use start, stop, or status.' });
+        }
+    } catch (error: any) {
+        console.error('HexStrike control error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+/**
+ * PROXY /api/hexstrike/*
+ * Forward requests to the running HexStrike instance
+ */
+app.use('/api/hexstrike', authMiddleware, async (req: Request, res: Response) => {
+    const manager = HexStrikeManager.getInstance();
+
+    if (!manager.isRunning()) {
+        // Auto-start if not running? Or fail? Let's fail and tell them to start it.
+        // Actually, for better UX, let's try to start it if it's not running
+        // But for now, let's just check status.
+        // manager.startServer(); 
+
+        // If not running, 503
+        return res.status(503).json({
+            error: 'HexStrike engine is not active. Please start it via the Sovereign Intel dashboard.',
+            code: 'HEXSTRIKE_OFFLINE'
+        });
+    }
+
+    try {
+        const baseUrl = manager.getBaseUrl();
+        // Construct target URL. req.url here is relative to the mount point '/api/hexstrike'
+        // e.g. /api/hexstrike/health -> req.url = /health
+        const targetUrl = `${baseUrl}${req.url}`;
+
+        console.log(`[HexStrike Proxy] ${req.method} ${targetUrl}`);
+
+        const response = await axios({
+            method: req.method,
+            url: targetUrl,
+            data: req.body,
+            params: req.query,
+            headers: {
+                // Forward auth header? HexStrike might not need it if it's local only
+                // 'Authorization': req.headers.authorization 
+            },
+            validateStatus: () => true // Allow any status code to pass through
+        });
+
+        res.status(response.status).send(response.data);
+
+    } catch (error: any) {
+        console.error('HexStrike proxy error:', error.message);
+        if (error.code === 'ECONNREFUSED') {
+            res.status(502).json({ error: 'HexStrike server unreachable. It might be starting up.' });
+        } else {
+            res.status(500).json({ error: 'Proxy request failed' });
+        }
+    }
+});
+
 // ============================================================================
 // FBHBOT AI AGENT ROUTES
 // ============================================================================
-
-import { fbhbotService } from './api/fbhbot-service.js';
-import http from 'http';
 
 /**
  * GET /api/fbhbot/status
@@ -796,6 +912,13 @@ app.post('/api/fbhbot/mobile/analyze', authMiddleware, async (req: Request, res:
         const { hash, app_path, platform } = req.body;
         console.log(`📱 Running FBHBot mobile analysis for ${hash} (${platform})`);
         const response = await fbhbotService.analyzeMobileApp(hash, app_path, platform);
+
+        // 🐝 SWARM AUTONOMY TRIGGER
+        // We run this asynchronously so we don't block the UI response
+        swarmCoordinator.processMobileReflex(response).catch(err => {
+            console.error('Swarm reflex error:', err);
+        });
+
         res.json(response);
     } catch (error: any) {
         console.error('FBHBot mobile analysis error:', error);
@@ -984,12 +1107,16 @@ app.get('/api/fbhbot/stream', authMiddleware, (req: Request, res: Response) => {
         'Connection': 'keep-alive',
     });
 
-    const proxyReq = http.request(streamUrl, (proxyRes) => {
+    const proxyReq = http.request(streamUrl);
+    proxyReq.on('response', (proxyRes: any) => {
+        if (proxyRes.statusCode === 503) {
+            // HexStrike starting up?
+        }
         proxyRes.pipe(res);
     });
 
-    proxyReq.on('error', (err) => {
-        console.error('SSE Proxy Error:', err);
+    proxyReq.on('error', (err: any) => {
+        console.error('HexStrike Proxy Request Error:', err);
         res.end();
     });
 

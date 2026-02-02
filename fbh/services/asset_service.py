@@ -8,6 +8,6 @@ class AssetService:
         return APKAcquisition.download(package, output_dir)
 
     @staticmethod
-    def download_ios(store_url: str, output_dir: Path) -> bool:
+    def download_ios(bundle_id: str, output_dir: Path) -> bool:
         """Download IPA using ipatool"""
-        return IPAAcquisition.download(store_url, output_dir)
+        return IPAAcquisition.download(bundle_id, output_dir)

@@ -183,8 +183,35 @@ export function startServer(port: number, memory = defaultMemory, agent = defaul
             }
 
             // specialized Flutter Audit
+            // specialized Flutter Audit
             if (req.method === "POST" && req.url === "/api/intel/audit-flutter") {
-                // ... (Placeholder for flutter audit)
+                let body = "";
+                req.on("data", chunk => body += chunk);
+                req.on("end", async () => {
+                    try {
+                        const { appPath, platform } = JSON.parse(body);
+                        log.info(`API: Starting Flutter Audit for ${appPath}`);
+
+                        // 1. Run JWT Scan
+                        const { runJWTScan } = await import("./tools/jwt.js");
+                        const jwtFindings = await runJWTScan(appPath);
+
+                        // 2. Future: Add specific Flutter Engine analysis tools here
+                        // ...
+
+                        res.writeHead(200, headers);
+                        res.end(JSON.stringify({
+                            status: "complete",
+                            jwt_findings: jwtFindings,
+                            message: `Audit complete. Found ${jwtFindings.length} potential auth issues.`
+                        }));
+                    } catch (e: any) {
+                        log.error(`Flutter Audit failed: ${e}`);
+                        res.writeHead(500, headers);
+                        res.end(JSON.stringify({ error: `Audit failed: ${e.message}` }));
+                    }
+                });
+                return;
             }
 
             // Exploit Forge (Autonomous Loop)

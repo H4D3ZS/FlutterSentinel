@@ -94,7 +94,49 @@ coverage/
 Thumbs.db
 .DS_Store
 
+
 # Package manager locks (optional, uncomment if needed)
 # package-lock.json
 # yarn.lock
 # poetry.lock
+
+# FBH Project Specific
+# New Target Structure (Root targets dir)
+targets/*/apk/
+targets/*/ipa/
+targets/*/decompiled/
+targets/*/pocs/*.zip
+targets/*/pocs/*.tar.gz
+targets/*/dist/
+targets/*/build/
+
+# Backend targets (legacy or alternative path)
+backend/targets/*/ipa/
+backend/targets/*/apk/
+backend/targets/*/decompiled/
+
+# Heavy Binary Extensions
+*.apk
+*.apkm
+*.apk.idsig
+*.xapk
+*.ipa
+*.app
+*.app.zip
+*.dSYM.zip
+*.aab
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.iso
+*.img
+*.db
+*.sqlite
+*.sqlite3
+

@@ -291,5 +291,35 @@ export const api = {
     clearForgeSessions: async () => {
         const response = await client.delete('/fbhbot/exploit/sessions');
         return response.data;
+    },
+
+    // ============================================================================
+    // HEXSTRIKE FUSION
+    // ============================================================================
+    hexstrikeControl: async (action: 'start' | 'stop' | 'status') => {
+        const response = await client.post('/hexstrike/control', { action });
+        return response.data;
+    },
+
+    hexstrikeFetch: async (endpoint: string) => {
+        const response = await client.get(`/hexstrike${endpoint}`);
+        return response.data;
+    },
+
+    hexstrikeSmartScan: async (target: string) => {
+        const response = await client.post('/hexstrike/api/intelligence/smart-scan', {
+            target: target,
+            scan_profile: 'comprehensive',
+            allow_active_recon: true
+        });
+        return response.data;
+    },
+
+    hexstrikeLogicScan: async (domain: string) => {
+        const response = await client.post('/hexstrike/api/bugbounty/business-logic-workflow', {
+            domain: domain,
+            program_type: 'web'
+        });
+        return response.data;
     }
 };

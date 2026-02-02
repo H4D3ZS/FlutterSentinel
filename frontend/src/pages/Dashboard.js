@@ -2,7 +2,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React, { useEffect, useState } from 'react';
 import { Plus, RefreshCcw, ShieldAlert, Zap, LayoutGrid, FileCode, ShieldCheck, Activity, CheckCircle2, BarChart3, ArrowUpRight, TrendingUp, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import api from '@/lib/api';
+import { targetService } from '@/services';
 import TargetCard from '@/components/TargetCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -28,17 +28,17 @@ const Dashboard = ({ workspaceId }) => {
     const fetchData = async () => {
         setRefreshing(true);
         try {
-            const [targetRes] = await Promise.all([
-                api.get('/mobsf/scans'),
-            ]);
-            const mobsfScans = targetRes.data || [];
-            const transformedTargets = mobsfScans.map((scan) => ({
-                name: scan.FILE_NAME || 'Unknown',
-                package: scan.PACKAGE_NAME || 'com.unknown.app',
-                platform: scan.PLATFORM || 'android',
-                status: 'completed',
-                scan_progress: 100,
-                stats: {
+            const fetchedTargets = await targetService.getTargets();
+            // Transform if needed, though domain model should ideally match or be mapped in repo
+            // specific mapping logic can stay here if Presentation layer needs different shape
+            // For now assuming Repo returns Domain Target which matches UI needs or we map:
+            const transformedTargets = fetchedTargets.map((t) => ({
+                name: t.name || t.FILE_NAME || 'Unknown',
+                package: t.package || t.PACKAGE_NAME || 'com.unknown.app',
+                platform: t.platform || t.PLATFORM || 'android',
+                status: t.status || 'completed',
+                scan_progress: t.progress || 100,
+                stats: t.stats || {
                     total_findings: Math.floor(Math.random() * 50),
                     findings_by_severity: { critical: Math.floor(Math.random() * 5), high: Math.floor(Math.random() * 10) }
                 }
