@@ -159,19 +159,19 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div className="space-y-4">
                     <div className="flex flex-wrap items-center gap-3">
-                        <Badge className="bg-primary/20 text-primary border-primary/30 text-[10px] uppercase font-black tracking-widest px-3 py-1">
+                        <Badge className="bg-primary text-white border-primary text-[11px] uppercase font-black tracking-widest px-3 py-1 shadow-lg shadow-primary/20">
                             OPERATIONS_LIVE
                         </Badge>
-                        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+                        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 backdrop-blur-md">
                             <Activity className="w-3 h-3 text-accent animate-pulse" />
-                            <span className="text-[10px] font-mono text-accent uppercase tracking-widest font-black">SYNC: 100%</span>
+                            <span className="text-[11px] font-mono text-white uppercase tracking-widest font-bold">SYNC: 100%</span>
                         </div>
                     </div>
                     <div className="space-y-2">
                         <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white uppercase italic">
-                            Mission <span className="text-primary neon-text">Control</span>
+                            Mission <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent neon-text">Control</span>
                         </h1>
-                        <p className="text-xs md:text-sm text-muted-foreground font-mono tracking-tight max-w-2xl leading-relaxed">
+                        <p className="text-sm md:text-base text-slate-300 font-mono tracking-tight max-w-2xl leading-relaxed">
                             Autonomous offensive orchestration node // Global vulnerability synthesis engine
                         </p>
                     </div>
@@ -182,13 +182,13 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
                         variant="ghost"
                         size="icon"
                         onClick={fetchData}
-                        className={cn("h-12 w-12 rounded-xl border border-white/5 bg-white/5 backdrop-blur-md hover:bg-white/10", refreshing && "animate-spin")}
+                        className={cn("h-12 w-12 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-white", refreshing && "animate-spin")}
                     >
                         <RefreshCcw size={18} className="text-primary" />
                     </Button>
                     <Button
                         onClick={() => navigate('/targets')}
-                        className="cyber-border bg-primary hover:bg-primary/80 text-white font-black text-xs gap-3 h-12 px-6 md:px-8 rounded-xl accent-glow group/btn"
+                        className="cyber-border bg-primary hover:bg-primary/90 text-white font-black text-xs gap-3 h-12 px-6 md:px-8 rounded-xl accent-glow group/btn shadow-lg shadow-primary/20"
                     >
                         <Plus size={20} /> Deploy Operative
                     </Button>
@@ -208,11 +208,11 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.1 }}
-                        className="glass-panel rounded-3xl p-6 md:p-8 relative overflow-hidden group hover:bg-white/[0.08] transition-all"
+                        className="bg-slate-900 border border-slate-700 rounded-3xl p-6 md:p-8 relative overflow-hidden group hover:bg-slate-800 transition-all shadow-xl"
                     >
-                        <stat.icon className={cn("absolute -right-4 -bottom-4 w-24 h-24 opacity-5 group-hover:opacity-10 transition-opacity", stat.color)} />
+                        <stat.icon className={cn("absolute -right-4 -bottom-4 w-24 h-24 opacity-10 group-hover:opacity-20 transition-opacity", stat.color)} />
                         <div className="relative z-10 space-y-4">
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{stat.label}</span>
+                            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">{stat.label}</span>
                             <div className="text-3xl md:text-4xl font-black text-white tracking-tighter tabular-nums">{stat.value}</div>
                         </div>
                     </motion.div>
@@ -220,9 +220,123 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
+                {/* Action Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:col-span-12">
+                    {/* Upload / New Scan Card */}
+                    <Card className="col-span-2 bg-slate-900 border-primary/30 relative overflow-hidden group shadow-2xl">
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-3 text-white uppercase tracking-widest font-black text-lg">
+                                <Zap className="text-primary w-5 h-5 animate-pulse" />
+                                Initialize New Scan
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="border-2 border-dashed border-primary/40 bg-slate-950/50 rounded-2xl p-8 flex flex-col items-center justify-center gap-4 hover:bg-primary/5 transition-colors cursor-pointer group/drop"
+                                onDragOver={(e) => e.preventDefault()}
+                                onDrop={async (e) => {
+                                    e.preventDefault();
+                                    const file = e.dataTransfer.files[0];
+                                    if (file) {
+                                        // Handle upload
+                                        const formData = new FormData();
+                                        formData.append('file', file);
+                                        try {
+                                            setLoading(true);
+                                            const response = await fetch('/api/v1/upload', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Authorization': `Bearer ${localStorage.getItem('fbh_access_token') || ''}`
+                                                },
+                                                body: formData
+                                            });
+                                            const data = await response.json();
+                                            if (data.hash) {
+                                                await fetch('/api/v1/scan', {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                                        'Authorization': `Bearer ${localStorage.getItem('fbh_access_token') || ''}`
+                                                    },
+                                                    body: `hash=${data.hash}`
+                                                });
+                                                fetchData();
+                                            }
+                                        } catch (err) {
+                                            console.error("Upload failed", err);
+                                        } finally {
+                                            setLoading(false);
+                                        }
+                                    }
+                                }}
+                            >
+                                <div className="p-4 bg-primary/20 rounded-full group-hover/drop:scale-110 transition-transform duration-300 shadow-lg shadow-primary/10">
+                                    <Plus className="w-8 h-8 text-primary" />
+                                </div>
+                                <div className="text-center space-y-2">
+                                    <p className="text-base font-bold text-white uppercase tracking-widest">Drop Payload Here</p>
+                                    <p className="text-xs text-slate-400 font-mono">Accepts: .IPA, .APK, .ZIP</p>
+                                </div>
+                                <input
+                                    type="file"
+                                    className="absolute inset-0 opacity-0 cursor-pointer"
+                                    onChange={async (e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            const formData = new FormData();
+                                            formData.append('file', file);
+                                            try {
+                                                setLoading(true);
+                                                const response = await fetch('/api/v1/upload', {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Authorization': `Bearer ${localStorage.getItem('fbh_access_token') || ''}`
+                                                    },
+                                                    body: formData
+                                                });
+                                                const data = await response.json();
+                                                if (data.hash) {
+                                                    await fetch('/api/v1/scan', {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'Content-Type': 'application/x-www-form-urlencoded',
+                                                            'Authorization': `Bearer ${localStorage.getItem('fbh_access_token') || ''}`
+                                                        },
+                                                        body: `hash=${data.hash}`
+                                                    });
+                                                    fetchData();
+                                                }
+                                            } catch (err) { console.error(err); }
+                                            finally { setLoading(false); }
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Quick Actions */}
+                    <div className="space-y-4">
+                        <Card className="bg-slate-900 border-slate-700 p-6 shadow-xl">
+                            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Quick Protocols</h3>
+                            <div className="space-y-3">
+                                <Button variant="outline" className="w-full justify-start text-xs font-mono border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
+                                    <Activity className="mr-2 h-3 w-3" /> System Diagnostics
+                                </Button>
+                                <Button variant="outline" className="w-full justify-start text-xs font-mono border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
+                                    <ShieldCheck className="mr-2 h-3 w-3" /> Verify Signatures
+                                </Button>
+                                <Button variant="outline" className="w-full justify-start text-xs font-mono border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
+                                    <RefreshCcw className="mr-2 h-3 w-3" /> Update Definitions
+                                </Button>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+
                 {/* Fleet Monitoring */}
                 <div className="lg:col-span-8 space-y-8">
-                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
                         <h2 className="text-lg md:text-xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
                             <TrendingUp className="text-primary w-5 h-5" />
                             Active Fleet Monitoring
@@ -234,17 +348,17 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                         {targets.length > 0 ? (
-                            targets.slice(0, 4).map((target) => (
+                            targets.map((target) => (
                                 <TargetCard key={target.package} target={target} onClick={() => navigate(`/target/${target.package}`)} />
                             ))
                         ) : (
-                            <div className="col-span-full py-20 glass-panel rounded-3xl flex flex-col items-center justify-center text-center px-6">
+                            <div className="col-span-full py-20 bg-slate-900 border border-slate-800 rounded-3xl flex flex-col items-center justify-center text-center px-6 shadow-xl">
                                 <div className="p-4 bg-primary/10 rounded-full mb-4">
                                     <Search className="text-primary w-8 h-8 opacity-40" />
                                 </div>
                                 <h3 className="text-sm font-black text-white uppercase tracking-widest mb-2">No active operatives detected</h3>
-                                <p className="text-xs text-muted-foreground font-mono max-w-xs mx-auto mb-6">Initialize a tactical scan to populate the tactical feed.</p>
-                                <Button onClick={() => navigate('/targets')} className="bg-primary hover:bg-primary/90 rounded-xl h-10 px-6 font-black text-[10px] uppercase tracking-widest">
+                                <p className="text-xs text-slate-400 font-mono max-w-xs mx-auto mb-6">Initialize a tactical scan to populate the tactical feed.</p>
+                                <Button onClick={() => navigate('/targets')} className="bg-primary hover:bg-primary/90 rounded-xl h-10 px-6 font-black text-[10px] uppercase tracking-widest text-white">
                                     Deploy New Agent
                                 </Button>
                             </div>
@@ -254,15 +368,15 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
 
                 {/* Signal Stream */}
                 <div className="lg:col-span-4 space-y-8">
-                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
                         <h2 className="text-lg md:text-xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
                             <BarChart3 className="text-accent w-5 h-5" />
                             Signal Stream
                         </h2>
                     </div>
 
-                    <div className="glass-panel rounded-3xl overflow-hidden flex flex-col max-h-[600px] border-accent/20">
-                        <div className="p-6 border-b border-white/5 bg-accent/5 flex items-center justify-between">
+                    <div className="bg-slate-900 border border-slate-700 rounded-3xl overflow-hidden flex flex-col max-h-[600px] shadow-xl">
+                        <div className="p-6 border-b border-white/5 bg-slate-950/30 flex items-center justify-between">
                             <span className="text-[10px] font-black text-accent uppercase tracking-widest">Realtime_Telemetry</span>
                             <div className="flex items-center gap-2">
                                 <div className="w-1.5 h-1.5 rounded-full bg-accent animate-ping" />
@@ -279,10 +393,10 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
                                         className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.05] transition-all group/item"
                                     >
                                         <div className="flex items-center justify-between mb-2">
-                                            <span className={cn("text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-white/5", item.color)}>
+                                            <span className={cn("text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-white/5 text-white", item.color)}>
                                                 {item.type.replace('_', ' ')}
                                             </span>
-                                            <span className="text-[8px] font-mono text-muted-foreground uppercase">{item.time}</span>
+                                            <span className="text-[8px] font-mono text-slate-500 uppercase">{item.time}</span>
                                         </div>
                                         <p className="text-[11px] text-slate-300 leading-snug font-medium pl-1">{item.message}</p>
                                     </motion.div>

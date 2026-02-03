@@ -60,7 +60,7 @@ export function MissionControl() {
     return (
         <div className="space-y-6 w-full pb-20">
             {/* Intel Section */}
-            <HexStrikeIntel missionId={activeMissionId} />
+            <HexStrikeIntel />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <Card className=" lg:col-span-full">

@@ -148,16 +148,16 @@ export function MobileUpload() {
             {/* Upload Zone */}
             <Card>
                 <CardHeader className="border-b border-border pb-4">
-                    <CardTitle className="text-lg font-bold flex items-center gap-3 text-primary uppercase tracking-widest">
+                    <CardTitle className="text-lg font-bold flex items-center gap-3 text-primary tracking-tight">
                         <Upload size={18} />
-                        &gt; MOBILE_APP_UPLOAD
+                        Mobile App Upload
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
                     <div
-                        className={`border-2 border-dashed rounded-none p-12 text-center transition-all cursor-pointer ${isDragging
-                            ? 'border-primary bg-primary/10'
-                            : 'border-border hover:border-primary/50'
+                        className={`border-2 border-dashed rounded-lg p-12 text-center transition-all cursor-pointer ${isDragging
+                            ? 'border-primary bg-primary/5'
+                            : 'border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/50'
                             }`}
                         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                         onDragLeave={() => setIsDragging(false)}
@@ -173,21 +173,21 @@ export function MobileUpload() {
                             onChange={handleFileSelect}
                         />
                         <div className="flex flex-col items-center gap-4">
-                            <div className="p-4 border border-primary/30">
+                            <div className="p-4 rounded-full bg-muted">
                                 <Upload className="text-primary" size={32} />
                             </div>
                             <div>
-                                <p className="text-primary font-bold uppercase tracking-wider">
+                                <p className="font-semibold text-foreground">
                                     Drop APK / IPA / ZIP here
                                 </p>
-                                <p className="text-primary/60 text-xs mt-2 font-mono">
+                                <p className="text-muted-foreground text-sm mt-1">
                                     or click to browse files
                                 </p>
                             </div>
-                            <div className="flex gap-4 mt-2">
-                                <Badge className="bg-primary/10 text-primary border-primary/30">.APK</Badge>
-                                <Badge className="bg-primary/10 text-primary border-primary/30">.IPA</Badge>
-                                <Badge className="bg-primary/10 text-primary border-primary/30">.ZIP</Badge>
+                            <div className="flex gap-2 mt-4">
+                                <Badge variant="secondary" className="font-mono text-xs">.APK</Badge>
+                                <Badge variant="secondary" className="font-mono text-xs">.IPA</Badge>
+                                <Badge variant="secondary" className="font-mono text-xs">.ZIP</Badge>
                             </div>
                         </div>
                     </div>

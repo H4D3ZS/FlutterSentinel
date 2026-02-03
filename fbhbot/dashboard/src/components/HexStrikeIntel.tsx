@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Terminal, Shield, Play, Brain, ShieldAlert, Key, Unlock } from 'lucide-react';
+import { Terminal, Shield, Play, Brain, ShieldAlert, Key, Unlock, Network, Activity, RefreshCw, AlertTriangle, Power, Zap, Lock } from 'lucide-react';
 import { api } from '../services/api';
 
 interface HexStrikeStatus {
@@ -105,6 +105,7 @@ export function HexStrikeIntel() {
                                     addLog('[REPORT] Generating Shadow Report...');
                                     try {
                                         const target = scanData?.target || logicData?.domain || 'UNKNOWN_TARGET';
+                                        // @ts-ignore
                                         const res = await api.generateReport(target, {
                                             hexstrikeData: scanData,
                                             logicData: logicData

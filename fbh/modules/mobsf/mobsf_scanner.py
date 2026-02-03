@@ -26,7 +26,7 @@ class MobSFScanner(Scanner):
         super().__init__(target)
         # MobSF server configuration
         self.mobsf_url = "http://localhost:8000"
-        self.api_key = "YOUR_API_KEY_HERE"  # TODO: Load from config
+        self.api_key = "a901ff91610eb601b53ea2b794a737b9c685aaf44c1570bb47f15e06404a49c0"  # Fixed API Key from local instance
         self.headers = {"Authorization": self.api_key}
     
     def scan(self):
@@ -80,7 +80,7 @@ class MobSFScanner(Scanner):
     def _check_mobsf_server(self) -> bool:
         """Check if MobSF server is accessible"""
         try:
-            response = requests.get(f"{self.mobsf_url}/api/v1/info", timeout=5)
+            response = requests.get(f"{self.mobsf_url}/api/v1/scans", headers=self.headers, timeout=5)
             return response.status_code == 200
         except:
             return False
@@ -89,7 +89,7 @@ class MobSFScanner(Scanner):
         """Upload file to MobSF"""
         try:
             with open(file_path, 'rb') as f:
-                files = {'file': (file_path.name, f)}
+                files = {'file': (file_path.name, f, 'application/octet-stream')}
                 response = requests.post(
                     f"{self.mobsf_url}/api/v1/upload",
                     files=files,

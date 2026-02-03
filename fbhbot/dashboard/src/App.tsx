@@ -58,26 +58,26 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-mono selection:bg-primary selection:text-black flex flex-col overflow-y-auto">
+    <div className="min-h-screen bg-background text-foreground flex flex-col overflow-y-auto">
 
       {/* Terminal Header */}
-      <header className="border-b border-primary/50 bg-black sticky top-0 z-50">
+      <header className="border-b border-border bg-card sticky top-0 z-50">
         <div className="container mx-auto px-6 h-14 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <span className="text-primary font-bold tracking-widest">
-              <span className="text-primary/60">root@</span>FBHBOT<span className="text-primary/60">:~#</span>
-              <span className="animate-pulse ml-1">_</span>
+            <span className="text-primary font-bold tracking-widest font-mono">
+              <span className="text-muted-foreground">root@</span>FBHBOT<span className="text-muted-foreground">:~#</span>
+              <span className="animate-pulse ml-1 text-primary">_</span>
             </span>
-            <Badge className="bg-primary/10 text-primary border-primary/30 font-mono text-[10px]">[v2.0-MOBILE]</Badge>
+            <Badge variant="outline" className="text-[10px] font-mono">[v2.0-MOBILE]</Badge>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1 border border-primary/30">
-              <div className="w-2 h-2 bg-primary animate-pulse" />
-              <span className="text-xs font-mono text-primary">MOBSF_LINKED</span>
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1 border border-border rounded-md bg-muted/50">
+              <div className="w-2 h-2 bg-green-500 animate-pulse rounded-full" />
+              <span className="text-xs font-medium">MOBSF_LINKED</span>
             </div>
 
-            <Button variant="ghost" size="icon" onClick={handleLogout} className="text-primary hover:text-red-500 hover:bg-red-500/10 rounded-none">
+            <Button variant="ghost" size="icon" onClick={handleLogout} className="hover:text-destructive hover:bg-destructive/10">
               <LogOut size={18} />
             </Button>
           </div>
@@ -89,38 +89,38 @@ function App() {
         <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)} className="space-y-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-1">
-              <h2 className="text-2xl font-bold text-primary tracking-widest">
-                &gt; {tabConfig[activeTab].title}
+              <h2 className="text-2xl font-bold tracking-tight">
+                {tabConfig[activeTab].title}
               </h2>
-              <p className="text-primary/60 text-xs font-mono">
+              <p className="text-muted-foreground text-sm">
                 {tabConfig[activeTab].description}
               </p>
             </div>
 
-            <TabsList className="bg-black border border-primary/50 p-1 h-10 rounded-none flex-wrap">
-              <TabsTrigger value="mobile" className="rounded-none px-3 data-[state=active]:bg-primary data-[state=active]:text-black font-bold text-[10px] uppercase tracking-widest h-full text-primary">
-                <Upload className="mr-1" size={12} /> UPLOAD
+            <TabsList className="bg-muted p-1 h-10 rounded-md flex-wrap justify-start">
+              <TabsTrigger value="mobile" className="px-3 font-medium text-xs uppercase tracking-wide h-full">
+                <Upload className="mr-2" size={14} /> UPLOAD
               </TabsTrigger>
-              <TabsTrigger value="scans" className="rounded-none px-3 data-[state=active]:bg-primary data-[state=active]:text-black font-bold text-[10px] uppercase tracking-widest h-full text-primary">
-                <Shield className="mr-1" size={12} /> SCANS
+              <TabsTrigger value="scans" className="px-3 font-medium text-xs uppercase tracking-wide h-full">
+                <Shield className="mr-2" size={14} /> SCANS
               </TabsTrigger>
-              <TabsTrigger value="exploit" className="rounded-none px-3 data-[state=active]:bg-primary data-[state=active]:text-black font-bold text-[10px] uppercase tracking-widest h-full text-primary">
-                <Hammer className="mr-1" size={12} /> EXPLOIT
+              <TabsTrigger value="exploit" className="px-3 font-medium text-xs uppercase tracking-wide h-full">
+                <Hammer className="mr-2" size={14} /> EXPLOIT
               </TabsTrigger>
-              <TabsTrigger value="targets" className="rounded-none px-3 data-[state=active]:bg-primary data-[state=active]:text-black font-bold text-[10px] uppercase tracking-widest h-full text-primary">
-                <Target className="mr-1" size={12} /> TARGETS
+              <TabsTrigger value="targets" className="px-3 font-medium text-xs uppercase tracking-wide h-full">
+                <Target className="mr-2" size={14} /> TARGETS
               </TabsTrigger>
-              <TabsTrigger value="terminal" className="rounded-none px-3 data-[state=active]:bg-primary data-[state=active]:text-black font-bold text-[10px] uppercase tracking-widest h-full text-primary">
-                <TerminalIcon className="mr-1" size={12} /> CMD
+              <TabsTrigger value="terminal" className="px-3 font-medium text-xs uppercase tracking-wide h-full">
+                <TerminalIcon className="mr-2" size={14} /> CMD
               </TabsTrigger>
-              <TabsTrigger value="sovereign" className="rounded-none px-3 data-[state=active]:bg-primary data-[state=active]:text-black font-bold text-[10px] uppercase tracking-widest h-full text-primary">
-                <Brain className="mr-1" size={12} /> INTEL
+              <TabsTrigger value="sovereign" className="px-3 font-medium text-xs uppercase tracking-wide h-full">
+                <Brain className="mr-2" size={14} /> INTEL
               </TabsTrigger>
-              <TabsTrigger value="settings" className="rounded-none px-3 data-[state=active]:bg-primary data-[state=active]:text-black font-bold text-[10px] uppercase tracking-widest h-full text-primary">
-                <SettingsIcon className="mr-1" size={12} /> CFG
+              <TabsTrigger value="settings" className="px-3 font-medium text-xs uppercase tracking-wide h-full">
+                <SettingsIcon className="mr-2" size={14} /> CFG
               </TabsTrigger>
-              <TabsTrigger value="upgrade" className="rounded-none px-3 data-[state=active]:bg-primary data-[state=active]:text-black font-bold text-[10px] uppercase tracking-widest h-full text-primary">
-                <ChevronsUp className="mr-1" size={12} /> ++
+              <TabsTrigger value="upgrade" className="px-3 font-medium text-xs uppercase tracking-wide h-full">
+                <ChevronsUp className="mr-2" size={14} /> ++
               </TabsTrigger>
             </TabsList>
           </div>
@@ -205,13 +205,13 @@ function App() {
       </main>
 
       {/* Terminal Footer */}
-      <footer className="border-t border-primary/30 py-4 bg-black">
-        <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-primary/60 font-mono">
+      <footer className="border-t border-border py-6 bg-card">
+        <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground font-mono">
           <span>&gt; FBHBOT_v2.0_MOBILE // &copy; 2026</span>
-          <div className="flex items-center gap-4">
-            <span className="hover:text-primary cursor-pointer">[DOCS]</span>
-            <span className="hover:text-primary cursor-pointer">[MOBSF]</span>
-            <span className="hover:text-primary cursor-pointer">[STATUS]</span>
+          <div className="flex items-center gap-6">
+            <span className="hover:text-primary cursor-pointer transition-colors">[DOCS]</span>
+            <span className="hover:text-primary cursor-pointer transition-colors">[MOBSF]</span>
+            <span className="hover:text-primary cursor-pointer transition-colors">[STATUS]</span>
           </div>
         </div>
       </footer>
