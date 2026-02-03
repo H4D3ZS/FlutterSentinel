@@ -1,0 +1,9 @@
+{
+  "name": "test_app",
+  "package_name": "com.test.app",
+  "platform": "android",
+  "bug_bounty_program": "",
+  "scope": [],
+  "out_of_scope": [],
+  "notes": ""
+}

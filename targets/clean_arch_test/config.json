@@ -1,0 +1,9 @@
+{
+  "name": "clean_arch_test",
+  "package_name": "com.example.clean",
+  "platform": "android",
+  "bug_bounty_program": "",
+  "scope": [],
+  "out_of_scope": [],
+  "notes": ""
+}
