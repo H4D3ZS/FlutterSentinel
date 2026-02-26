@@ -141,8 +141,3 @@ backend/targets/*/decompiled/
 *.sqlite3
 
 
-# VPhone build artifacts
-scripts/memshim.dylib
-scripts/memshim_x64.dylib
-scripts/pccvre_wrapper
-
