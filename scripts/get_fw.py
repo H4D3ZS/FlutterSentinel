@@ -49,9 +49,12 @@ def extract_zip(archive, dest, label):
     print(f"  ✓ Extracted to {dest}")
 
 
-def mix_firmware(pcc_dir, ipsw_dir, output_dir):
+def mix_firmware(pcc_dir, ipsw_path, output_dir):
     """
     Mix iPhone IPSW (base) with PCC firmware (vphone components).
+    
+    Extracts IPSW directly to output dir (space-efficient),
+    then overlays PCC components on top.
     
     From iPhone IPSW: SystemVolume, OS, Cryptex, RestoreRamDisk, TrustCaches
     From PCC firmware: kernelcache, device tree, bootloaders, SEP, agx, ane, etc.
@@ -60,14 +63,21 @@ def mix_firmware(pcc_dir, ipsw_dir, output_dir):
     print("  STEP 1: Mix Firmware Components")
     print("=" * 60)
 
-    # Start with complete iPhone IPSW as base
     if os.path.exists(output_dir):
         print(f"  Output dir exists, cleaning: {output_dir}")
         shutil.rmtree(output_dir)
     
-    print(f"\n[1/5] Copying iPhone IPSW as base...")
-    shutil.copytree(ipsw_dir, output_dir)
-    print(f"  ✓ Copied iPhone IPSW base")
+    # Extract IPSW directly to output (saves ~10GB temp space)
+    print(f"\n[1/5] Extracting iPhone IPSW directly to output...")
+    extract_zip(ipsw_path, output_dir, "iPhone IPSW → output")
+    
+    # Fix permissions — IPSW files are extracted read-only
+    for root, dirs, files in os.walk(output_dir):
+        for d in dirs:
+            os.chmod(os.path.join(root, d), 0o755)
+        for f in files:
+            os.chmod(os.path.join(root, f), 0o644)
+    print(f"  ✓ Permissions fixed")
 
     # Overlay PCC components
     print(f"\n[2/5] Overlaying PCC kernelcache files...")
@@ -113,14 +123,17 @@ def mix_firmware(pcc_dir, ipsw_dir, output_dir):
             print(f"  ✓ {plist}")
 
     print(f"\n[5/5] Merging BuildManifest.plist...")
-    merge_build_manifest(pcc_dir, ipsw_dir, output_dir)
+    merge_build_manifest(pcc_dir, output_dir)
     
     print(f"\n✅ Firmware mixed successfully at: {output_dir}")
 
 
-def merge_build_manifest(pcc_dir, ipsw_dir, output_dir):
+def merge_build_manifest(pcc_dir, output_dir):
     """
     Merge BuildManifest.plist from PCC and iPhone.
+    
+    The iPhone manifest is already in output_dir (extracted there).
+    We read it first, then overwrite with merged version.
     
     Strategy (from writeup):
     - SystemVolume, SystemVolumeCanonicalMetadata, OS, StaticTrustCache,
@@ -128,7 +141,7 @@ def merge_build_manifest(pcc_dir, ipsw_dir, output_dir):
     - Everything else (bootloaders, kernel, device tree, SEP) → from PCC
     """
     pcc_manifest_path = os.path.join(pcc_dir, "BuildManifest.plist")
-    ipsw_manifest_path = os.path.join(ipsw_dir, "BuildManifest.plist")
+    ipsw_manifest_path = os.path.join(output_dir, "BuildManifest.plist")
     
     if not os.path.exists(pcc_manifest_path) or not os.path.exists(ipsw_manifest_path):
         print("  ⚠ BuildManifest.plist missing, using PCC version as-is")
@@ -245,16 +258,13 @@ def main():
     print("║  Mixing PCC cloudOS + iPhone IPSW                ║")
     print("╚═══════════════════════════════════════════════════╝")
 
-    # Extract archives
+    # Extract PCC firmware only (IPSW extracted directly to output)
     pcc_dir = "/tmp/vphone_pcc_extracted"
-    ipsw_dir = "/tmp/vphone_ipsw_extracted"
     
     extract_zip(args.pcc, pcc_dir, "PCC firmware")
-    extract_zip(args.ipsw, ipsw_dir, "iPhone IPSW")
 
-    # Verify build numbers match
+    # Verify PCC build info
     pcc_sv = os.path.join(pcc_dir, "SystemVersion.plist")
-    ipsw_rv = os.path.join(ipsw_dir, "Restore.plist")
     if os.path.exists(pcc_sv):
         with open(pcc_sv, 'rb') as f:
             pcc_info = plistlib.load(f)
@@ -262,8 +272,8 @@ def main():
         pcc_ver = pcc_info.get('ProductVersion', 'unknown')
         print(f"\n  PCC firmware: {pcc_ver} (build {pcc_build})")
     
-    # Mix firmware
-    mix_firmware(pcc_dir, ipsw_dir, args.output)
+    # Mix firmware (IPSW extracted directly to output dir)
+    mix_firmware(pcc_dir, args.ipsw, args.output)
     update_restore_plist(args.output)
 
     print("\n" + "=" * 60)
