@@ -2,9 +2,11 @@
 
 > **Virtualized Jailbroken iPhone on Apple Silicon**
 >
-> Everything we did, step by step — from fresh macOS install to iBoot serial output — and what remains.
+> Everything we did, step by step — from fresh macOS install to jailbroken boot — and what remains.
 >
 > **Date**: 2026-02-28 | **macOS**: Tahoe 26.2 (25C56) | **Hardware**: M1 8GB | **Target iOS**: 26.1 (23B85)
+>
+> **See also**: [Session Log](./VPHONE_SESSION_LOG.md) — detailed log of jailbreak boot, TrollVNC setup, and GPU/Metal investigation
 
 ---
 
@@ -811,7 +813,7 @@ python3 install_jb_basebin.py
 
 ## 13. Current System State
 
-### As of 2026-02-28T02:48
+### As of 2026-02-28T06:48
 
 | Component | Status |
 |-----------|--------|
@@ -822,15 +824,19 @@ python3 install_jb_basebin.py
 | **Research guests** | ✅ `allow-research-guests` enabled |
 | **PCC VM** | ✅ Created at `/var/root/.../pcc-research.vm/` |
 | **VPhone VM** | ✅ Directory at `~/.tart/vms/vphone/` with symlinks |
-| **AVPBooter** | ✅ Copied (with .bak), ⚠️ NOT YET PATCHED |
+| **AVPBooter** | ✅ Patched |
 | **super-tart-vphone** | ✅ Built (14.3 MB binary) |
 | **libirecovery** | ✅ Built and installed |
 | **DFU boot** | ✅ iBoot serial output confirmed |
-| **Custom firmware** | ❌ Not yet built |
-| **AVPBooter patch** | ❌ Requires IDA Pro |
-| **Firmware restore** | ❌ Depends on AVPBooter patch |
-| **SSH ramdisk** | ❌ Depends on firmware restore |
-| **Jailbreak** | ❌ Depends on SSH ramdisk |
+| **Custom firmware** | ✅ Built and restored |
+| **Firmware restore** | ✅ Complete |
+| **SSH ramdisk** | ✅ Working |
+| **Jailbreak** | ✅ Active — `launchdhook.dylib` confirmed in boot log |
+| **SSH (normal boot)** | ✅ `root@192.168.64.2:22222` (alpine) |
+| **TrollVNC** | ✅ Built from source, installed on VPhone |
+| **Theos** | ✅ Installed at `~/theos` |
+| **Metal/GPU** | ❌ **BLOCKER** — Missing `AppleParavirtGPUMetalIOGPUFamily.bundle` |
+| **Home screen** | ❌ Blocked by Metal/GPU — `SBRendererService` crashes |
 
 ### File Layout
 
@@ -925,4 +931,4 @@ sudo ~/pccvre_patched release download --release 35622
 
 ---
 
-> **Next Steps**: Patch AVPBooter with IDA Pro (Phase 4), then proceed through firmware build/restore (Phase 5), SSH ramdisk (Phase 6), and jailbreak (Phase 7).
+> **Next Steps**: Install `AppleParavirtGPUMetalIOGPUFamily.bundle` from PCC VM to VPhone (via SSH ramdisk) to enable Metal GPU support. Then the home screen will render and full GUI interaction will be available via TrollVNC. See [Session Log](./VPHONE_SESSION_LOG.md) for detailed steps.

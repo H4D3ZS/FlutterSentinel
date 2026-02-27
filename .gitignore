@@ -152,3 +152,4 @@ pccvre_patched
 *.shsh
 *.dmg
 *.dylib
+TrollVNC/
