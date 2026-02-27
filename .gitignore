@@ -141,3 +141,14 @@ backend/targets/*/decompiled/
 *.sqlite3
 
 
+
+# VPhone firmware (23GB+ extracted IPSW/PCC)
+super-tart-vphone/
+super-tart/
+libirecovery/
+pccvre_patched
+*.ipsw
+*.im4p
+*.shsh
+*.dmg
+*.dylib

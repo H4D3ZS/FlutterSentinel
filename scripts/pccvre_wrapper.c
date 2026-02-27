@@ -14,7 +14,7 @@
 #include <unistd.h>
 
 #define PCCVRE_PATH "/System/Library/SecurityResearch/usr/bin/pccvre"
-#define SHIM_PATH "/Users/hades/Desktop/bugbounty/FlutterSentinel/scripts/memshim.dylib"
+#define SHIM_PATH "/Users/hades/Desktop/FlutterSentinel/scripts/memshim.dylib"
 
 int main(int argc, char *argv[], char *envp[]) {
     fprintf(stderr, "[wrapper] Setting up DYLD environment...\n");

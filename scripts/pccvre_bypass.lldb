@@ -1,7 +1,7 @@
 # pccvre_bypass.lldb — Simple lldb script to bypass pccvre 16GB RAM check
 #
 # Usage:
-#   sudo lldb -s /Users/hades/Desktop/bugbounty/FlutterSentinel/scripts/pccvre_bypass.lldb
+#   sudo lldb -s /Users/hades/Desktop/FlutterSentinel/scripts/pccvre_bypass.lldb
 #
 # For download:
 #   Change the last line's args as needed
