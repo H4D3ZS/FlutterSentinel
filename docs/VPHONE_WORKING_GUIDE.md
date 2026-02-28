@@ -33,7 +33,7 @@ This is the definitive guide covering everything that works, all bugs fixed, and
 | VNC Display | ✅ | Full iPhone screen at 1290×2796 |
 | Jailbreak | ✅ | Procursus + launchdhook active |
 | SpringBoard | ✅ | Running, home screen accessible |
-| iOS Setup Skip | ✅ | Via plist + process kill |
+| iOS Setup Skip | ✅ | Scroll down in Apple ID screen → hidden "Set Up Later" button |
 | Apple ID Sign-in | ❌ | Not possible (fake serial, expected) |
 | Auto-start SSH/VNC | ❌ | LaunchDaemons not loading (manual start needed) |
 | Metal/GPU | ❌ | Missing `AppleParavirtGPUMetalIOGPUFamily.bundle` |
@@ -137,52 +137,37 @@ TigerVNC: **View → Zoom → Custom Scale** (set 40–50% for iPhone 15 Pro siz
 
 ## 5. Setup Assistant Bypass (iOS 26.1)
 
-When the iPhone first boots after jailbreak, iOS 26.1 shows a setup wizard with an Apple ID screen that **cannot be skipped via the UI** and **cannot sign in** (verification fails on fake hardware).
+When the iPhone first boots after jailbreak, iOS 26.1 shows a setup wizard including an Apple ID sign-in screen. Apple ID **cannot sign in** (verification fails on fake hardware — expected), but the screen **can be skipped**.
 
-### Fix via SSH
+### ✅ Actual Working Method — Scroll Down in VNC
+
+On the Apple ID screen in TigerVNC, **scroll down** past the visible buttons. A hidden **"Set Up Later"** option appears below the fold. Tap it to skip Apple ID and proceed to the home screen.
+
+> ⚠️ The buttons visible without scrolling (`Other Sign-In Options`, `Use Another Device`, `Use Multiple Accounts`) do NOT have a skip path. **You must scroll down** to reveal "Set Up Later".
+
+### Helper Files (also create via SSH for persistence across reboots)
 
 ```bash
-# SSH into VM
-ssh root@192.168.64.2 -p 22222
+# Create setup done marker
+echo -n > /private/var/db/.AppleSetupDone
 
-# Step 1: Kill the running setup processes
-killall -9 budd 2>/dev/null
-killall -9 Setup 2>/dev/null
-sleep 1
-
-# Step 2: Write setup completion plist (build MUST match iOS build)
-# iOS 26.1 build = 23B85
+# Write completion plist (iOS 26.1 build = 23B85)
 cat > /var/mobile/Library/Preferences/com.apple.SetupAssistant.plist << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>HasSeenSetupAssistant</key>
-    <true/>
-    <key>LastBuddyBuildVersion</key>
-    <string>23B85</string>
-    <key>SentInitialActivation</key>
-    <true/>
+    <key>HasSeenSetupAssistant</key><true/>
+    <key>LastBuddyBuildVersion</key><string>23B85</string>
+    <key>SentInitialActivation</key><true/>
 </dict>
 </plist>
 EOF
-
 chown mobile:mobile /var/mobile/Library/Preferences/com.apple.SetupAssistant.plist
-
-# Step 3: Respring
-killall SpringBoard
 ```
 
-> **CRITICAL**: The `LastBuddyBuildVersion` string MUST match the actual iOS build exactly.
-> Get it from: `cat /System/Library/CoreServices/SystemVersion.plist`
-> - iOS 26.1 = `23B85`
-> - Tools `defaults` and `PlistBuddy` are NOT available on this device — use shell `cat > file` heredoc
-
-### Why The Order Matters
-
-`budd` and `Setup.app` hold the plist in memory. If you write the plist THEN kill SpringBoard without killing them first, they rewrite the old values on SpringBoard restart.
-
-Kill order: **budd → Setup → write plist → SpringBoard**
+> Note: `defaults`, `PlistBuddy`, `touch`, `reboot` are NOT available — use shell built-ins.
+> Full reboot: `/sbin/reboot` or `launchctl reboot system`
 
 ---
 
@@ -312,22 +297,10 @@ ssh root@192.168.64.2 -p 22222
 
 # 6. Connect VNC client to 192.168.64.2:5901 (password: alpine)
 
-# 7. (First boot only) Bypass setup assistant via SSH:
-killall -9 budd 2>/dev/null; killall -9 Setup 2>/dev/null; sleep 1
-cat > /var/mobile/Library/Preferences/com.apple.SetupAssistant.plist << 'EOF'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>HasSeenSetupAssistant</key><true/>
-    <key>LastBuddyBuildVersion</key><string>23B85</string>
-    <key>SentInitialActivation</key><true/>
-</dict>
-</plist>
-EOF
-chown mobile:mobile /var/mobile/Library/Preferences/com.apple.SetupAssistant.plist
-killall SpringBoard
-# Wait ~5 seconds for respring, then reconnect VNC
+# 7. (First boot only) Bypass setup assistant:
+# In TigerVNC, on the Apple ID screen → SCROLL DOWN → tap "Set Up Later"
+# Also create these files via SSH for persistence:
+echo -n > /private/var/db/.AppleSetupDone
 
 # 8. You now have a fully interactive jailbroken iOS 26.1 VM!
 ```
