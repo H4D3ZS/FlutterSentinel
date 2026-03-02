@@ -1,0 +1,26 @@
+# pccvre_bypass.lldb — Simple lldb script to bypass pccvre 16GB RAM check
+#
+# Usage:
+#   sudo lldb -s /Users/hades/Desktop/FlutterSentinel/scripts/pccvre_bypass.lldb
+#
+# For download:
+#   Change the last line's args as needed
+
+target create /System/Library/SecurityResearch/usr/bin/pccvre
+
+# Break on sysctlbyname and auto-continue after patching
+breakpoint set -n sysctlbyname
+breakpoint command add 1
+    # Read the name string from x0
+    expr -l c -- (int)strcmp((char*)$x0, "hw.memsize")
+    # We can't conditionally do things easily in basic commands,
+    # so we'll use a different approach: break on RETURN from
+    # the function and fix the output there.
+    thread step-out
+    # After step-out, x0 has the return value (0 = success)
+    # The output buffer was in x1 at call time, but x1 is clobbered now.
+    # We need a different approach.
+    continue
+DONE
+
+process launch -- release download --release 35622

