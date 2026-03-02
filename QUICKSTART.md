@@ -15,20 +15,20 @@ Flutter Bounty Hunter v3.0 transforms into a **fully automated mobile security p
 
 ## 📦 Installation
 
-### 1. Unified Setup (Recommended)
+### 1. Prerequisites
 
 ```bash
-# Clone and install everything
-npm run install:all
+# Python 3.14+
+python3 --version
 
-# Build all modules (Frontend, Backend, FBHBot)
-npm run build
+# Install FBH dependencies
+cd /path/to/flutter_bounty_hunter
+pip3 install -r requirements.txt
 
-# Launch everything
-npm run dev:all
+# Install MobSF dependencies
+cd MOBSF
+./setup.sh
 ```
-
-### 2. Prerequisites
 
 ### 2. Install Mobile App Download Tools
 

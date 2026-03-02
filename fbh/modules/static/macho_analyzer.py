@@ -76,7 +76,8 @@ class MachOAnalyzer(Scanner):
                                 "title": f"Insecure Mach-O Symbol: {sym}",
                                 "description": f"The binary imports '{sym}'. {desc}",
                                 "location": str(exe.relative_to(search_dir)),
-                                "remediation": "Audit the usage of this symbol. For anti-debugging, ensure it is robust or used for legitimate protection."
+                                "remediation": "Audit the usage of this symbol. For anti-debugging, ensure it is robust or
+                                    or used for legitimate protection."
                             })
 
                 # 2. Run 'otool -L' to check linked frameworks (PIE/ASLR checks)
@@ -100,7 +101,8 @@ class MachOAnalyzer(Scanner):
                             "title": "Hardcoded Secret in Mach-O Binary",
                             "description": f"Found a potential hardcoded secret in the compiled binary: {secret[:5]}...",
                             "location": str(exe.relative_to(search_dir)),
-                            "remediation": "Do not hardcode secrets in compiled binaries; they are easily extracted with 'strings' or 'nm'."
+                            "remediation": "Do not hardcode secrets in compiled binaries; they are easily extracted with 'strings' or
+                                or 'nm'."
                         })
 
             except Exception as e:

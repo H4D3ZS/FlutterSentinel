@@ -26,64 +26,55 @@ export function Login({ onLogin }: LoginProps) {
             const { token, tier } = await api.login(email, password);
             onLogin(token, tier);
         } catch (err: any) {
-            setError('AUTH_FAILURE: Invalid credentials. Access denied.');
+            setError('Tactical authentication failed. Verify credentials.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden bg-black font-mono">
-            {/* Terminal Grid Background */}
-            <div className="absolute inset-0 opacity-5" style={{
-                backgroundImage: `
-                    linear-gradient(rgba(0,255,0,0.1) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(0,255,0,0.1) 1px, transparent 1px)
-                `,
-                backgroundSize: '20px 20px'
-            }} />
-
-            <Card className="w-full max-w-lg  relative z-10 p-2">
-                <CardHeader className="text-center p-8 pb-6 border-b border-primary/30">
-                    <div className="mx-auto w-20 h-20 bg-black rounded-none flex items-center justify-center mb-6 border-2 border-primary">
-                        <ShieldAlert className="text-primary" size={40} />
+        <div className="min-h-screen flex items-center justify-center p-6 sovereign-glow">
+            <Card className="w-full max-w-md glass-surface relative z-10 border-slate-800">
+                <CardHeader className="text-center">
+                    <div className="mx-auto w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 ring-1 ring-primary/50 overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
+                        <ShieldAlert className="text-primary relative z-10" size={28} />
                     </div>
-                    <CardTitle className="text-2xl font-bold tracking-widest text-primary uppercase">&gt; FBHBOT_v2.0</CardTitle>
-                    <CardDescription className="text-primary/60 text-xs uppercase tracking-[0.3em] mt-2">// Initialize secure command session</CardDescription>
+                    <CardTitle className="text-2xl font-bold tracking-tight text-white">FBHBot Singularity</CardTitle>
+                    <CardDescription className="text-slate-400">Initialize sovereign command session</CardDescription>
                 </CardHeader>
-
-                <CardContent className="p-8">
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-4">
                         {error && (
-                            <Badge className="w-full py-3 justify-center font-bold text-xs tracking-widest uppercase bg-red-500/20 border border-red-500/50 text-red-400 rounded-none">
-                                [{error}]
+                            <Badge variant="destructive" className="w-full py-2 justify-center rounded-lg font-mono text-[10px] tracking-widest uppercase">
+                                {error}
                             </Badge>
                         )}
 
                         <div className="space-y-2">
-                            <Label className="text-xs font-bold text-primary/70 uppercase tracking-widest">&gt; OPERATOR_ID</Label>
-                            <div className="relative">
-                                <Mail className="absolute left-3 top-3.5 text-primary/50" size={18} />
+                            <Label className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Email Address</Label>
+                            <div className="relative group">
+                                <Mail className="absolute left-3.5 top-3 text-slate-500 group-focus-within:text-primary transition-colors" size={18} />
                                 <Input
                                     type="email"
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
-                                    className="bg-black border-primary/30 pl-12 h-12 rounded-none focus:border-primary text-primary placeholder:text-primary/30 font-mono"
-                                    placeholder="admin@fbh.local"
+                                    className="bg-slate-950/50 border-slate-800 pl-11 h-12 rounded-xl focus-visible:ring-primary/50 transition-all"
+                                    placeholder="operative@fbhbot.com"
                                     required
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-xs font-bold text-primary/70 uppercase tracking-widest">&gt; ACCESS_KEY</Label>
-                            <div className="relative">
-                                <Lock className="absolute left-3 top-3.5 text-primary/50" size={18} />
+                            <Label className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Access Key</Label>
+                            <div className="relative group">
+                                <Lock className="absolute left-3.5 top-3 text-slate-500 group-focus-within:text-primary transition-colors" size={18} />
                                 <Input
                                     type="password"
                                     value={password}
                                     onChange={e => setPassword(e.target.value)}
-                                    className="bg-black border-primary/30 pl-12 h-12 rounded-none focus:border-primary text-primary placeholder:text-primary/30 font-mono"
+                                    className="bg-slate-950/50 border-slate-800 pl-11 h-12 rounded-xl focus-visible:ring-primary/50 transition-all"
                                     placeholder="••••••••"
                                     required
                                 />
@@ -93,33 +84,23 @@ export function Login({ onLogin }: LoginProps) {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="w-full h-14 rounded-none font-bold uppercase tracking-widest text-xs bg-primary hover:bg-primary/80 text-black border-0 mt-6"
+                            className="w-full h-12 rounded-xl font-bold uppercase tracking-widest text-sm bg-gradient-to-r from-primary to-indigo-600 hover:from-primary-hover hover:to-indigo-500 transition-all duration-500 shadow-lg shadow-primary/20 mt-4"
                         >
                             {loading ? (
                                 <>
-                                    <Loader2 className="mr-3 h-5 w-5 animate-spin" />
-                                    AUTHENTICATING...
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Synchronizing...
                                 </>
-                            ) : '[ESTABLISH_UPLINK]'}
+                            ) : 'Access Console'}
                         </Button>
                     </form>
                 </CardContent>
-
-                <CardFooter className="flex-col gap-4 p-8 pt-0">
-                    <div className="flex items-center gap-3 w-full">
-                        <div className="h-px flex-1 bg-primary/20" />
-                        <span className="text-xs font-bold text-primary/40 uppercase tracking-widest">SYSTEM_INFO</span>
-                        <div className="h-px flex-1 bg-primary/20" />
+                <CardFooter className="flex-col gap-2 pt-2 pb-6">
+                    <div className="text-[10px] text-slate-500 uppercase tracking-widest text-center">
+                        Secure Uplink Active
                     </div>
-
-                    <div className="text-xs font-mono p-4 bg-black border border-primary/20 text-primary/60 w-full text-center leading-relaxed">
-                        DEFAULT_USER: <span className="text-primary font-bold">admin@fbh.local</span><br />
-                        DEFAULT_PASS: <span className="text-primary font-bold">admin123</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 mt-2">
-                        <div className="w-2 h-2 bg-primary animate-pulse" />
-                        <span className="text-xs font-bold text-primary/50 uppercase tracking-widest">NODE: 0xFB-ALPHA | STATUS: ONLINE</span>
+                    <div className="text-[10px] font-mono p-3 bg-slate-950/80 rounded-lg border border-slate-800 text-slate-400 w-full text-center">
+                        Demo: <span className="text-primary">demo@fbhbot.com</span> / <span className="text-primary">hunter2</span>
                     </div>
                 </CardFooter>
             </Card>

@@ -13,10 +13,9 @@ import {
     Bell,
     ExternalLink,
     Terminal,
-    Bug,
-    X
+    Bug
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import {
     Tooltip,
@@ -30,7 +29,6 @@ interface SidebarProps {
     className?: string;
     isCollapsed: boolean;
     toggleCollapse: () => void;
-    onClose?: () => void;
 }
 
 const SidebarNavItem = ({
@@ -38,15 +36,13 @@ const SidebarNavItem = ({
     icon: Icon,
     children,
     isCollapsed,
-    badge,
-    onClick
+    badge
 }: {
     to: string,
     icon: any,
     children: React.ReactNode,
     isCollapsed: boolean,
-    badge?: string,
-    onClick?: (() => void) | undefined
+    badge?: string
 }) => {
     return (
         <TooltipProvider delayDuration={0}>
@@ -54,54 +50,29 @@ const SidebarNavItem = ({
                 <TooltipTrigger asChild>
                     <NavLink
                         to={to}
-                        onClick={onClick}
                         className={({ isActive }) => cn(
-                            "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 group relative",
+                            "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group relative",
                             isActive
-                                ? "bg-primary/20 text-white shadow-[0_0_20px_rgba(168,85,247,0.15)] border border-primary/30"
-                                : "text-slate-400 hover:bg-white/5 hover:text-slate-100"
+                                ? "bg-primary/10 text-primary shadow-[0_0_15px_rgba(59,130,246,0.1)] border-r-2 border-primary"
+                                : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-100"
                         )}
                     >
-                        <div className={cn(
-                            "flex items-center justify-center transition-transform duration-300 group-hover:scale-110",
-                            isCollapsed ? "w-8 h-8" : "w-5 h-5"
-                        )}>
-                            <Icon className="w-full h-full" />
-                        </div>
-
-                        <AnimatePresence>
-                            {!isCollapsed && (
-                                <motion.span
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -10 }}
-                                    className="text-sm font-semibold tracking-wide flex-1 whitespace-nowrap"
-                                >
-                                    {children}
-                                </motion.span>
-                            )}
-                        </AnimatePresence>
-
+                        <Icon className={cn("shrink-0", isCollapsed ? "h-6 w-6" : "h-5 w-5")} />
+                        {!isCollapsed && (
+                            <span className="text-sm font-medium tracking-wide flex-1">{children}</span>
+                        )}
                         {!isCollapsed && badge && (
-                            <Badge variant="outline" className="px-1.5 py-0 h-4 text-[9px] font-bold bg-accent/20 text-accent border-accent/30 animate-pulse">
+                            <Badge variant="secondary" className="px-1.5 py-0 h-4 text-[9px] bg-primary/20 text-primary border-primary/30">
                                 {badge}
                             </Badge>
                         )}
-
                         {isCollapsed && badge && (
-                            <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-accent animate-ping" />
+                            <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary border border-slate-900 shadow-[0_0_5px_rgba(59,130,246,0.5)]" />
                         )}
-
-                        {/* Active Indicator Dot */}
-                        <NavLink to={to}>
-                            {({ isActive }) => isActive && (
-                                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full shadow-[0_0_10px_hsl(var(--primary))]" />
-                            )}
-                        </NavLink>
                     </NavLink>
                 </TooltipTrigger>
                 {isCollapsed && (
-                    <TooltipContent side="right" className="bg-slate-900 border-white/10 text-slate-100 px-3 py-1.5 text-xs font-bold">
+                    <TooltipContent side="right" className="bg-slate-900 border-border text-slate-100 font-sans text-xs">
                         {children}
                     </TooltipContent>
                 )}
@@ -110,117 +81,117 @@ const SidebarNavItem = ({
     );
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ className, isCollapsed, toggleCollapse, onClose }) => {
+const Sidebar: React.FC<SidebarProps> = ({ className, isCollapsed, toggleCollapse }) => {
     return (
         <aside className={cn(
-            "h-full glass-panel border-r border-white/5 flex flex-col transition-all duration-500 z-50 overflow-hidden",
-            isCollapsed ? "w-[80px]" : "w-[280px]",
+            "bg-slate-950/80 backdrop-blur-xl border-r border-border/40 flex flex-col transition-all duration-300 z-50",
+            isCollapsed ? "w-[72px]" : "w-64",
             className
         )}>
             {/* Header */}
             <div className={cn(
-                "p-6 flex items-center transition-all duration-300",
+                "p-4 border-b border-border/20 flex items-center mb-4 transition-all duration-300",
                 isCollapsed ? "justify-center" : "justify-between"
             )}>
-                <AnimatePresence>
-                    {!isCollapsed && (
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            className="flex items-center gap-3 overflow-hidden"
-                        >
-                            <div className="p-2 bg-primary/20 rounded-xl border border-primary/30 shadow-[0_0_15px_rgba(168,85,247,0.3)]">
-                                <ShieldCheck className="text-primary h-5 w-5" />
-                            </div>
-                            <h1 className="text-lg font-black tracking-tighter text-white">
-                                FBH <span className="text-primary">SINGULARITY</span>
-                            </h1>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                <div className="flex items-center gap-1">
-                    <button
-                        onClick={toggleCollapse}
-                        className="hidden lg:flex p-2 rounded-lg border border-white/5 text-slate-400 hover:text-white hover:bg-white/5 transition-all"
-                    >
-                        {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-                    </button>
-                    <button
-                        onClick={onClose}
-                        className="lg:hidden p-2 rounded-lg border border-white/5 text-slate-400 hover:text-white hover:bg-white/5 transition-all"
-                    >
-                        <X size={16} />
-                    </button>
-                </div>
-            </div>
-
-            {/* Navigation Sections */}
-            <div className="flex-1 px-4 space-y-8 overflow-y-auto py-4 custom-scrollbar">
-                <nav className="space-y-1.5">
-                    {!isCollapsed && (
-                        <p className="px-3 mb-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.25em]">Tactical Core</p>
-                    )}
-                    <SidebarNavItem to="/" icon={LayoutDashboard} isCollapsed={isCollapsed} onClick={onClose}>Overview</SidebarNavItem>
-                    <SidebarNavItem to="/mobsf" icon={ShieldAlert} isCollapsed={isCollapsed} badge="LIVE" onClick={onClose}>Analysis Engine</SidebarNavItem>
-                    <SidebarNavItem to="/trends" icon={BarChart3} isCollapsed={isCollapsed} onClick={onClose}>Intel Grid</SidebarNavItem>
-                </nav>
-
-                <nav className="space-y-1.5">
-                    {!isCollapsed && (
-                        <p className="px-3 mb-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.25em]">Autonomous Ops</p>
-                    )}
-                    <SidebarNavItem to="/agents" icon={Cpu} isCollapsed={isCollapsed} badge="AI" onClick={onClose}>War Room</SidebarNavItem>
-                    <SidebarNavItem to="/ir" icon={Terminal} isCollapsed={isCollapsed} onClick={onClose}>Swarm Logic</SidebarNavItem>
-                </nav>
-
-                <nav className="space-y-1.5">
-                    {!isCollapsed && (
-                        <p className="px-3 mb-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.25em]">Secure Silos</p>
-                    )}
-                    <SidebarNavItem to="/targets" icon={Search} isCollapsed={isCollapsed} onClick={onClose}>Shadow Map</SidebarNavItem>
-                    <SidebarNavItem to="/reports" icon={Bug} isCollapsed={isCollapsed} onClick={onClose}>Exfil Archive</SidebarNavItem>
-                </nav>
-            </div>
-
-            {/* Bottom Status Panel */}
-            <div className="p-4 border-t border-white/5 space-y-4 bg-black/20">
                 {!isCollapsed && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 group hover:border-primary/20 transition-all cursor-default"
-                    >
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="w-2.5 h-2.5 rounded-full bg-accent shadow-[0_0_12px_rgba(0,255,255,0.6)] animate-pulse" />
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Sovereign Link</span>
+                    <div className="flex items-center gap-2 overflow-hidden">
+                        <div className="p-1.5 bg-primary/10 rounded-lg border border-primary/20">
+                            <ShieldCheck className="text-primary h-5 w-5" />
                         </div>
-                        <div className="text-[11px] font-mono text-primary/90 font-bold border-l-2 border-primary/40 pl-3">
-                            NODE_B4-X092
+                        <h1 className="text-lg font-bold tracking-tight text-white truncate">
+                            FBH <span className="text-primary/50 font-medium">Bounty</span>
+                        </h1>
+                    </div>
+                )}
+                <button
+                    onClick={toggleCollapse}
+                    className="p-1.5 rounded-lg border border-border/40 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                >
+                    {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+                </button>
+            </div>
+
+            {/* Navigation */}
+            <div className="flex-1 px-3 space-y-6 overflow-y-auto scrollbar-none">
+                <nav className="space-y-1">
+                    {!isCollapsed && (
+                        <p className="px-3 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Core</p>
+                    )}
+                    <SidebarNavItem to="/" icon={LayoutDashboard} isCollapsed={isCollapsed}>Overview</SidebarNavItem>
+                    <SidebarNavItem to="/mobsf" icon={ShieldAlert} isCollapsed={isCollapsed} badge="API">MobSF Analysis</SidebarNavItem>
+                    <SidebarNavItem to="/trends" icon={BarChart3} isCollapsed={isCollapsed}>Trends & Intel</SidebarNavItem>
+                </nav>
+
+                <nav className="space-y-1">
+                    {!isCollapsed && (
+                        <p className="px-3 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Autonomous</p>
+                    )}
+                    <SidebarNavItem to="/agents" icon={Cpu} isCollapsed={isCollapsed} badge="AI">Mission Control</SidebarNavItem>
+                    <SidebarNavItem to="/ir" icon={Terminal} isCollapsed={isCollapsed}>Swarm Defense</SidebarNavItem>
+                </nav>
+
+                <nav className="space-y-1">
+                    {!isCollapsed && (
+                        <p className="px-3 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Resources</p>
+                    )}
+                    <SidebarNavItem to="/targets" icon={Search} isCollapsed={isCollapsed}>Shadow Scans</SidebarNavItem>
+                    <SidebarNavItem to="/reports" icon={Bug} isCollapsed={isCollapsed}>Exfil Reports</SidebarNavItem>
+                </nav>
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 border-t border-border/20 space-y-4">
+                {!isCollapsed && (
+                    <div className="p-3 rounded-xl bg-slate-900/50 border border-border/40 group hover:border-primary/30 transition-colors">
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse" />
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sovereign Active</span>
                         </div>
-                    </motion.div>
+                        <div className="text-xs font-mono text-primary/80 truncate">
+                            Singularity Link V6.4
+                        </div>
+                    </div>
                 )}
 
-                <SidebarNavItem to="/settings" icon={Settings} isCollapsed={isCollapsed} onClick={onClose}>System.cfg</SidebarNavItem>
+                <SidebarNavItem to="/settings" icon={Settings} isCollapsed={isCollapsed}>System Config</SidebarNavItem>
 
                 <a
                     href="http://localhost:8000"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={cn(
-                        "flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all group",
+                        "flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-800/50 hover:text-white transition-all group",
                         isCollapsed ? "justify-center" : ""
                     )}
                 >
-                    <div className={cn(
-                        "flex items-center justify-center transition-transform group-hover:rotate-12",
-                        isCollapsed ? "w-8 h-8" : "w-5 h-5"
-                    )}>
-                        <ExternalLink className="w-full h-full" />
-                    </div>
-                    {!isCollapsed && <span className="text-sm font-semibold tracking-wide">Legacy MobSF</span>}
+                    <ExternalLink size={isCollapsed ? 20 : 18} className="shrink-0" />
+                    {!isCollapsed && <span className="text-sm font-medium">Headless MobSF</span>}
                 </a>
+            </div>
+            {/* Tactical Status Indicator */}
+            <div className={cn(
+                "mt-auto p-4 transition-all duration-500",
+                isCollapsed ? "opacity-0 invisible h-0 overflow-hidden" : "opacity-100 visible"
+            )}>
+                <div className="p-3 rounded-xl bg-slate-900/50 border border-border/20 backdrop-blur-sm">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Singularity Link</span>
+                        <div className="flex h-2 w-2 relative">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <div className="flex-1 h-1 bg-slate-800 rounded-full overflow-hidden">
+                            <motion.div
+                                className="h-full bg-primary"
+                                animate={{ width: ["20%", "60%", "45%", "80%", "30%"] }}
+                                transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
+                            />
+                        </div>
+                        <span className="text-[8px] font-mono text-primary font-bold">LIVE</span>
+                    </div>
+                </div>
             </div>
         </aside>
     );

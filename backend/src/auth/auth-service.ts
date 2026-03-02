@@ -28,14 +28,14 @@ export class AuthService {
      * Generate JWT access token
      */
     static generateAccessToken(payload: JWTPayload): string {
-        return jwt.sign(payload as any, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions);
+        return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
     }
 
     /**
      * Generate JWT refresh token
      */
     static generateRefreshToken(payload: JWTPayload): string {
-        return jwt.sign(payload as any, JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRES_IN } as jwt.SignOptions);
+        return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRES_IN });
     }
 
     /**

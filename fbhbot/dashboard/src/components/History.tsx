@@ -32,71 +32,73 @@ export function History() {
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center py-24 text-primary/50 gap-4">
+            <div className="flex flex-col items-center justify-center py-24 text-slate-500 gap-4">
                 <Loader2 className="animate-spin text-primary" size={32} />
-                <span className="text-xs uppercase tracking-widest font-bold">&gt; RETRIEVING_ARCHIVE...</span>
+                <span className="text-[10px] uppercase tracking-widest font-bold">Retrieving Archive...</span>
             </div>
         );
     }
 
     return (
-        <Card className=" relative overflow-hidden">
-            <CardHeader className="flex flex-row items-center justify-between p-6 border-b border-primary/30">
+        <Card className="glass-surface border-slate-800 sovereign-glow">
+            <CardHeader className="flex flex-row items-center justify-between pb-6">
                 <div className="flex flex-col gap-1">
-                    <CardTitle className="text-lg font-bold flex items-center gap-3 text-primary uppercase tracking-widest">
-                        <Clock className="text-primary" size={18} />
-                        &gt; MISSION_ARCHIVE
+                    <CardTitle className="text-xl font-bold flex items-center gap-2">
+                        <Clock className="text-primary" size={20} />
+                        Mission Archive
                     </CardTitle>
-                    <CardDescription className="text-primary/50 font-mono text-xs uppercase tracking-widest">// Historical record of all operations</CardDescription>
+                    <CardDescription>Historical record of all autonomous operations.</CardDescription>
                 </div>
-                <div className="relative w-72">
-                    <Search className="absolute left-3 top-3 text-primary/50" size={14} />
+                <div className="relative w-64 group">
+                    <Search className="absolute left-3 top-2.5 text-slate-500 group-focus-within:text-primary transition-colors" size={14} />
                     <Input
-                        placeholder="FILTER_BY_TARGET..."
-                        className="h-10 pl-10 bg-black border-primary/30 text-xs font-bold uppercase tracking-widest rounded-none focus:border-primary text-primary placeholder:text-primary/30"
+                        placeholder="Filter by target or status..."
+                        className="h-9 pl-9 bg-slate-950/50 border-slate-800 text-xs rounded-lg"
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
                     />
                 </div>
             </CardHeader>
-            <CardContent className="p-6">
+            <CardContent>
                 {filteredMissions.length === 0 ? (
-                    <div className="text-center py-16 border border-dashed border-primary/20">
-                        <p className="text-primary/40 text-xs font-bold uppercase tracking-widest font-mono">[-] No matching operations found</p>
+                    <div className="text-center py-20 bg-slate-950/30 rounded-xl border border-dashed border-slate-800">
+                        <p className="text-slate-500 text-xs italic">No matching operations found within the archive.</p>
                     </div>
                 ) : (
                     <ScrollArea className="h-[500px] w-full pr-4">
-                        <div className="space-y-3">
+                        <div className="space-y-2">
                             {filteredMissions.map((mission) => (
-                                <div key={mission.id} className="flex items-center justify-between p-4 bg-black border border-primary/20 hover:border-primary/50 transition-all group">
+                                <div key={mission.id} className="flex items-center justify-between p-4 bg-slate-950/40 rounded-xl border border-slate-800/50 hover:bg-slate-900/40 transition-all group">
                                     <div className="flex flex-col gap-1">
-                                        <span className="text-sm font-bold text-primary group-hover:glow-text transition-all tracking-wider uppercase">{mission.target}</span>
-                                        <span className="text-xs text-primary/40 font-mono uppercase tracking-widest">ID: {mission.id.slice(0, 16)}...</span>
+                                        <span className="text-sm font-mono text-white group-hover:text-primary transition-colors">{mission.target}</span>
+                                        <span className="text-[10px] text-slate-500 font-mono italic">ID: {mission.id.slice(0, 16)}...</span>
                                     </div>
 
-                                    <div className="flex items-center gap-6">
+                                    <div className="flex items-center gap-8">
                                         <div className="flex flex-col items-end gap-1">
-                                            {mission.status === 'completed' ? (
-                                                <Badge className="border-primary/50 text-primary bg-primary/10 text-xs font-bold tracking-widest px-2 rounded-none uppercase">
-                                                    <CheckCircle size={10} className="mr-1" /> [DONE]
-                                                </Badge>
-                                            ) : mission.status === 'failed' ? (
-                                                <Badge className="bg-red-500/20 border-red-500/50 text-red-400 text-xs font-bold tracking-widest px-2 rounded-none uppercase">
-                                                    <XCircle size={10} className="mr-1" /> [FAIL]
-                                                </Badge>
-                                            ) : (
-                                                <Badge className="border-yellow-500/50 text-yellow-400 bg-yellow-500/10 text-xs font-bold tracking-widest px-2 rounded-none uppercase">
-                                                    <Loader2 size={10} className="mr-1 animate-spin" /> [RUN]
-                                                </Badge>
-                                            )}
-                                            <span className="text-xs text-primary/40 font-mono">
+                                            <div className="flex items-center gap-2">
+                                                {mission.status === 'completed' ? (
+                                                    <Badge variant="outline" className="border-green-500/50 text-green-400 bg-green-500/5 text-[9px] px-2 h-5">
+                                                        <CheckCircle size={10} className="mr-1" /> COMPLETED
+                                                    </Badge>
+                                                ) : mission.status === 'failed' ? (
+                                                    <Badge variant="destructive" className="text-[9px] px-2 h-5">
+                                                        <XCircle size={10} className="mr-1" /> FAILED
+                                                    </Badge>
+                                                ) : (
+                                                    <Badge variant="outline" className="border-primary/50 text-primary bg-primary/5 text-[9px] px-2 h-5">
+                                                        <Loader2 size={10} className="mr-1 animate-spin" /> ACTIVE
+                                                    </Badge>
+                                                )}
+                                            </div>
+                                            <span className="text-[9px] text-slate-500 uppercase tracking-tighter">
                                                 {new Date(mission.timestamp).toLocaleDateString()} @ {new Date(mission.timestamp).toLocaleTimeString([], { hour12: false })}
                                             </span>
                                         </div>
 
-                                        <Button className="h-10 px-4 text-xs font-bold uppercase tracking-widest bg-black hover:bg-primary hover:text-black border border-primary/30 hover:border-primary rounded-none transition-all">
-                                            <FileText size={12} className="mr-2" />
-                                            [REPORT]
+                                        <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold border-slate-700 hover:bg-slate-800">
+                                            <FileText className="mr-2" size={12} />
+                                            INTEL REPORT
                                         </Button>
                                     </div>
                                 </div>

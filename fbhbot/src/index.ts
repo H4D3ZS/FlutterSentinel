@@ -1,55 +1,14 @@
 import "dotenv/config";
-import fs from "fs";
-import path from "path";
-
-// 1. GLOBAL KEY FALLBACK (MUST RUN BEFORE IMPORTS)
-// This beats ESM hoisting by running synchronously before dynamic imports
-try {
-    // Assuming run from fbhbot directory
-    const settingsPath = path.resolve(process.cwd(), "../data/tokens.json");
-    console.log(`[INIT] Checking for tokens at: ${settingsPath}`);
-
-    if (fs.existsSync(settingsPath)) {
-        const settings = JSON.parse(fs.readFileSync(settingsPath, "utf-8"));
-
-        const setEnv = (key: string, value: string | undefined) => {
-            if (value && !process.env[key]) {
-                process.env[key] = value;
-                console.log(`[INIT] Loaded ${key} from tokens.json`);
-            }
-        };
-
-        setEnv('GOOGLE_API_KEY', settings.google_api_key);
-        setEnv('ANTHROPIC_API_KEY', settings.anthropic_api_key || settings.anthropic_key);
-        setEnv('OPENAI_API_KEY', settings.openai_api_key || settings.openai_key);
-        setEnv('SHODAN_API_KEY', settings.shodan_api_key);
-    } else {
-        console.warn(`[INIT] Settings file not found.`);
-    }
-} catch (e) {
-    console.error(`[INIT] Failed to load settings: ${e}`);
-}
-
-// 2. DYNAMIC IMPORTS (To ensure env vars are set first)
-const { AutonomousRunner } = await import("./core/runner.js");
-const { FBHBotAgent } = await import("./agent/core.js");
-const { VectorMemoryManager } = await import("./memory/vector-engine.js");
-const { createSubsystemLogger } = await import("./logging/subsystem.js");
-const { MissionPlanner } = await import("./agent/planner.js");
-const { ReporterService } = await import("./services/reporter.js");
-const { MissionRefiner } = await import("./agent/refiner.js");
-const { submitBounty } = await import("./tools/bounty.js");
-
-// 3. GLOBAL ERROR HANDLERS (Prevent crash from library internals)
-process.on('uncaughtException', (err) => {
-    console.error('[FATAL] Uncaught Exception:', err);
-    // Keep process alive for HTTP server
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('[FATAL] Unhandled Rejection:', reason);
-    // Keep process alive for HTTP server
-});
+import { AutonomousRunner } from "./core/runner.js";
+import { FBHBotAgent } from "./agent/core.js";
+import { VectorMemoryManager } from "./memory/vector-engine.js";
+import { createSubsystemLogger } from "./logging/subsystem.js";
+import { MissionPlanner } from "./agent/planner.js";
+import { ReporterService } from "./services/reporter.js";
+import { MissionRefiner } from "./agent/refiner.js";
+import { submitBounty } from "./tools/bounty.js";
+import path from "node:path";
+import fs from "node:fs";
 
 const log = createSubsystemLogger("main");
 
@@ -80,6 +39,66 @@ async function securityMission() {
         }
     }
 
+    const targets = ["emeraldball.com", "dancevision.com"]; // Demo targets
+
+    for (const target of targets) {
+        log.info(`ORCHESTRATING MISSION FOR TARGET: ${target}`);
+
+        // Try to resume an active mission or create a new one
+        let mission = await memory.getMostRecentMission(target);
+
+        if (!mission || mission.status === 'completed' || mission.status === 'failed') {
+            log.info(`Creating new mission for ${target}`);
+            mission = await planner.createMission(target, "Perform full-scale autonomous pentest and exploit discovery.");
+        } else {
+            log.info(`Resuming existing mission ${mission.id} for ${target}`);
+        }
+
+        const stages = (mission as any).stages || (mission.state as any)?.stages;
+        if (!stages) {
+            log.error(`[MISSION: ${mission.id}] No stages found in mission state.`);
+            continue;
+        }
+        for (const stage of stages) {
+            if (stage.status === 'completed') {
+                log.info(`[MISSION: ${mission.id}] Stage ${stage.type} already completed. Skipping.`);
+                continue;
+            }
+
+            log.info(`[MISSION: ${mission.id}] Executing stage: ${stage.type} (${stage.description})`);
+
+            try {
+                const goal = `MISSION_ID: ${mission.id}, STAGE_ID: ${stage.id}. Target: ${target}. Mission Goal: ${mission.goal}. Current Stage: ${stage.description}.`;
+                const result = await agent.runMission(goal);
+
+                await planner.updateStage(mission.id, stage.id, 'completed', result);
+                log.info(`[MISSION: ${mission.id}] Stage ${stage.type} completed.`);
+            } catch (err) {
+                log.error(`[MISSION: ${mission.id}] Stage ${stage.type} failed: ${err}`);
+                await planner.updateStage(mission.id, stage.id, 'failed', String(err));
+                // Optional: Stop the mission if a critical stage fails
+                break;
+            }
+        }
+
+        const finalMission = await planner.getMission(mission.id);
+        if (finalMission && finalMission.status === 'completed') {
+            // 1. Post-Mission Refinement (Expert Audit)
+            log.info(`[MISSION: ${finalMission.id}] Initiating Expert Refinement...`);
+            const audit = await refiner.refineMission(finalMission);
+            log.info(`[MISSION: ${finalMission.id}] Audit Score: ${audit.score}/100. Critique: ${audit.critique}`);
+
+            // 2. Generate Final Report
+            const report = reporter.generateMissionReport(finalMission);
+            console.log(report);
+
+            // 3. Automated Bounty Submission
+            log.info(`[MISSION: ${finalMission.id}] Generating professional bounty report...`);
+            const submission = await submitBounty(finalMission);
+            log.info(`[MISSION: ${finalMission.id}] Bounty submitted as ${submission.submission_id} to ${submission.platform}.`);
+        }
+    }
+
     log.info("Periodic security mission batch completed.");
 }
 
@@ -89,9 +108,8 @@ const runner = new AutonomousRunner({
 });
 
 runner.start(securityMission).catch((err) => {
-    log.error(`Runner crashed (Supervisor will restart mission logic later): ${err}`);
-    // Do NOT exit process. This keeps the HTTP server alive for Exploit Forge.
-    // process.exit(1); 
+    log.error(`Runner fatal crash: ${err}`);
+    process.exit(1);
 });
 
 export async function startServer(port: number) {

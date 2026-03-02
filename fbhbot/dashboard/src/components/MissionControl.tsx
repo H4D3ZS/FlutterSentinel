@@ -41,52 +41,57 @@ export function MissionControl() {
             if (frequency === 'once') {
                 const playbook = playbooks.find(p => p.id === selectedPlaybook);
                 const result = await api.triggerMission(target, playbook?.name || 'Scan', selectedPlaybook, strategy);
-                setMessage({ type: 'success', text: `[+] Mission deployed: ${target}` });
+                setMessage({ type: 'success', text: `Mission launched against ${target}` });
                 if (result && (result as any).mission_id) {
                     setActiveMissionId((result as any).mission_id);
                 }
             } else {
                 await api.createSchedule(target, frequency);
-                setMessage({ type: 'success', text: `[+] ${frequency} scan scheduled: ${target}` });
+                setMessage({ type: 'success', text: `${frequency} scan scheduled for ${target}` });
             }
             setTarget('');
         } catch (err: any) {
-            setMessage({ type: 'error', text: err.message || '[-] Mission launch failed' });
+            setMessage({ type: 'error', text: err.message || 'Failed to launch mission' });
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="space-y-6 w-full pb-20">
+        <div className="space-y-6 max-w-6xl mx-auto pb-20">
             {/* Intel Section */}
-            <HexStrikeIntel />
+            <HexStrikeIntel missionId={activeMissionId} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <Card className=" lg:col-span-full">
-                    <CardHeader className="p-6 border-b border-primary/30">
-                        <CardTitle className="text-lg font-bold flex items-center gap-3 text-primary uppercase tracking-widest">
-                            <Rocket className="text-primary" size={18} />
-                            &gt; DEPLOY_SWARM
-                        </CardTitle>
-                        <CardDescription className="text-primary/50 font-mono text-xs uppercase tracking-widest">// Configure autonomous offensive parameters</CardDescription>
+                <Card className="glass-surface border-slate-800 sovereign-glow lg:col-span-1">
+                    <CardHeader>
+                        <div className="flex justify-between items-center">
+                            <div className="flex flex-col">
+                                <CardTitle className="text-xl font-bold flex items-center gap-2">
+                                    <Rocket className="text-primary" size={20} />
+                                    Launch Mission
+                                </CardTitle>
+                                <CardDescription>Configure and deploy autonomous security swarms.</CardDescription>
+                            </div>
+                        </div>
                     </CardHeader>
-                    <CardContent className="p-6">
+                    <CardContent>
                         <form onSubmit={handleLaunch} className="space-y-6">
                             {message && (
-                                <Badge className={`w-full py-3 justify-center font-bold text-xs uppercase tracking-widest rounded-none ${message.type === 'success' ? 'border-primary/50 text-primary bg-primary/10' : 'bg-red-500/20 border-red-500/50 text-red-400'}`}>
+                                <Badge variant={message.type === 'success' ? 'outline' : 'destructive'}
+                                    className={`w-full py-2 justify-center rounded-lg border-2 ${message.type === 'success' ? 'border-green-500/30 text-green-400 bg-green-500/5' : ''}`}>
                                     {message.text}
                                 </Badge>
                             )}
 
                             <div className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-bold text-primary/70 uppercase tracking-widest">&gt; TARGET_VECTOR</Label>
-                                    <div className="relative">
-                                        <Globe className="absolute left-3 top-3 text-primary/50" size={16} />
+                                    <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Target Scope</Label>
+                                    <div className="relative group">
+                                        <Globe className="absolute left-3 top-2.5 text-slate-500 group-focus-within:text-primary transition-colors" size={16} />
                                         <Input
-                                            className="bg-black border-primary/30 pl-10 h-11 rounded-none text-sm font-mono text-primary placeholder:text-primary/30 focus:border-primary"
-                                            placeholder="TARGET_IP / DOMAIN"
+                                            className="bg-slate-950/50 border-slate-800 pl-10 rounded-lg text-xs"
+                                            placeholder="example.com"
                                             value={target}
                                             onChange={(e) => setTarget(e.target.value)}
                                             required
@@ -95,65 +100,62 @@ export function MissionControl() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-bold text-primary/70 uppercase tracking-widest">&gt; TACTICAL_PLAYBOOK</Label>
+                                    <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tactical Playbook</Label>
                                     <Select value={selectedPlaybook} onValueChange={setSelectedPlaybook}>
-                                        <SelectTrigger className="w-full bg-black border-primary/30 text-primary h-11 rounded-none text-xs font-bold uppercase tracking-widest focus:border-primary">
+                                        <SelectTrigger className="w-full bg-slate-950/50 border-slate-800 text-slate-200 h-9 text-xs">
                                             <SelectValue placeholder="Select Playbook" />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-black border-primary/30 text-primary rounded-none">
+                                        <SelectContent className="bg-slate-950 border-slate-800 text-slate-200">
                                             {playbooks.map(pb => (
-                                                <SelectItem key={pb.id} value={pb.id} className="text-xs font-bold uppercase tracking-widest py-2 hover:bg-primary/20 focus:bg-primary/20">{pb.name}</SelectItem>
+                                                <SelectItem key={pb.id} value={pb.id} className="text-xs">{pb.name}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-bold text-primary/70 uppercase tracking-widest">&gt; SYNC_FREQUENCY</Label>
+                                    <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Frequency</Label>
                                     <Tabs value={frequency} onValueChange={(v: any) => setFrequency(v)}>
-                                        <TabsList className="grid grid-cols-4 w-full bg-black border border-primary/30 h-11 rounded-none p-0.5">
-                                            {['once', 'hourly', 'daily', 'weekly'].map((f) => (
-                                                <TabsTrigger key={f} value={f} className="text-xs uppercase font-bold tracking-widest data-[state=active]:bg-primary data-[state=active]:text-black rounded-none text-primary/50 data-[state=active]:rounded-none">
-                                                    {f}
-                                                </TabsTrigger>
-                                            ))}
+                                        <TabsList className="grid grid-cols-4 w-full bg-slate-950/80 border border-slate-800 h-8">
+                                            <TabsTrigger value="once" className="text-[8px] uppercase font-bold">Once</TabsTrigger>
+                                            <TabsTrigger value="hourly" className="text-[8px] uppercase font-bold">Hourly</TabsTrigger>
+                                            <TabsTrigger value="daily" className="text-[8px] uppercase font-bold">Daily</TabsTrigger>
+                                            <TabsTrigger value="weekly" className="text-[8px] uppercase font-bold">Weekly</TabsTrigger>
                                         </TabsList>
                                     </Tabs>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-bold text-primary/70 uppercase tracking-widest">&gt; OFFENSIVE_STRATEGY</Label>
+                                    <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Strategy</Label>
                                     <Tabs value={strategy} onValueChange={(v: any) => setStrategy(v)}>
-                                        <TabsList className="grid grid-cols-2 w-full bg-black border border-primary/30 h-11 rounded-none p-0.5">
-                                            <TabsTrigger value="stealth" className="text-xs uppercase font-bold tracking-widest gap-2 data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400 rounded-none text-primary/50">
-                                                <Fingerprint size={12} />
-                                                STEALTH
+                                        <TabsList className="grid grid-cols-2 w-full bg-slate-950/80 border border-slate-800 h-8">
+                                            <TabsTrigger value="stealth" className="text-[8px] uppercase font-bold flex gap-1">
+                                                <Fingerprint size={10} className={strategy === 'stealth' ? 'text-cyan-400' : ''} />
+                                                Stealth
                                             </TabsTrigger>
-                                            <TabsTrigger value="aggressive" className="text-xs uppercase font-bold tracking-widest gap-2 data-[state=active]:bg-red-500/20 data-[state=active]:text-red-400 rounded-none text-primary/50">
-                                                <Zap size={12} />
-                                                AGGRESSIVE
+                                            <TabsTrigger value="aggressive" className="text-[8px] uppercase font-bold flex gap-1">
+                                                <Zap size={10} className={strategy === 'aggressive' ? 'text-red-400' : ''} />
+                                                Aggressive
                                             </TabsTrigger>
                                         </TabsList>
                                     </Tabs>
                                 </div>
                             </div>
 
-                            <div className="p-3 bg-black border border-primary/20">
-                                <p className="text-xs text-primary/60 font-mono uppercase tracking-widest animate-pulse">
-                                    {strategy === 'stealth'
-                                        ? "> INITIALIZING LOW-OBSERVABILITY SWARM... PROXY ROTATION ACTIVE."
-                                        : "> INITIALIZING FULL-SPECTRUM ATTACK... PARALLEL DISCOVERY MAXIMIZED."
-                                    }
-                                </p>
-                            </div>
+                            <p className="text-[8px] text-slate-500 leading-relaxed font-mono italic">
+                                {strategy === 'stealth'
+                                    ? "> INITIALIZING LOW-OBSERVABILITY SWARM... PROXY ROTATION ACTIVE."
+                                    : "> INITIALIZING FULL-SPECTRUM ATTACK... PARALLEL DISOCVERY MAXIMIZED."
+                                }
+                            </p>
 
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full h-12 rounded-none font-bold uppercase tracking-widest text-xs bg-primary hover:bg-primary/80 text-black"
+                                className="w-full h-10 rounded-lg font-bold uppercase tracking-widest text-[10px] bg-gradient-to-r from-primary to-indigo-600 hover:from-primary-hover hover:to-indigo-500 text-white shadow-lg transition-all"
                             >
-                                {loading ? <Loader2 className="animate-spin mr-2" size={16} /> : <PlayCircle className="mr-2" size={16} />}
-                                {frequency === 'once' ? '[AUTHORIZE_DEPLOYMENT]' : '[ESTABLISH_PERSISTENCE]'}
+                                {loading ? <Loader2 className="animate-spin" /> : <PlayCircle className="mr-2" size={14} />}
+                                {frequency === 'once' ? 'Initialize Swarm' : 'Schedule Continuity'}
                             </Button>
                         </form>
                     </CardContent>
