@@ -35,7 +35,7 @@ import TerminalBackground from '@/components/TerminalBackground';
 
 const loginSchema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
-    password: z.string().min(7, { message: "Password must be at least 7 characters" }),
+    password: z.string().min(8, { message: "Password must be at least 8 characters" }),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -51,7 +51,7 @@ const Login: React.FC = () => {
         handleSubmit,
         formState: { errors },
     } = useForm<LoginFormValues>({
-        resolver: zodResolver(loginSchema as any),
+        resolver: zodResolver(loginSchema),
         defaultValues: {
             email: '',
             password: '',

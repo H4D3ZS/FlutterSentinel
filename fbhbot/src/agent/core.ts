@@ -14,10 +14,7 @@ import { broadcastTacticalAlert, getSwarmIntelligence } from "../memory/swarm.js
 import { manageEvasion } from "../tools/bypass.js";
 import { detectDeception } from "../tools/deception.js";
 import { agentEvents } from "../services/events.js";
-import { AISwarm } from "../services/ai_swarm.js";
 import path from "node:path";
-
-import fs from "node:fs";
 
 const log = createSubsystemLogger("agent/core");
 
@@ -25,33 +22,7 @@ export class FBHBotAgent {
     private agent: Agent;
 
     constructor(private memory: VectorMemoryManager, private planner?: MissionPlanner) {
-        // Emergency Key Patch
-        try {
-            if (!process.env.GOOGLE_API_KEY || !process.env.ANTHROPIC_API_KEY || !process.env.OPENAI_API_KEY) {
-                const settingsPath = path.resolve(process.cwd(), "../data/tokens.json");
-                if (fs.existsSync(settingsPath)) {
-                    const settings = JSON.parse(fs.readFileSync(settingsPath, "utf-8"));
-                    if (!process.env.GOOGLE_API_KEY && settings.google_api_key) process.env.GOOGLE_API_KEY = settings.google_api_key;
-                    if (!process.env.ANTHROPIC_API_KEY && (settings.anthropic_api_key || settings.anthropic_key))
-                        process.env.ANTHROPIC_API_KEY = settings.anthropic_api_key || settings.anthropic_key;
-                    if (!process.env.OPENAI_API_KEY && (settings.openai_api_key || settings.openai_key))
-                        process.env.OPENAI_API_KEY = settings.openai_api_key || settings.openai_key;
-                    log.info("FBHBotAgent: Emergency key patch applied from tokens.json");
-                }
-            }
-        } catch (e) {
-            log.warn("FBHBotAgent: Failed to patch keys: " + e);
-        }
-
-        this.agent = new Agent({
-            getApiKey: (provider: string) => {
-                log.info(`[Auth] Agent requested key for provider: ${provider}`);
-                if (provider === "google") return process.env.GOOGLE_API_KEY;
-                if (provider === "anthropic") return process.env.ANTHROPIC_API_KEY;
-                if (provider === "openai") return process.env.OPENAI_API_KEY;
-                return undefined;
-            }
-        });
+        this.agent = new Agent({});
         this.agent.setSystemPrompt(FBHBOT_PERSONA);
     }
 
@@ -86,21 +57,11 @@ export class FBHBotAgent {
             },
             {
                 name: "fbh_exploit",
-                description: "Generate and execute standard exploits using rule-based synthesis.",
+                description: "Generate and execute exploits to prove impact.",
                 execute: async (args: { target: string }) => {
                     log.info(`Agent calling fbh_exploit on ${args.target}`);
                     agentEvents.emitEvent({ type: "action", message: `Executing fbh_exploit on ${args.target}` });
                     return await fbhTools.exploit(args.target);
-                }
-            },
-            {
-                name: "fbh_ai_synthesize",
-                description: "Advanced Tactical Synthesis: Uses Claude (Exploit Expert) to generate complex PoCs with high impact bypasses.",
-                execute: async (args: { finding: any }) => {
-                    const { synthesizePoC } = await import("../tools/exploit_synth.js");
-                    const swarm = (this as any).activeSwarm;
-                    if (!swarm) return { status: "error", message: "AI Swarm not initialized. Missing credentials." };
-                    return await synthesizePoC({ finding: args.finding, swarm });
                 }
             },
             {
@@ -138,8 +99,7 @@ export class FBHBotAgent {
                     const hash = await mobsf.upload(args.file_path);
                     if (!hash) return { status: "failure", message: "Upload failed." };
                     const results = await mobsf.scan(hash);
-                    // Use new extraction logic to reduce token usage and noise
-                    return mobsf.extractTacticalInfo(results);
+                    return results;
                 }
             },
             {
@@ -734,7 +694,7 @@ export class FBHBotAgent {
         }
 
         // 3. Proactive Recall (Intelligence injection)
-        const historicalContext = await this.injectHistory(goal, options?.settings?.google_api_key || process.env.GOOGLE_API_KEY);
+        const historicalContext = await this.injectHistory(goal, options?.settings?.google_api_key);
         if (historicalContext) {
             systemPrompt += `\n\n### HISTORICAL CONTEXT & SEMANTIC INTELLIGENCE:\n${historicalContext}`;
         }
@@ -751,15 +711,7 @@ export class FBHBotAgent {
 
         agentEvents.emitEvent({ type: "status", message: `Mission initiated for goal: ${goal}` });
 
-        // Initialize AI Swarm
-        const swarmConfig = {
-            google_api_key: options?.settings?.google_api_key || process.env.GOOGLE_API_KEY,
-            anthropic_api_key: options?.settings?.anthropic_api_key || process.env.ANTHROPIC_API_KEY,
-            openai_api_key: options?.settings?.openai_api_key || process.env.OPENAI_API_KEY
-        };
-        (this as any).activeSwarm = new AISwarm(swarmConfig);
-
-        if (!swarmConfig.google_api_key) {
+        if (!process.env.GOOGLE_API_KEY && !options?.settings?.google_api_key) {
             const errorMsg = "CRITICAL: Mission stalled. Missing GOOGLE_API_KEY for autonomous reasoning engine.";
             log.error(errorMsg);
             agentEvents.emitEvent({ type: "status", message: errorMsg });

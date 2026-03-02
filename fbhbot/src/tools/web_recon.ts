@@ -26,12 +26,9 @@ export class WebReconEngine {
             const certs = JSON.parse(ctData);
             const subdomains = new Set<string>();
             certs.forEach((c: any) => {
-                const name = c.common_name || c.name_value || '';
-                if (typeof name === 'string') {
-                    name.split('\n').forEach((n: string) => {
-                        if (n.endsWith(domain)) subdomains.add(n);
-                    });
-                }
+                c.common_name.split('\n').forEach((name: string) => {
+                    if (name.endsWith(domain)) subdomains.add(name);
+                });
             });
             subdomains.forEach(s => assets.push({ type: "subdomain", value: s, details: "Discovered via CT Logs" }));
         } catch (e) {

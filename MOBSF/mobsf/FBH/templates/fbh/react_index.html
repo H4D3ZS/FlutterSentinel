@@ -7,16 +7,18 @@
 <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
     rel="stylesheet">
-<link rel="stylesheet" crossorigin href="{% static 'fbh/dist/index.css' %}?v=4.4.5">
+<link rel="stylesheet" crossorigin href="{% static 'fbh/dist/index.css' %}">
 <style>
     /* Ensure the React root fills the available space correctly */
     #root {
         min-height: calc(100vh - 114px);
+        background: #1a1a1a;
         margin-top: 50px;
         /* Offset for new MobSF nav height */
     }
 
     .content-wrapper {
+        background: #1a1a1a !important;
         padding-top: 0px !important;
     }
 </style>
@@ -41,5 +43,5 @@
         }
     })();
 </script>
-<script type="module" crossorigin src="{% static 'fbh/dist/index.js' %}?v=4.4.6"></script>
+<script type="module" crossorigin src="{% static 'fbh/dist/index.js' %}"></script>
 {% endblock %}

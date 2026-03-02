@@ -17,19 +17,11 @@ declare global {
 export function authMiddleware(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
 
-    let token: string | undefined;
-
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-        token = authHeader.split(' ')[1];
-    } else if (req.query && req.query.token) {
-        // Support token in query param for SSE
-        token = req.query.token as string;
-    }
-
-    if (!token) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ error: 'Unauthorized: No token provided' });
     }
 
+    const token = authHeader.split(' ')[1];
     const payload = AuthService.verifyToken(token);
 
     if (!payload) {

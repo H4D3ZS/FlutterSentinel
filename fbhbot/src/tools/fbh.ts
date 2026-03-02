@@ -34,7 +34,6 @@ import { performActiveScan } from "./active_scanner.js";
 import { auditInfrastructure } from "./infra_fingerprint.js";
 import { performSigIntDiscovery } from "./sigint_bridge.js";
 import { getHexStrikeIntelligence } from "./hexstrike_bridge.js";
-import { AISwarm } from "../services/ai_swarm.js";
 import path from "node:path";
 import fs from "node:fs";
 
@@ -219,21 +218,17 @@ export const fbhTools = {
     /**
      * Tactical Exploit Engine: Synthesize exploit chains and PoC reports.
      */
-    exploitChain: async (args: { vulnerabilities: any[], swarm?: AISwarm }) => {
+    exploitChain: async (args: { vulnerabilities: any[] }) => {
         return await buildExploitChain(args);
     },
 
     /**
      * Master Scan: End-to-end autonomous pipeline (Web + Mobile + Cloud).
      */
-    masterScan: async (target: string, keys?: any) => {
+    masterScan: async (target: string) => {
         const log = createSubsystemLogger("tools/fbh/master");
         log.info(`Initiating Sovereign Singularity Engine for ${target}`);
         console.log(`[!] THE SINGULARITY ENGINE ACTIVATED: ${target}`);
-
-        // Initialize AISwarm with provided keys if available
-        const swarm = new AISwarm(keys || {});
-
         const results = [];
 
         // 0. AI Target Intelligence (HexStrike)

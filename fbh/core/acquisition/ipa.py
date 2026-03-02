@@ -10,23 +10,25 @@ class IPAAcquisition:
     """Download IPAs using ipatool"""
 
     @staticmethod
-    def download(bundle_id: str, output_dir: Path) -> bool:
+    def download(store_url_or_bundle: str, output_dir: Path) -> bool:
         """Download IPA using ipatool"""
         output_dir.mkdir(parents=True, exist_ok=True)
         
-        # If it looks like a URL, try to extract, otherwise assume bundle_id
-        # Ideally, we should ensure the caller passes the bundle_id (e.g. com.example.app)
-        target_id = bundle_id
+        # Extract bundle ID or App ID
+        app_id = None
+        if "id" in store_url_or_bundle:
+            match = re.search(r'id(\d+)', store_url_or_bundle)
+            if match: app_id = match.group(1)
+        
+        if not app_id:
+            app_id = store_url_or_bundle # Assume it's already an ID or bundle
             
-        logger.info(f"Downloading IPA for {target_id}...")
+        logger.info(f"Downloading IPA for {app_id}...")
         
         try:
-            # Attempt 1: Using bundle ID
-            # ipatool download -b com.package.name -o output_dir --purchase
-            # Add --purchase to attempt free purchase if not owned
-            cmd = ['ipatool', 'download', '-b', target_id, '-o', str(output_dir), '--purchase', '--non-interactive']
+            # Attempt 1: Using bundle ID if provided as string
             result = subprocess.run(
-                cmd,
+                ['ipatool', 'download', '-b', app_id, '-o', str(output_dir), '--non-interactive'],
                 capture_output=True, timeout=600
             )
             if result.returncode == 0:

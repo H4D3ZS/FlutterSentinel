@@ -1,8 +1,6 @@
 import Database from "better-sqlite3";
 import * as sqliteVec from "sqlite-vec";
 import { createSubsystemLogger } from "../logging/subsystem.js";
-import fs from "fs";
-import path from "path";
 
 const log = createSubsystemLogger("memory/vector");
 
@@ -108,28 +106,6 @@ export class VectorMemoryManager {
           metadata TEXT,
           timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         );
-
-      CREATE TABLE IF NOT EXISTS forge_sessions(
-        id TEXT PRIMARY KEY,
-        target TEXT NOT NULL,
-        finding_title TEXT NOT NULL,
-        status TEXT NOT NULL,
-        poc TEXT,
-        logs TEXT,
-        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-      );
-
-      CREATE TABLE IF NOT EXISTS web_scans(
-        id TEXT PRIMARY KEY,
-        target TEXT NOT NULL,
-        scan_type TEXT NOT NULL,
-        status TEXT NOT NULL,
-        findings TEXT,
-        owasp_score INTEGER,
-        owasp_categories TEXT,
-        started_at DATETIME NOT NULL,
-        completed_at DATETIME
-      );
 `);
 
     this.seedPlaybooks();
@@ -138,18 +114,6 @@ export class VectorMemoryManager {
   }
 
   async getSettings(userId: string): Promise<Record<string, string>> {
-    // Priority: tokens.json (Single Source of Truth)
-    try {
-      const tokensPath = path.resolve(process.cwd(), "../data/tokens.json");
-      if (fs.existsSync(tokensPath)) {
-        const fileData = JSON.parse(fs.readFileSync(tokensPath, "utf-8"));
-        return fileData;
-      }
-    } catch (e) {
-      log.warn(`Failed to read tokens.json: ${e}`);
-    }
-
-    // Fallback to DB (Legacy/Backup)
     const stmt = this.db.prepare("SELECT key_name, value FROM settings WHERE user_id = ?");
     const rows = stmt.all(userId) as { key_name: string, value: string }[];
     const settings: Record<string, string> = {};
@@ -160,24 +124,6 @@ export class VectorMemoryManager {
   }
 
   async updateSettings(userId: string, settings: Record<string, string>) {
-    // 1. Write to tokens.json (Persistence)
-    try {
-      const tokensPath = path.resolve(process.cwd(), "../data/tokens.json");
-      const dir = path.dirname(tokensPath);
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-
-      let existing = {};
-      if (fs.existsSync(tokensPath)) {
-        existing = JSON.parse(fs.readFileSync(tokensPath, "utf-8"));
-      }
-      const newData = { ...existing, ...settings };
-      fs.writeFileSync(tokensPath, JSON.stringify(newData, null, 2));
-      log.info("Persisted settings to tokens.json");
-    } catch (e) {
-      log.error(`Failed to write tokens.json: ${e}`);
-    }
-
-    // 2. Sync to DB (Legacy support)
     const stmt = this.db.prepare(
       "INSERT OR REPLACE INTO settings (user_id, key_name, value) VALUES (?, ?, ?)"
     );
@@ -492,84 +438,5 @@ LIMIT ?
     const stmt = this.db.prepare("UPDATE pivots SET status = ? WHERE id = ?");
     stmt.run(status, id);
     log.info(`Updated pivot session ${id} status to ${status}`);
-  }
-
-  async storeForgeSession(session: { id: string; target: string; finding_title: string; status: string; poc?: string; logs?: string }) {
-    const stmt = this.db.prepare(`
-      INSERT OR REPLACE INTO forge_sessions (id, target, finding_title, status, poc, logs)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `);
-    stmt.run(session.id, session.target, session.finding_title, session.status, session.poc || null, session.logs || null);
-    log.info(`Stored forge session: ${session.id} for ${session.target}`);
-  }
-
-  async getForgeSessions(): Promise<any[]> {
-    const stmt = this.db.prepare("SELECT * FROM forge_sessions ORDER BY timestamp DESC");
-    return stmt.all();
-  }
-
-  async deleteForgeSession(id: string) {
-    const stmt = this.db.prepare("DELETE FROM forge_sessions WHERE id = ?");
-    stmt.run(id);
-    log.info(`Deleted forge session: ${id}`);
-  }
-
-  async clearForgeSessions() {
-    const stmt = this.db.prepare("DELETE FROM forge_sessions");
-    stmt.run();
-    log.info(`Cleared all forge sessions`);
-  }
-
-  // Web Scans CRUD Operations
-  async storeWebScan(scan: { id: string; target: string; scanType: string; status: string; findings?: any[]; owaspScore?: number; owaspCategories?: any[]; startedAt: string; completedAt?: string }) {
-    const stmt = this.db.prepare(`
-      INSERT OR REPLACE INTO web_scans (id, target, scan_type, status, findings, owasp_score, owasp_categories, started_at, completed_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    stmt.run(
-      scan.id,
-      scan.target,
-      scan.scanType,
-      scan.status,
-      JSON.stringify(scan.findings || []),
-      scan.owaspScore || null,
-      JSON.stringify(scan.owaspCategories || []),
-      scan.startedAt,
-      scan.completedAt || null
-    );
-    log.info(`Stored web scan: ${scan.id} for ${scan.target}`);
-  }
-
-  async getWebScans(): Promise<any[]> {
-    const stmt = this.db.prepare("SELECT * FROM web_scans ORDER BY started_at DESC");
-    const rows = stmt.all() as any[];
-    return rows.map(r => ({
-      ...r,
-      findings: JSON.parse(r.findings || "[]"),
-      owaspCategories: JSON.parse(r.owasp_categories || "[]")
-    }));
-  }
-
-  async getWebScan(id: string): Promise<any | null> {
-    const stmt = this.db.prepare("SELECT * FROM web_scans WHERE id = ?");
-    const row = stmt.get(id) as any;
-    if (!row) return null;
-    return {
-      ...row,
-      findings: JSON.parse(row.findings || "[]"),
-      owaspCategories: JSON.parse(row.owasp_categories || "[]")
-    };
-  }
-
-  async deleteWebScan(id: string) {
-    const stmt = this.db.prepare("DELETE FROM web_scans WHERE id = ?");
-    stmt.run(id);
-    log.info(`Deleted web scan: ${id}`);
-  }
-
-  async clearWebScans() {
-    const stmt = this.db.prepare("DELETE FROM web_scans");
-    stmt.run();
-    log.info(`Cleared all web scans`);
   }
 }

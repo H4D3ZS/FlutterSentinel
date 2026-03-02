@@ -11,7 +11,7 @@ class Config:
     
     # MobSF
     MOBSF_URL = os.getenv("MOBSF_URL", "http://localhost:8000")
-    MOBSF_API_KEY = os.getenv("MOBSF_API_KEY", "o3)z$cb&(tr0wozx34q25!04s(@5eq46v6pfv=ufp(=u*ppio&")
+    MOBSF_API_KEY = os.getenv("MOBSF_API_KEY", "7d89892a6453134e616fe025a37183be58ef545e34c5dc127cee9773eba1864c")
     
     # External APIs
     HACKERONE_API_TOKEN = os.getenv("HACKERONE_API_TOKEN", "")

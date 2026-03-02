@@ -1,0 +1,91 @@
+{"timestamp": "2026-01-26T00:25:13+0000", "level": "INFO", "logger": "fbh", "message": "Created new target: test_target_verify", "module": "target", "filename": "target.py", "lineno": 37}
+{"timestamp": "2026-01-26T00:25:13+0000", "level": "INFO", "logger": "fbh", "message": "Creating workspace for test_target_verify", "module": "target", "filename": "target.py", "lineno": 71}
+{"timestamp": "2026-01-26T00:25:58+0000", "level": "INFO", "logger": "fbh", "message": "Created new target: test_target_verify", "module": "target", "filename": "target.py", "lineno": 37}
+{"timestamp": "2026-01-26T00:25:58+0000", "level": "INFO", "logger": "fbh", "message": "Creating workspace for test_target_verify", "module": "target", "filename": "target.py", "lineno": 71}
+{"timestamp": "2026-01-26T00:25:58+0000", "level": "INFO", "logger": "fbh", "message": "Workspace created at: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/targets/test_target_verify", "module": "target", "filename": "target.py", "lineno": 104}
+{"timestamp": "2026-01-26T00:25:58+0000", "level": "WARNING", "logger": "fbh", "message": "Deleting target: test_target_verify", "module": "target", "filename": "target.py", "lineno": 159}
+{"timestamp": "2026-01-26T00:25:58+0000", "level": "INFO", "logger": "fbh", "message": "Removed workspace: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/targets/test_target_verify", "module": "target", "filename": "target.py", "lineno": 171}
+{"timestamp": "2026-01-26T00:29:55+0000", "level": "INFO", "logger": "fbh", "message": "Created new target: reviewer", "module": "target", "filename": "target.py", "lineno": 37}
+{"timestamp": "2026-01-26T00:29:55+0000", "level": "INFO", "logger": "fbh", "message": "Creating workspace for reviewer", "module": "target", "filename": "target.py", "lineno": 71}
+{"timestamp": "2026-01-26T00:29:55+0000", "level": "INFO", "logger": "fbh", "message": "Workspace created at: /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/targets/reviewer", "module": "target", "filename": "target.py", "lineno": 104}
+{"timestamp": "2026-01-26T00:29:55+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:29:57+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:30:07+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:30:17+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:30:27+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:30:37+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:30:47+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:30:57+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:31:07+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:31:17+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:31:27+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:31:37+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:31:47+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:31:57+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:32:07+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:32:17+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:32:27+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:32:37+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:32:47+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:32:57+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:33:07+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:34:08+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:35:09+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:38:26+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:38:26+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:39:10+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:39:15+0000", "level": "INFO", "logger": "fbh", "message": "\ud83d\ude80 Submitting test_sim.apk to MobSF for analysis...", "module": "mobsf_service", "filename": "mobsf_service.py", "lineno": 30}
+{"timestamp": "2026-01-26T00:39:15+0000", "level": "ERROR", "logger": "fbh", "message": "\ud83d\udd25 MobSF Upload Failed [401]: {\"error\": \"You are unauthorized to make this request.\"}", "module": "mobsf_service", "filename": "mobsf_service.py", "lineno": 46}
+{"timestamp": "2026-01-26T00:39:42+0000", "level": "INFO", "logger": "fbh", "message": "\ud83d\ude80 Submitting test_sim.apk to MobSF for analysis...", "module": "mobsf_service", "filename": "mobsf_service.py", "lineno": 30}
+{"timestamp": "2026-01-26T00:39:42+0000", "level": "ERROR", "logger": "fbh", "message": "\ud83d\udd25 MobSF Upload Failed [400]: {\"error\": \"File format not Supported!\"}", "module": "mobsf_service", "filename": "mobsf_service.py", "lineno": 46}
+{"timestamp": "2026-01-26T00:43:54+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:44:04+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:44:10+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:44:14+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:44:24+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:44:34+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:44:44+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:44:54+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:45:04+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:45:10+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:45:14+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:45:24+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:45:34+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:46:10+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:46:10+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:52:11+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:52:11+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:52:31+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:52:45+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:53:10+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:53:10+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:54:10+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:54:10+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:54:32+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T00:54:34+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T13:15:26+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T13:15:26+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T13:15:26+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: reviewer", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T13:15:26+0000", "level": "INFO", "logger": "fbh", "message": "\ud83d\ude80 Running workflow mass_audit on reviewer (Parallel Mode)", "module": "workflow", "filename": "workflow.py", "lineno": 28}
+{"timestamp": "2026-01-26T13:15:26+0000", "level": "INFO", "logger": "fbh", "message": "Running quick_all scanner on reviewer", "module": "scanner", "filename": "scanner.py", "lineno": 102}
+{"timestamp": "2026-01-26T13:15:26+0000", "level": "INFO", "logger": "fbh", "message": "Running apk_analysis scanner on reviewer", "module": "scanner", "filename": "scanner.py", "lineno": 102}
+{"timestamp": "2026-01-26T13:15:26+0000", "level": "ERROR", "logger": "fbh", "message": "Scanner quick_all failed: bad parameter or other API misuse", "module": "scanner", "filename": "scanner.py", "lineno": 117}
+{"timestamp": "2026-01-26T13:15:26+0000", "level": "INFO", "logger": "fbh", "message": "Started apk_analysis scan (ID: 1)", "module": "scanner", "filename": "scanner.py", "lineno": 50}
+{"timestamp": "2026-01-26T13:15:26+0000", "level": "ERROR", "logger": "fbh", "message": "\u274c quick failed: bad parameter or other API misuse", "module": "workflow", "filename": "workflow.py", "lineno": 46}
+{"timestamp": "2026-01-26T13:15:26+0000", "level": "WARNING", "logger": "fbh", "message": "No APK found in /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/targets/reviewer/apk", "module": "apk_scanner", "filename": "apk_scanner.py", "lineno": 21}
+{"timestamp": "2026-01-26T13:15:26+0000", "level": "INFO", "logger": "fbh", "message": "Completed apk_analysis scan with 0 findings", "module": "scanner", "filename": "scanner.py", "lineno": 57}
+{"timestamp": "2026-01-26T13:15:26+0000", "level": "INFO", "logger": "fbh", "message": "\u2705 apk finished: 0 findings", "module": "workflow", "filename": "workflow.py", "lineno": 43}
+{"timestamp": "2026-01-26T13:15:26+0000", "level": "INFO", "logger": "fbh", "message": "Running source_code_audit scanner on reviewer", "module": "scanner", "filename": "scanner.py", "lineno": 102}
+{"timestamp": "2026-01-26T13:15:26+0000", "level": "INFO", "logger": "fbh", "message": "Started source_code_audit scan (ID: 2)", "module": "scanner", "filename": "scanner.py", "lineno": 50}
+{"timestamp": "2026-01-26T13:15:26+0000", "level": "INFO", "logger": "fbh", "message": "Running source code audit on /Users/hades/Desktop/bugbounty/flutter_bounty_hunter/targets/reviewer/decompiled", "module": "source_scanner", "filename": "source_scanner.py", "lineno": 23}
+{"timestamp": "2026-01-26T13:15:26+0000", "level": "INFO", "logger": "fbh", "message": "Completed source_code_audit scan with 0 findings", "module": "scanner", "filename": "scanner.py", "lineno": 57}
+{"timestamp": "2026-01-26T13:15:26+0000", "level": "INFO", "logger": "fbh", "message": "\u2705 source_code finished: 0 findings", "module": "workflow", "filename": "workflow.py", "lineno": 43}
+{"timestamp": "2026-01-26T22:42:44+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: test_app", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T22:42:44+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: test_app", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T22:45:09+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: test_app", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-26T22:45:09+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: test_app", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-27T08:51:00+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: fbh_verification_test", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-27T08:51:00+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: test_app", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-27T08:51:28+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: test_app", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-27T08:52:09+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: fbh_verification_test", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-01-27T08:52:17+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: fbh_verification_test", "module": "target", "filename": "target.py", "lineno": 35}

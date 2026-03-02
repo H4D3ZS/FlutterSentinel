@@ -2,17 +2,18 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import {
     Shield,
+    Clock,
     Activity,
     ChevronRight,
     MoreVertical,
     Smartphone,
-    Terminal,
-    Target as TargetIcon
+    AlertCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
     Card,
     CardContent,
+    CardDescription,
     CardFooter,
     CardHeader,
     CardTitle,
@@ -49,113 +50,113 @@ const TargetCard: React.FC<TargetCardProps> = ({ target, onClick }) => {
 
     return (
         <motion.div
+            layout
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             whileHover={{ y: -4 }}
-            className="h-full"
+            transition={{ duration: 0.2 }}
         >
             <Card
-                className="group cursor-pointer glass-panel overflow-hidden border-white/5 hover:border-primary/40 transition-all duration-300 h-full flex flex-col"
+                className="group relative cursor-pointer overflow-hidden border-border/40 bg-slate-900/40 backdrop-blur-sm hover:bg-slate-900/60 hover:border-primary/40 transition-all duration-300 shadow-xl"
                 onClick={onClick}
             >
-                {/* Tactical Header Overlay */}
-                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+                {/* Status Indicator Bar */}
+                <div className={cn(
+                    "absolute top-0 left-0 w-full h-[2px]",
+                    target.status === 'completed' ? "bg-green-500/50" : "bg-primary/50"
+                )} />
 
-                <CardHeader className="p-6 pb-4">
-                    <div className="flex justify-between items-start gap-4">
-                        <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1.5">
-                                <TargetIcon className="w-3.5 h-3.5 text-primary" />
-                                <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest border-primary/20 text-primary bg-primary/5">
-                                    {target.platform === 'android' ? 'OS_APK' : 'OS_IPA'}
-                                </Badge>
-                            </div>
-                            <CardTitle className="text-lg font-black text-white truncate tracking-tight group-hover:text-primary transition-colors">
-                                {target.name.split('.').pop()?.toUpperCase()}
+                <CardHeader className="p-5 pb-3">
+                    <div className="flex justify-between items-start">
+                        <div className="flex-1 min-w-0 pr-2">
+                            <CardTitle className="text-base font-bold text-white truncate group-hover:text-primary transition-colors">
+                                {target.name}
                             </CardTitle>
-                            <div className="text-[10px] font-mono truncate text-muted-foreground/60 mt-1 flex items-center gap-2">
-                                <Terminal size={10} />
+                            <CardDescription className="text-[10px] font-mono truncate text-slate-500 mt-1">
                                 {target.package}
-                            </div>
+                            </CardDescription>
                         </div>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg">
-                                    <MoreVertical size={16} />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="glass-panel border-white/10 bg-black/90 min-w-[160px]">
-                                <DropdownMenuItem className="text-xs font-bold text-slate-300 focus:bg-primary/20 focus:text-white cursor-pointer py-2.5">
-                                    LAUNCH_ANALYSIS
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="text-xs font-bold text-slate-300 focus:bg-primary/20 focus:text-white cursor-pointer py-2.5">
-                                    EXFIL_RESULTS
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="text-xs font-bold text-red-400 focus:bg-red-500/10 focus:text-red-300 cursor-pointer py-2.5">
-                                    TERMINATE_LINK
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <div className="flex items-center gap-2 shrink-0">
+                            <Badge variant="outline" className={cn(
+                                "h-5 text-[9px] uppercase tracking-widest font-bold",
+                                target.platform === 'android'
+                                    ? "border-green-500/30 text-green-500 bg-green-500/5"
+                                    : "border-blue-500/30 text-blue-500 bg-blue-500/5"
+                            )}>
+                                {target.platform}
+                            </Badge>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-slate-500 hover:text-white">
+                                        <MoreVertical size={14} />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="bg-slate-900 border-border">
+                                    <DropdownMenuItem className="text-xs text-slate-300 focus:bg-slate-800">View Details</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-xs text-slate-300 focus:bg-slate-800">Scan History</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-xs text-red-400 focus:bg-red-500/10">Delete Target</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
                     </div>
                 </CardHeader>
 
-                <CardContent className="p-6 pt-0 pb-6 flex-1">
-                    <div className="grid grid-cols-2 gap-6 mb-6">
+                <CardContent className="p-5 pt-0 pb-4">
+                    <div className="grid grid-cols-2 gap-4 mb-4">
                         <div className="space-y-1">
-                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-1.5 opacity-60">
-                                <Shield size={12} className="text-primary" /> Intel
+                            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1">
+                                <Shield size={10} className="text-primary/70" /> Intelligence
                             </p>
-                            <p className="text-2xl font-black text-white tabular-nums tracking-tighter">
+                            <p className="text-xl font-bold text-white">
                                 {target.stats?.total_findings || 0}
                             </p>
                         </div>
                         <div className="space-y-1 text-right">
-                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-1.5 justify-end opacity-60">
-                                <Activity size={12} className="text-accent" /> Status
+                            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1 justify-end">
+                                <Activity size={10} className="text-primary/70" /> Status
                             </p>
                             <div className={cn(
-                                "text-xs font-black tracking-widest flex items-center justify-end gap-2",
+                                "text-xs font-bold",
                                 target.status === 'completed' ? "text-green-500" : "text-primary"
                             )}>
-                                {target.status.split(':').pop()?.trim().toUpperCase()}
-                                {isScanning && <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />}
+                                {isScanning && <Activity size={10} className="inline mr-1 animate-ping" />}
+                                {target.status.replace('running: ', '').toUpperCase()}
                             </div>
                         </div>
                     </div>
 
                     {isScanning && (
-                        <div className="space-y-2.5 p-3 rounded-xl bg-primary/5 border border-primary/10">
-                            <div className="flex justify-between text-[9px] font-black tracking-[0.2em]">
-                                <span className="text-muted-foreground">SCAN_PROGRESS</span>
+                        <div className="space-y-2">
+                            <div className="flex justify-between text-[9px] font-mono">
+                                <span className="text-slate-500">EXFIL PROGRESS</span>
                                 <span className="text-primary">{target.scan_progress}%</span>
                             </div>
-                            <Progress value={target.scan_progress} className="h-1 bg-white/5" />
+                            <Progress value={target.scan_progress} className="h-1 bg-slate-800" />
                         </div>
                     )}
                 </CardContent>
 
-                <CardFooter className="p-5 border-t border-white/5 bg-black/20 flex justify-between items-center">
-                    <div className="flex flex-wrap gap-2">
+                <CardFooter className="p-4 pt-4 border-t border-border/20 bg-slate-950/20 flex justify-between items-center">
+                    <div className="flex gap-1.5 overflow-hidden">
                         {target.stats?.findings_by_severity?.critical ? (
-                            <Badge className="bg-red-500/20 text-red-500 border-red-500/30 text-[9px] font-black px-2 py-0.5 rounded-md animate-pulse">
-                                {target.stats.findings_by_severity.critical}_CRIT
+                            <Badge className="bg-red-500/10 text-red-500 border-red-500/20 text-[8px] h-4 px-1 pb-0.5">
+                                {target.stats.findings_by_severity.critical} CRIT
                             </Badge>
                         ) : null}
                         {target.stats?.findings_by_severity?.high ? (
-                            <Badge className="bg-orange-500/20 text-orange-500 border-orange-500/30 text-[9px] font-black px-2 py-0.5 rounded-md">
-                                {target.stats.findings_by_severity.high}_HIGH
+                            <Badge className="bg-orange-500/10 text-orange-500 border-orange-500/20 text-[8px] h-4 px-1 pb-0.5">
+                                {target.stats.findings_by_severity.high} HIGH
                             </Badge>
-                        ) : (
-                            <div className="flex items-center gap-2 text-muted-foreground opacity-40">
-                                <Smartphone size={12} />
-                                <span className="text-[9px] font-black tracking-widest uppercase">Inactive</span>
+                        ) : null}
+                        {!target.stats?.findings_by_severity?.critical && !target.stats?.findings_by_severity?.high && (
+                            <div className="flex items-center gap-1 text-slate-500">
+                                <Smartphone size={10} />
+                                <span className="text-[8px] font-mono tracking-tighter">STANDBY</span>
                             </div>
                         )}
                     </div>
 
-                    <div className="p-1.5 rounded-lg group-hover:bg-primary/20 transition-all text-muted-foreground group-hover:text-primary">
-                        <ChevronRight size={16} />
-                    </div>
+                    <ChevronRight size={14} className="text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                 </CardFooter>
             </Card>
         </motion.div>

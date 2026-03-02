@@ -32,75 +32,79 @@ export function LiveFeed() {
     }, []);
 
     const getAlertIcon = (type: string) => {
-        if (['C2_ROTATION', 'THREAT_INTEL'].includes(type)) return <Cpu size={12} className="text-cyan-400" />;
-        if (type === 'CVE_DISCOVERY') return <ShieldAlert size={12} className="text-red-400" />;
-        return <Activity size={12} className="text-primary" />;
+        if (['C2_ROTATION', 'THREAT_INTEL'].includes(type)) return <Cpu size={14} className="text-purple-400" />;
+        if (type === 'CVE_DISCOVERY') return <ShieldAlert size={14} className="text-red-400" />;
+        return <Activity size={14} className="text-primary" />;
     };
 
     const getSeverityBadge = (severity: string) => {
         switch (severity) {
-            case 'critical': return <Badge className="text-xs px-1.5 h-5 bg-red-500/20 border-red-500/50 text-red-400 rounded-none uppercase tracking-widest font-bold">CRITICAL</Badge>;
-            case 'high': return <Badge className="text-xs border-red-500/30 text-red-400 bg-red-500/10 px-1.5 h-5 rounded-none uppercase tracking-widest font-bold">HIGH</Badge>;
-            case 'medium': return <Badge className="text-xs border-yellow-500/30 text-yellow-500 bg-yellow-500/10 px-1.5 h-5 rounded-none uppercase tracking-widest font-bold">MEDIUM</Badge>;
-            default: return <Badge className="text-xs border-primary/30 text-primary bg-primary/10 px-1.5 h-5 rounded-none uppercase tracking-widest font-bold">LOW</Badge>;
+            case 'critical': return <Badge variant="destructive" className="text-[8px] tracking-tight px-1.5 h-4">CRITICAL</Badge>;
+            case 'high': return <Badge variant="outline" className="text-[8px] border-red-500/50 text-red-400 bg-red-500/5 px-1.5 h-4">HIGH</Badge>;
+            case 'medium': return <Badge variant="outline" className="text-[8px] border-yellow-500/50 text-yellow-500 bg-yellow-500/5 px-1.5 h-4">MEDIUM</Badge>;
+            default: return <Badge variant="outline" className="text-[8px] border-blue-500/50 text-blue-400 bg-blue-500/5 px-1.5 h-4">LOW</Badge>;
         }
     };
 
     return (
-        <Card className="flex flex-col overflow-hidden">
-            <CardHeader className="p-6 border-b border-primary/30">
+        <Card className="glass-surface border-slate-800 h-full flex flex-col sovereign-glow overflow-hidden">
+            <CardHeader className="pb-4">
                 <div className="flex justify-between items-start">
                     <div>
-                        <CardTitle className="text-lg font-bold flex items-center gap-3 text-primary uppercase tracking-widest">
-                            <Activity className="text-primary" size={18} />
-                            &gt; TACTICAL_SWARM_FEED
+                        <CardTitle className="text-xl font-bold flex items-center gap-2">
+                            <Activity className="text-primary" size={20} />
+                            Tactical Swarm Feed
                         </CardTitle>
-                        <CardDescription className="text-primary/50 font-mono text-xs uppercase tracking-widest mt-1">// Real-time offensive telemetry and target discovery</CardDescription>
+                        <CardDescription>Real-time offensive telemetry and target discovery.</CardDescription>
                     </div>
-                    <div className="flex items-center gap-2 bg-black px-2 py-1 border border-primary/30">
-                        <div className="w-2 h-2 bg-primary animate-pulse" />
-                        <span className="text-xs font-bold text-primary uppercase tracking-widest">LIVE</span>
+                    <div className="flex items-center gap-1.5 bg-slate-950/80 px-2 py-1 rounded-full border border-slate-800 shadow-inner">
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
+                        <span className="text-[9px] font-bold text-green-500 uppercase tracking-widest leading-none">Live</span>
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="flex-1 p-0 bg-black">
-                <ScrollArea className="h-[300px] px-4">
-                    <div className="space-y-3 py-4">
+            <CardContent className="flex-1 p-0">
+                <ScrollArea className="h-[430px] px-6">
+                    <div className="space-y-4 pb-6">
                         {alerts.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-16 text-primary/40 animate-pulse">
-                                <Activity size={48} className="text-primary/20 mb-4" />
-                                <p className="text-xs font-bold uppercase tracking-widest font-mono">&gt; Awaiting tactical transmission...</p>
+                            <div className="flex flex-col items-center justify-center py-20 text-slate-600 animate-pulse">
+                                <Activity size={40} className="opacity-20 mb-4" />
+                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] italic">Awaiting tactical transmission...</p>
                             </div>
                         ) : (
                             alerts.map((alert, idx) => {
                                 const isSovereign = ['C2_ROTATION', 'CVE_DISCOVERY', 'THREAT_INTEL'].includes(alert.type);
                                 return (
-                                    <div key={idx} className={`group bg-black p-4 border border-primary/20 hover:border-primary/50 transition-all ${isSovereign ? 'border-l-2 border-l-cyan-400' : ''}`}>
-                                        <div className="flex justify-between items-start mb-2">
+                                    <div key={idx} className={`group relative bg-slate-950/40 p-4 rounded-xl border border-slate-800/50 transition-all hover:bg-slate-950/80 hover:border-slate-700/50 animate-in fade-in slide-in-from-right-4 duration-500`}>
+                                        {isSovereign && <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-3xl rounded-full -mr-12 -mt-12 pointer-events-none group-hover:opacity-100 transition-opacity" />}
+
+                                        <div className="flex justify-between items-start mb-2 relative z-10">
                                             <div className="flex items-center gap-2">
-                                                <div className={`p-1 border ${isSovereign ? "border-cyan-400/50" : "border-primary/30"}`}>
-                                                    {getAlertIcon(alert.type)}
-                                                </div>
-                                                <span className={`font-mono text-xs font-bold uppercase tracking-widest ${isSovereign ? 'text-cyan-400' : 'text-primary/60'}`}>
+                                                {getAlertIcon(alert.type)}
+                                                <span className={`font-mono text-[9px] font-black uppercase tracking-widest ${isSovereign ? 'text-purple-400' : 'text-slate-400'}`}>
                                                     {alert.type}
                                                 </span>
                                             </div>
                                             {getSeverityBadge(alert.severity)}
                                         </div>
 
-                                        <p className="text-primary text-sm leading-relaxed mb-3">
+                                        <p className="text-slate-300 text-[13px] leading-relaxed mb-3 relative z-10">
                                             {alert.message}
                                         </p>
 
-                                        <div className="flex items-center justify-between pt-2 border-t border-primary/10">
-                                            <div className="flex items-center gap-2 text-xs font-mono text-primary/40 uppercase tracking-widest">
-                                                <Globe size={10} className="text-primary/30" />
-                                                <span className="truncate max-w-[150px] font-bold">{alert.target_scope}</span>
+                                        <div className="flex items-center justify-between mt-auto relative z-10">
+                                            <div className="flex items-center gap-1.5 text-[9px] font-mono text-slate-500">
+                                                <Globe size={10} />
+                                                <span className="truncate max-w-[120px]">{alert.target_scope}</span>
                                             </div>
-                                            <div className="text-xs text-primary/30 font-mono tracking-widest uppercase font-bold">
-                                                REF: {alert.mission_id?.slice(0, 8) || 'GLOBAL'}
+                                            <div className="text-[8px] text-slate-600 font-mono tracking-tighter uppercase">
+                                                Ref: {alert.mission_id?.slice(0, 8) || 'GLOBAL'}
                                             </div>
                                         </div>
+
+                                        {isSovereign && (
+                                            <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
+                                        )}
                                     </div>
                                 );
                             })

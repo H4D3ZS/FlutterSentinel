@@ -57,7 +57,7 @@ const Register: React.FC = () => {
         handleSubmit,
         formState: { errors },
     } = useForm<RegisterFormValues>({
-        resolver: zodResolver(registerSchema as any),
+        resolver: zodResolver(registerSchema),
         defaultValues: {
             name: '',
             email: '',
