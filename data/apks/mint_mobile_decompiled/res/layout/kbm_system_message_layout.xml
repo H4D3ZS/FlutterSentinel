@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:id="@id/system_message_root" android:background="@drawable/kbm_system_message_background" android:focusable="true" android:focusableInTouchMode="true" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="8.0dip" android:minWidth="32.0dip" android:minHeight="44.0dip" android:paddingStart="12.0dip" android:paddingEnd="8.0dip" android:layout_marginStart="74.0dip" android:layout_marginEnd="74.0dip"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <ImageView android:id="@id/info_icon" android:focusable="false" android:layout_width="16.0dip" android:layout_height="16.0dip" android:src="@drawable/kbm_system_message_info_icon" android:layout_centerVertical="true" android:contentDescription="@string/com.kbm.content_description_image_generic" android:layout_marginEnd="12.0dip" />
-    <TextView android:id="@id/system_message_text" android:focusable="true" android:focusableInTouchMode="true" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_centerInParent="true" android:layout_toEndOf="@id/info_icon" style="?kbmUiSystemMessageTextAppearance" />
-</RelativeLayout>

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:orientation="horizontal" android:paddingBottom="?placesSpacingLarge" android:layout_width="wrap_content" android:layout_height="wrap_content"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <ImageView android:layout_width="@dimen/gmp_sys_measurement_icon_size_small" android:layout_height="@dimen/gmp_sys_measurement_icon_size_small" android:src="@drawable/gs_check_vd_24" android:tint="?placesColorOnSurface" android:importantForAccessibility="no" android:layout_marginEnd="?placesSpacingExtraSmall" />
-    <TextView android:textAppearance="?placesTextAppearanceBodySmall" android:textColor="?placesColorOnSurface" android:id="@id/feature_name" android:paddingBottom="?placesSpacingLarge" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="?placesSpacingSmall" />
-</LinearLayout>

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<layer-list
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:height="@dimen/brand_messenger_pinned_drawable_height" android:width="@dimen/brand_messenger_pinned_drawable_width" android:drawable="@android:color/transparent" />
-</layer-list>

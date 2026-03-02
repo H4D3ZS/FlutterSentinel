@@ -1,0 +1,8 @@
+#!/bin/sh
+echo "🔍 Running pre-commit checks..."
+npm run build
+if [ $? -ne 0 ]; then
+  echo "❌ Build failed. Please fix issues before committing."
+  exit 1
+fi
+echo "✅ Build successful. Committing..."

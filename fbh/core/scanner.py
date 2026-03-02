@@ -12,6 +12,7 @@ from pathlib import Path
 from fbh.core.target import Target
 from fbh.database import db
 from fbh.logger import logger
+from fbh.core.notifier import NotificationHub
 
 class Scanner(ABC):
     """Base class for all security scanners"""
@@ -89,6 +90,12 @@ class Scanner(ABC):
             )
             
             logger.info(f"Added {severity} finding: {title}")
+            
+            # Phase 14: Dispatch enterprise alert
+            try:
+                NotificationHub.send_alert(finding, self.target.name)
+            except Exception as e:
+                logger.error(f"Failed to dispatch alert: {e}")
     
     def run(self) -> List[Dict]:
         """Execute complete scan workflow"""

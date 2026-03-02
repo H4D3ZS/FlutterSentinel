@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:background="@drawable/carrier_double_check_card_rounded_background" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/common_gutter_size" android:layout_marginBottom="@dimen/common_inner_margin" android:showDividers="middle" android:layout_marginStart="@dimen/common_edge_margin" android:layout_marginEnd="@dimen/common_edge_margin" android:elevation="10.0dip"
-  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
-    <TextView android:textSize="26.0sp" android:textColor="@color/mintGreen" android:id="@id/itemTitle" android:paddingTop="@dimen/common_inner_margin" android:paddingBottom="@dimen/common_inner_margin" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="TextView" android:layout_weight="1.0" android:fontFamily="@font/oswald_bold" android:textAlignment="center" />
-</LinearLayout>

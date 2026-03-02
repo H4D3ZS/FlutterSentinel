@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:gravity="center" android:orientation="vertical" android:id="@id/cellLayout" android:background="@color/ultraTransparent" android:layout_width="wrap_content" android:layout_height="wrap_content"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <androidx.appcompat.widget.AppCompatImageView android:id="@id/carrierImage" android:background="@drawable/item_carrier_background_drawable" android:padding="@dimen/orange_carrier_search_top_margin" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_margin="@dimen/orange_carrier_select_cell_padding" android:src="@null" android:elevation="5.0dip" />
-    <TextView android:textSize="16.0sp" android:textColor="@color/text_dialog_dark" android:gravity="center" android:id="@id/carrierText" android:background="@drawable/item_carrier_background_drawable" android:padding="@dimen/orange_carrier_search_top_margin" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_margin="@dimen/orange_carrier_select_cell_padding" android:text="Other" android:fontFamily="@font/proximanova_bold" android:textAlignment="center" android:elevation="5.0dip" />
-</FrameLayout>

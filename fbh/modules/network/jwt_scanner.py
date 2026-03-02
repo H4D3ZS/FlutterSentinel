@@ -32,7 +32,11 @@ class JWTScanner(Scanner):
                 # Look for JWT-related patterns
                 if 'jwt' in content.lower() or 'token' in content.lower():
                     for line in content.split('\n'):
-                        if 'const-string' in line and any(keyword in line.lower() for keyword in ['secret', 'key', 'jwt']):
+                        if 'const-string' in line and any(
+                            keyword in line.lower() for keyword in ['secret',
+                            'key',
+                            'jwt']
+                        ):
                             secrets_found.append({
                                 'file': str(smali_file.relative_to(self.target.decompiled_dir)),
                                 'line': line.strip()

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:gravity="center" android:layout_gravity="center" android:orientation="horizontal" android:paddingTop="15.0dip" android:paddingBottom="15.0dip" android:clickable="false" android:longClickable="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_centerInParent="true"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <TextView android:textSize="14.0sp" android:textStyle="bold" android:gravity="center_horizontal" android:layout_gravity="center_horizontal" android:id="@id/chat_screen_day" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="10" />
-    <TextView android:gravity="center_horizontal" android:layout_gravity="center_horizontal" android:id="@id/chat_screen_date" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="" android:paddingStart="10.0dip" android:paddingEnd="10.0dip" style="@style/KBMUIConversationDateTextStyle" />
-</LinearLayout>
