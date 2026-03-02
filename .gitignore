@@ -153,3 +153,6 @@ pccvre_patched
 *.dmg
 *.dylib
 TrollVNC/
+
+# OpenClaw
+openclaw/

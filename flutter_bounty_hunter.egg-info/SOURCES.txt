@@ -47,6 +47,10 @@ fbh/modules/__init__.py
 fbh/modules/dynamic/__init__.py
 fbh/modules/dynamic/auth_tester.py
 fbh/modules/dynamic/deeplink_scanner.py
+fbh/modules/dynamic/vphone/__init__.py
+fbh/modules/dynamic/vphone/frida_bridge.py
+fbh/modules/dynamic/vphone/vphone_dynamic_analyzer.py
+fbh/modules/dynamic/vphone/vphone_manager.py
 fbh/modules/exploit/__init__.py
 fbh/modules/exploit/aws_exploit.py
 fbh/modules/exploit/firebase_exploit.py
