@@ -21,6 +21,45 @@ class Workflow:
         with open(self.workflow_file, 'r') as f:
             return yaml.safe_load(f)
     
+    def run_on_target(self, target: Target) -> Dict:
+        """Run workflow on a single target with parallel execution"""
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        
+        logger.info(f"🚀 Running workflow {self.config.get('name')} on {target.name} (Parallel Mode)")
+        target.update_progress(0, 'active')
+        
+        modules = self.config.get('modules', [])
+        target_results = {}
+        total = len(modules)
+        
+        def execute_module(module_config):
+            name = module_config.get('name')
+            scanner = self._load_scanner(name, target)
+            if not scanner:
+                return name, {'status': 'not_found'}
+            
+            try:
+                findings = scanner.run()
+                logger.info(f"✅ {name} finished: {len(findings)} findings")
+                return name, {'findings': len(findings), 'status': 'success'}
+            except Exception as e:
+                logger.error(f"❌ {name} failed: {e}")
+                return name, {'status': 'failed', 'error': str(e)}
+
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            futures = {executor.submit(execute_module, m): m for m in modules}
+            completed = 0
+            for future in as_completed(futures):
+                completed += 1
+                name, result = future.result()
+                target_results[name] = result
+                progress = int((completed / total) * 100)
+                target.update_progress(progress, f'completed: {name}')
+        
+        target.update_progress(100, 'completed')
+        self.results[target.name] = target_results
+        return target_results
+
     def run(self) -> Dict:
         """Execute workflow"""
         logger.info(f"Running workflow: {self.config.get('name', 'unknown')}")
@@ -77,9 +116,39 @@ class Workflow:
             elif module_name == 'jwt':
                 from fbh.modules.network.jwt_scanner import JWTScanner
                 return JWTScanner(target)
+            elif module_name == 'jwt_static':
+                from fbh.modules.static.jwt_scanner import JWTScanner
+                return JWTScanner(target)
+            elif module_name == 'vdp':
+                from fbh.modules.recon.vdp_discoverer import VDPDiscoverer
+                return VDPDiscoverer(target)
+            elif module_name == 'auth_testing':
+                from fbh.modules.dynamic.auth_tester import AuthTester
+                return AuthTester(target)
+            elif module_name == 'endpoint_fuzzer':
+                from fbh.modules.network.endpoint_fuzzer import EndpointFuzzer
+                return EndpointFuzzer(target)
+            elif module_name == 'jwt_bruteforce':
+                from fbh.modules.network.jwt_bruteforce import JWTBruteForceScanner
+                return JWTBruteForceScanner(target)
             elif module_name == 'deeplink':
-                from fbh.modules.dynamic.deeplink_scanner import DeepLinkScanner
-                return DeepLinkScanner(target)
+                from fbh.modules.static.deeplink_matcher import DeepLinkMatcher
+                return DeepLinkMatcher(target)
+            elif module_name == 'iac_sentinel':
+                from fbh.modules.static.iac_scanner import IaCScanner
+                return IaCScanner(target)
+            elif module_name == 'webview':
+                from fbh.modules.static.webview_analyzer import WebViewAnalyzer
+                return WebViewAnalyzer(target)
+            elif module_name == 'macho':
+                from fbh.modules.static.macho_analyzer import MachOAnalyzer
+                return MachOAnalyzer(target)
+            elif module_name == 'flutter_engine':
+                from fbh.modules.static.flutter_engine_auditor import FlutterEngineAuditor
+                return FlutterEngineAuditor(target)
+            elif module_name == 'deep_scan':
+                from fbh.modules.static.deep_scanner import DeepScanner
+                return DeepScanner(target)
             else:
                 logger.warning(f"Unknown scanner: {module_name}")
                 return None

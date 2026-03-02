@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<shape android:shape="rectangle"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <corners android:topLeftRadius="@dimen/carrier_double_check_card_radius" android:bottomRightRadius="@dimen/carrier_double_check_card_radius" />
-    <solid android:color="@color/horizontal_line_color" />
-</shape>

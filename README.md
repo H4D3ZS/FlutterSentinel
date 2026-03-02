@@ -1,263 +1,230 @@
-# Flutter Bounty Hunter (FBH) v3.0
+# Flutter Bounty Hunter (FBH)
 
-> **🚀 Automated Mobile Security Platform for Bug Bounty Hunting**
+**The Autonomous Mobile Penetration Testing & Exploit Generation Framework**
 
-A professional-grade mobile application security testing framework with **integrated MobSF engine**, **dual-platform automation** (Android/iOS), and a **modern web dashboard** for managing multiple bug bounty targets.
+FBH is a specialized penetration testing platform designed for bug bounty hunters and mobile security researchers. It focuses on **exploit generation**, **proof-of-concept development**, and **maximizing bug bounty payouts** through automated vulnerability discovery and weaponization.
 
-[![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS-blue)](https://github.com)
-[![Python](https://img.shields.io/badge/Python-3.14%2B-green)](https://www.python.org/)
-[![MobSF](https://img.shields.io/badge/MobSF-Integrated-orange)](https://github.com/MobSF/Mobile-Security-Framework-MobSF)
+## 🎯 Core Mission
 
----
+**Generate working exploits, not just vulnerability reports.**
 
-## 🎯 What's New in v3.0
+FBH transforms vulnerability discovery into actionable exploits with ready-to-submit proof-of-concepts for HackerOne, Bugcrowd, and other bug bounty platforms.
 
-### **Automated Mobile App Pipeline**
-- ✅ **Dual Platform Support**: Android (APK) and iOS (IPA) automation
-- ✅ **Smart URL Parsing**: Paste any Google Play or App Store URL
-- ✅ **Automatic Downloads**: One-click APK/IPA acquisition
-- ✅ **Auto-Scanning**: Immediate MobSF security analysis
-- ✅ **Web Dashboard**: Dark-themed, multi-target interface
-- ✅ **Background Processing**: Non-blocking downloads and scans
+## ⚡ Key Capabilities
 
-### **MobSF Integration**
-- 🔧 **Embedded Django App**: Custom FBH dashboard within MobSF
-- 📊 **Vulnerability Analytics**: Interactive Chart.js visualizations
-- 🎯 **Multi-Target Tracking**: Manage all your bug bounty apps
-- 🤖 **AI Agent Foundation**: Ready for autonomous hunting
+### 🔓 Exploit Generation Engine
+- **JWT Forgery**: Automatic secret extraction and token manipulation
+- **Authentication Bypass**: Privilege escalation and session hijacking
+- **Crypto Exploitation**: Weak algorithm detection and key recovery
+- **Binary Patching**: Smali modification for behavior bypasses
 
----
+### 🔗 Attack Chain Analysis
+- **AI-Driven Chaining**: Combine multiple vulnerabilities for maximum impact
+- **Privilege Escalation Paths**: Map low-impact findings to critical exploits
+- **Business Logic Bypass**: Identify complex attack scenarios
 
-## 🌟 Key Features
+### 📱 Advanced Mobile Analysis
+- **Flutter Specialization**: Blutter integration for Dart AOT analysis
+- **SSL Pinning Bypass**: Automated detection and bypass generation
+- **Firebase Testing**: Misconfiguration detection and data extraction
+- **Deep Link Exploitation**: URL scheme vulnerability analysis
 
-### **Automated Security Pipeline**
-```
-Paste App Store URL → Extract Package → Download Binary → MobSF Scan → Dashboard Results
-```
+### 🤖 Autonomous Verification
+- **Exploit Testing**: Verify all PoCs work reliably (>95% success rate)
+- **Persistence Checking**: Ensure vulnerabilities remain exploitable
+- **False Positive Elimination**: Only report confirmed, exploitable issues
 
-**Android:**  
-`https://play.google.com/store/apps/details?id=com.example.app` → APK Download → MobSF Scan
+## 🏗 Architecture
 
-**iOS:**  
-`https://apps.apple.com/us/app/example/id1234567890` → IPA Download → MobSF Scan
+The platform follows a **Penetration Testing Framework** pattern:
 
-### **Web Dashboard** (`http://localhost:8000/fbh/`)
-- 📱 Multi-Target Overview
-- 📊 Global Statistics  
-- 📈 Vulnerability Trends
-- 🎯 Platform Selection (Android/iOS)
-- 🤖 AI Agents (Coming Soon)
+- **`fbh/core`**: Exploit generation engines and attack chain analysis
+- **`fbh/analyzers`**: Specialized vulnerability detectors (crypto, SSL, Flutter)
+- **`fbh/core/agents`**: Autonomous exploitation agents (binary patching, Frida, PoC execution)
+- **`MOBSF/mobsf/FBH`**: Command & control web interface
+- **`frontend/`**: Penetration testing dashboard with exploit management
 
-### **CLI Interface** (Still Available)
-- 🔍 MobSF Scanner
-- 🔐 JWT Analyzer
-- 🔗 DeepLink Scanner
-- 🌐 SigInt OSINT
-- 📄 Report Generation
+## 🚀 Quick Start - Unified Development Environment
 
----
-
-## 🚀 Quick Start
-
-### Installation
-
+### 1. One-Command Setup
 ```bash
-# Install dependencies
-pip3 install -r requirements.txt
+# Install all dependencies (root, frontend, and fbhbot)
+npm run install:all
 
-# Setup MobSF
+# Setup MobSF (first time only)
 cd MOBSF && ./setup.sh && cd ..
-
-# Install download tools
-pip3 install gplaycli          # Android
-brew install ipatool            # iOS
-ipatool auth login             # Apple ID
 ```
 
-### Start Platform
-
+### 2. Launch Everything
 ```bash
-cd MOBSF
-python3 -m poetry run gunicorn -b 0.0.0.0:8000 'mobsf.MobSF.wsgi:application' --workers=1 --timeout=3600 --daemon
+# Start all services with one command
+npm run dev:all
+
+# Or start individual services:
+npm run dev:mobsf      # MobSF only
+npm run dev:frontend   # Web UI only
+npm run dev:fbhbot     # FBHBot only
 ```
 
-### Access Dashboard
+### 3. Access Services
 
-**http://localhost:8000/fbh/**
+| Service | URL | Description |
+|---------|-----|-------------|
+| **MobSF** | http://localhost:8000 | Mobile security analysis platform |
+| **Frontend** | http://localhost:5173 | Penetration testing dashboard |
+| **FBHBot** | http://localhost:3000 | Autonomous bot backend |
+| **FBHBot Dashboard** | http://localhost:5174 | Bot control panel |
 
----
-
-## 💡 Usage
-
-### Web Interface (Recommended)
-
-1. Click **"Add Target"**
-2. Select **Android** or **iOS**
-3. Paste **App Store URL**
-4. Name your target
-5. Enable **Auto-Download & Scan**
-6. Click **"Create"**
-
-System automatically downloads and scans!
-
-### CLI Interface
-
+### 4. Add Target & Generate Exploits
 ```bash
-# Add target
+# Via Web Interface:
+# 1. Open http://localhost:5173
+# 2. Add target APK/IPA
+# 3. Auto-analysis discovers vulnerabilities
+# 4. Exploit generation creates working PoCs
+# 5. Verification tests confirm exploitability
+# 6. Professional reports ready for submission
+
+# Via CLI:
 ./fbh.sh target add myapp com.example.app android
-
-# Run MobSF scan
-./fbh.sh scan run myapp --module mobsf
-
-# Generate report
-./fbh.sh report generate myapp --format markdown
-
-# View stats
-./fbh.sh scan stats
+./fbh.sh exploit generate myapp --type jwt,crypto,auth
+./fbh.sh verify run myapp --all-exploits
+./fbh.sh report bounty myapp --platform hackerone
 ```
 
----
+## 💡 Legacy Commands (Still Supported)
 
-## 📊 Dashboard Features
-
-### Main Dashboard
-- Visual target cards
-- Global findings count
-- Critical issue tracking
-- Platform badges
-
-### Trends Page
-- Severity distribution charts
-- Target comparison
-- Interactive Chart.js graphs
-
-### AI Agents (Foundation)
-- Pattern recognition (planned)
-- Exploit generation (planned)
-- Risk assessment (planned)
-
----
-
-## 🔧 Available Scanners
-
-| Scanner | Type | Platform |
-|---------|------|----------|
-| MobSF | Professional | Android/iOS |
-| JWT | Network | Both |
-| DeepLink | Dynamic | Mobile |
-| Quick | Static | All |
-| Source Code | Static | All |
-| SigInt | OSINT | Web |
-
----
-
-## 📁 Project Structure
-
+```bash
+# Old workflow (still works):
+./run.sh                    # Launch MobSF only
+cd frontend && npm run dev  # Launch frontend only
+cd fbhbot && npm run dev    # Launch FBHBot only
 ```
-flutter_bounty_hunter/
-├── MOBSF/                    # MobSF installation
-│   └── mobsf/FBH/            # Custom Django app
-│       ├── views.py          # API & dashboard
-│       ├── urls.py           # Routing
-│       └── templates/fbh/    # Dark UI
-├── fbh/                      # Core framework
-│   ├── core/                 # Target, scanner, workflow
-│   └── modules/              # Security scanners
-├── tools/
-│   ├── apk_downloader.py     # Android automation
-│   └── ipa_downloader.py     # iOS automation
-├── targets/                  # Target workspaces
-├── fbh.sh                    # CLI wrapper
-└── QUICKSTART_V3.md         # Full guide
+
+## 💰 Bug Bounty Optimization
+
+### Exploit Prioritization Matrix
+- **Critical (CVSS 9.0-10.0)**: RCE, Admin bypass, Crypto key extraction
+- **High (CVSS 7.0-8.9)**: Privilege escalation, JWT forgery, SSL bypass
+- **Medium (CVSS 4.0-6.9)**: Information disclosure, weak crypto
+- **Low (CVSS 0.1-3.9)**: Documentation only
+
+### Automated Profit Maximization
+- Focus on high-payout programs
+- Generate reliable, repeatable exploits
+- Professional HackerOne/Bugcrowd report formatting
+- Fast turnaround: Discovery → PoC → Submission in <24 hours
+
+## 🔧 Advanced Features
+
+### Specialized Analyzers
+```python
+# Crypto weakness detection
+from fbh.analyzers.crypto_analyzer import CryptoAnalyzer
+analyzer = CryptoAnalyzer()
+vulns = analyzer.analyze_source(target_dir)
+
+# SSL pinning bypass generation
+from fbh.analyzers.ssl_pin_detector import SSLPinDetector
+detector = SSLPinDetector()
+bypasses = detector.generate_bypass_scripts(apk_path)
+
+# Flutter-specific exploitation
+from fbh.analyzers.advanced_flutter import AdvancedFlutterAnalyzer
+flutter = AdvancedFlutterAnalyzer()
+exploits = flutter.full_analysis(apk_path, output_dir)
 ```
+
+### Autonomous Agents
+```python
+# PoC generation
+from fbh.core.poc_generator import PoCGenerator
+poc_script = PoCGenerator.generate_python_poc(finding)
+
+# Attack chain analysis
+from fbh.core.chainer import VulnerabilityChainer
+chainer = VulnerabilityChainer()
+attack_paths = chainer.analyze_findings(findings)
+
+# Exploit verification
+from fbh.core.verifier import VerificationAgent
+is_exploitable = VerificationAgent.verify_finding(finding_id)
+```
+
+## 📊 Penetration Testing Dashboard
+
+### Exploit Management
+- **Target Overview**: Active exploits, success rates, CVSS scores
+- **PoC Library**: Generated exploits with usage instructions
+- **Verification Status**: Real-time exploit testing results
+- **Chain Analysis**: Attack path visualization
+
+### Bug Bounty Intelligence
+- **Payout Tracking**: Revenue per target and vulnerability type
+- **Program Analytics**: Success rates across different platforms
+- **Trend Analysis**: Vulnerability patterns and exploit evolution
+
+## 🛠 Tool Integration
+
+### Primary Exploitation Tools
+- **MobSF**: Static analysis foundation
+- **Frida**: Dynamic instrumentation and runtime manipulation
+- **Blutter**: Flutter/Dart AOT snapshot analysis
+- **APKTool**: APK decompilation and repackaging
+
+### External Tool Support
+- **Burp Suite**: Manual testing integration
+- **APKLeaks**: Automated secret extraction
+- **SigInt**: OSINT and reconnaissance
+- **Custom Scripts**: Specialized exploit frameworks
+
+## 🎓 Methodology
+
+### Penetration Testing Workflow
+1. **Target Acquisition**: APK/IPA extraction and reconnaissance
+2. **Vulnerability Discovery**: Automated static/dynamic analysis
+3. **Exploit Development**: PoC generation and weaponization
+4. **Attack Chaining**: Combine vulnerabilities for maximum impact
+5. **Verification**: Test exploit reliability and persistence
+6. **Bug Bounty Submission**: Professional report generation
+
+### Success Metrics
+- **Exploit Success Rate**: >95% reliability for generated PoCs
+- **False Positive Rate**: <10% of reported vulnerabilities
+- **Time to PoC**: <2 hours from discovery to working exploit
+- **Bug Bounty Acceptance**: >80% submission acceptance rate
+
+## 🔒 Operational Security
+
+### Stealth Testing
+- Realistic User-Agent strings and request patterns
+- Rate limiting and traffic throttling
+- IP rotation and detection avoidance
+- Legal compliance and responsible disclosure
+
+### Evidence Management
+- Complete exploit documentation
+- Step-by-step reproduction guides
+- Video/screenshot proof generation
+- Chain of custody maintenance
 
 ---
 
 ## 📚 Documentation
 
-- **[QUICKSTART_V3.md](QUICKSTART_V3.md)** - Complete v3.0 guide
-- **[FEATURES.md](FEATURES.md)** - Feature list
-- **[CHANGELOG.md](CHANGELOG.md)** - Version history
-- **[CHEATSHEET.md](CHEATSHEET.md)** - CLI commands
-
----
-
-## 🎯 Typical Workflow
-
-### Discovery
-Add targets from bug bounty programs via web UI
-
-### Scanning
-Automatic download + MobSF scan
-
-### Analysis
-Review findings in dashboard
-
-### Manual Testing
-```bash
-cd targets/<target_name>
-# Deep dive into findings
-```
-
-### Reporting
-```bash
-./fbh.sh report generate <target> --format markdown
-```
-
----
-
-## 🔌 API Endpoints
-
-```bash
-# List targets
-curl http://localhost:8000/fbh/api/targets/
-
-# Create target
-curl -X POST http://localhost:8000/fbh/api/targets/ \
-  -H "Content-Type: application/json" \
-  -d '{"name":"myapp","package":"com.example.app","platform":"android"}'
-
-# Get findings
-curl http://localhost:8000/fbh/api/findings/?target=myapp
-```
-
----
-
-## 🐛 Troubleshooting
-
-**MobSF won't start:**
-```bash
-lsof -ti:8000 | xargs kill -9
-cd MOBSF && ./run.sh
-```
-
-**APK download fails:**
-```bash
-pip3 install gplaycli
-```
-
-**IPA download fails:**
-```bash
-ipatool auth login
-```
-
----
+- **[Penetration Testing Methodology](.kiro/steering/PENTEST_METHODOLOGY.md)**: Complete testing workflow
+- **[Quick Start Guide](QUICKSTART.md)**: Get started with exploit generation
+- **[Agent Configuration](.kiro/steering/AGENTS.md)**: Automation and hooks
+- **[Technical Architecture](.kiro/steering/tech.md)**: System design and components
 
 ## 🤝 Contributing
 
-Bug bounty hunters, security researchers, and developers welcome!
+FBH is designed for security researchers and bug bounty hunters. Contributions should focus on:
+- New exploit generation techniques
+- Advanced vulnerability detection patterns
+- Improved automation and verification
+- Bug bounty platform integrations
 
 ---
 
-## 📄 License
-
-MIT License - For authorized security testing only
-
----
-
-**Version**: 3.0.0  
-**Status**: Production Ready  
-**Author**: Security Researcher  
-**Platform**: macOS, Linux
-
-🎯 **Happy Hunting!**
+**⚠️ Legal Notice**: This tool is designed for authorized security testing only. Users are responsible for compliance with applicable laws and responsible disclosure practices. Only test applications you own or have explicit permission to test.

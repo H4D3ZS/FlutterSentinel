@@ -1,0 +1,9 @@
+{
+  "name": "fbh_verification_test",
+  "package_name": "com.fbh.test",
+  "platform": "android",
+  "bug_bounty_program": "",
+  "scope": [],
+  "out_of_scope": [],
+  "notes": ""
+}

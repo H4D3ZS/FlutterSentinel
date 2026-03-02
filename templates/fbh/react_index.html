@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title|default:"Flutter Bounty Hunter" }}</title>
+    <!-- React Entry Point for FBH -->
+    <link rel="icon" type="image/svg+xml" href="{% static 'fbh/dist/vite.svg' %}" />
+
+    <!-- Build CSS - Vite will generate this -->
+    <link rel="stylesheet" href="{% static 'fbh/dist/index.css' %}" />
+</head>
+
+<body class="bg-[#030303] text-white">
+    <div id="root"></div>
+
+    <!-- React App Entry -->
+    <script type="module" src="{% static 'fbh/dist/index.js' %}"></script>
+</body>
+
+</html>

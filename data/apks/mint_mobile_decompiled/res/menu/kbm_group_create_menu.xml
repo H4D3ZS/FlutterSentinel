@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu
-  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@id/Next" android:orderInCategory="2" android:title="@string/com.kbm.next" app:showAsAction="always|withText" />
-    <item android:id="@id/Done" android:orderInCategory="2" android:title="@string/com.kbm.done" app:showAsAction="always|withText" />
-    <item android:icon="@null" android:id="@id/menu_search" android:orderInCategory="1" android:title="@string/com.kbm.menu_search" android:showAsAction="always" android:iconifiedByDefault="true" android:actionViewClass="androidx.appcompat.widget.SearchView" app:actionViewClass="androidx.appcompat.widget.SearchView" app:iconifiedByDefault="true" app:showAsAction="always" />
-</menu>

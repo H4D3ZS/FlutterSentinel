@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:layout_width="fill_parent" android:layout_height="wrap_content"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <androidx.emoji.widget.EmojiTextView android:textSize="20.0sp" android:textColor="@color/black" android:gravity="center" android:id="@id/emojiTextView" android:layout_width="fill_parent" android:layout_height="wrap_content" />
-</RelativeLayout>

@@ -1,0 +1,14 @@
+id: jwt-none-algorithm
+info:
+  name: JWT None Algorithm Disclosure
+  author: sovereign
+  severity: high
+  description: Detecting JWT tokens using 'none' algorithm which allows for signature bypass.
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+    matchers:
+      - type: regex
+        regex:
+          - "eyJhbGciOiJub25lIn0"

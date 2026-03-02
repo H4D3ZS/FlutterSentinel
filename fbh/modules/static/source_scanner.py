@@ -1,10 +1,7 @@
 """Source Code Scanner - Wraps existing source_code_auditor"""
 from fbh.core.scanner import Scanner
 from fbh.logger import logger
-import sys
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-from analyzers.source_code_auditor import SourceCodeAuditor
+from fbh.analyzers.source_code_auditor import SourceCodeAuditor
 
 class SourceCodeScanner(Scanner):
     @property

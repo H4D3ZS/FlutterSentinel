@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<com.ultramobile.mint.customcomponents.RippleAnimatedLayout android:orientation="horizontal" android:id="@id/cellLayout" android:layout_width="wrap_content" android:layout_height="wrap_content"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <TextView android:textSize="@dimen/light_dashboard_data_item_text_size" android:textColor="@color/primary_green" android:gravity="center" android:id="@id/dataItemSelectedTitle" android:background="@drawable/plan_selection_data_selected_rounded_background" android:layout_width="@dimen/campus_plan_selection_data_cell_width" android:layout_height="@dimen/campus_plan_selection_data_cell_height" android:fontFamily="@font/oswald_bold" />
-    <TextView android:textSize="@dimen/light_dashboard_data_item_text_size" android:textColor="@color/White" android:gravity="center" android:id="@id/dataItemUnselectedTitle" android:background="@drawable/plan_selection_data_unselected_rounded_background" android:layout_width="@dimen/campus_plan_selection_data_cell_width" android:layout_height="@dimen/campus_plan_selection_data_cell_height" android:fontFamily="@font/oswald_bold" />
-</com.ultramobile.mint.customcomponents.RippleAnimatedLayout>
