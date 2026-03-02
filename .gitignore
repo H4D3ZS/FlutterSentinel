@@ -69,6 +69,22 @@ database/*.db
 *.ipa
 *.aab
 
+
+
+# VPhone firmware (23GB+ extracted IPSW/PCC)
+super-tart-vphone/
+super-tart/
+libirecovery/
+pccvre_patched
+*.ipsw
+*.im4p
+*.shsh
+*.dmg
+*.dylib
+TrollVNC/
+
+# OpenClaw
+openclaw/
 # Temporary files
 tmp/
 temp/
