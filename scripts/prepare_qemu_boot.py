@@ -174,14 +174,37 @@ def main():
     vm_dir  = args.vm
     out_dir = args.out
 
-    # Search directories in priority order
+    # ── Search directories — broad scan so we find firmware wherever it lives ──
+    # Priority: explicit --cfw arg, then common locations, then wide fallbacks
+    candidate_roots = [
+        cfw_dir,                                               # ~/super-tart-vphone/CFW
+        HOME / "super-tart-vphone" / "CFW",
+        Path("/opt/vphone"),                                   # Parrot OS install location
+        Path("/opt/vphone/CFW"),
+        Path("/tmp/vphone_fw"),                               # manual drop point
+        Path("/tmp/vphone"),
+        HOME / "Desktop" / "vphone_fw",
+        HOME / "Desktop" / "CFW",
+        HOME / "Downloads" / "vphone_fw",
+        HOME / "Downloads" / "CFW",
+        Path("/Users/Shared/vphone_fw"),                      # macOS shared folder
+        Path(__file__).parent,                                # repo scripts/ dir
+        Path(__file__).parent.parent / "CFW",                 # repo root/CFW
+        vm_dir,                                               # ~/.tart/vms/vphone
+        HOME / ".tart" / "vms" / "vphone",
+    ]
+
     search_dirs = []
-    for subdir in ("patched", ".", "output", "firmware"):
-        p = cfw_dir / subdir
-        if p.is_dir():
-            search_dirs.append(p)
-    if vm_dir.is_dir():
-        search_dirs.append(vm_dir)
+    for root in candidate_roots:
+        if root.is_dir():
+            # Add root itself
+            if root not in search_dirs:
+                search_dirs.append(root)
+            # Add common sub-directories
+            for sub in ("patched", "output", "firmware", "CFW", "."):
+                p = root / sub
+                if p.is_dir() and p not in search_dirs:
+                    search_dirs.append(p)
 
     print("=" * 60)
     print("VPhone QEMU Firmware Preparation")
@@ -197,8 +220,52 @@ def main():
     print("[1/4] Locating kernel (kernelcache)...")
     kernel_src = find_file(search_dirs, KERNEL_PATTERNS)
     if not kernel_src:
-        print("  ERROR: Could not find kernelcache. Run patch_fw.py first.")
-        print("  Expected one of:", KERNEL_PATTERNS)
+        print()
+        print("=" * 60)
+        print("  ⚠️  FIRMWARE NOT FOUND")
+        print("=" * 60)
+        print()
+        print("  The patched iOS firmware must be transferred from your")
+        print("  Apple Silicon Mac before running this script.")
+        print()
+        print("  ── Step 1: On your Apple Silicon Mac ──────────────────")
+        print("  Make sure VPhone is set up and patch_fw.py has been run.")
+        print("  Then transfer the firmware to this machine:")
+        print()
+        print("  Option A — Direct transfer via SCP (fastest)")
+        print("  ┌──────────────────────────────────────────────────────┐")
+        print("  │ # Run this on THIS machine:                          │")
+        print("  │ mkdir -p /tmp/vphone_fw                              │")
+        print("  │ scp -r USER@APPLE_MAC:~/super-tart-vphone/CFW/patched│")
+        print("  │       /tmp/vphone_fw/                                 │")
+        print("  │ scp USER@APPLE_MAC:~/.tart/vms/vphone/disk.img       │")
+        print("  │       ~/.tart/vms/vphone/disk.img                    │")
+        print("  └──────────────────────────────────────────────────────┘")
+        print()
+        print("  Option B — USB/External drive")
+        print("  ┌──────────────────────────────────────────────────────┐")
+        print("  │ # On Apple Silicon Mac, copy to drive:               │")
+        print("  │ cp -r ~/super-tart-vphone/CFW/patched /Volumes/DRIVE/│")
+        print("  │ # On this machine, copy from drive:                  │")
+        print("  │ cp -r /Volumes/DRIVE/patched /tmp/vphone_fw/         │")
+        print("  └──────────────────────────────────────────────────────┘")
+        print()
+        print("  Option C — Drop the files manually")
+        print("  Place the patched firmware files in ONE of these dirs")
+        print("  and re-run this script:")
+        for d in ["/tmp/vphone_fw", str(HOME / "Desktop/vphone_fw"),
+                  "/opt/vphone", str(HOME / "Downloads/vphone_fw")]:
+            print(f"    • {d}/")
+        print()
+        print("  Files needed:")
+        print("    • kernelcache.research.vphone600   (patched kernel)")
+        print("    • DeviceTree.vresearch101.*.im4p   (device tree)")
+        print("    • *RestoreRamDisk*.im4p            (ramdisk, optional)")
+        print("    • disk.img                         (APFS root disk) → ~/.tart/vms/vphone/")
+        print()
+        print("  After copying, re-run:")
+        print("    python3 scripts/prepare_qemu_boot.py")
+        print("=" * 60)
         sys.exit(1)
     print(f"  Found: {kernel_src}")
 
