@@ -47,6 +47,8 @@ interface VPhoneStatus {
     frida_reachable: boolean;
     device_info: DeviceInfo | null;
     tart_available: boolean;
+    host_mode: 'tart' | 'qemu';
+    accel: 'vz' | 'kvm' | 'hvf' | 'tcg' | string;
     error?: string;
 }
 
@@ -163,10 +165,28 @@ const VPhone: React.FC = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                 <div className="space-y-3">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-wrap">
                         <Badge variant="outline" className="border-primary/40 text-primary bg-primary/10 text-[10px] uppercase font-bold tracking-[0.2em] px-3 py-1 animate-pulse">
                             VPHONE_RESEARCH_ENV
                         </Badge>
+                        {/* Host mode + accelerator badge */}
+                        {status && (
+                            <div className={cn(
+                                'flex items-center gap-2 px-3 py-1 rounded-full border backdrop-blur-sm text-[10px] font-mono font-black uppercase tracking-widest',
+                                status.host_mode === 'tart'
+                                    ? 'bg-violet-900/40 border-violet-500/30 text-violet-300'
+                                    : status.accel === 'kvm'
+                                        ? 'bg-emerald-900/40 border-emerald-500/30 text-emerald-300'
+                                        : status.accel === 'hvf'
+                                            ? 'bg-blue-900/40 border-blue-500/30 text-blue-300'
+                                            : 'bg-amber-900/40 border-amber-500/30 text-amber-300'
+                            )}>
+                                <Cpu className="w-3 h-3" />
+                                {status.host_mode === 'tart'
+                                    ? 'TART / VZ.FRAMEWORK'
+                                    : `QEMU / ${status.accel.toUpperCase()}`}
+                            </div>
+                        )}
                         <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/60 border border-primary/20 backdrop-blur-sm">
                             <MonitorSmartphone className="w-3.5 h-3.5 text-primary" />
                             <span className="text-[10px] font-mono text-primary/80 uppercase tracking-widest font-black">
@@ -432,10 +452,12 @@ const VPhone: React.FC = () => {
                         <CardContent className="p-6 flex items-start gap-4">
                             <Shield size={20} className="text-orange-400 shrink-0 mt-0.5" />
                             <div className="space-y-1">
-                                <div className="text-xs font-black text-white uppercase tracking-widest">VPhone Setup Required?</div>
+                                <div className="text-xs font-black text-white uppercase tracking-widest">VPhone Setup</div>
                                 <p className="text-[11px] text-slate-400 leading-relaxed">
-                                    Run <code className="text-orange-400">/vphone-setup</code> workflow to configure the Apple PCC Research VM.
-                                    Requires Apple Silicon Mac, SIP disabled, and Xcode installed.
+                                    {status?.host_mode === 'tart'
+                                        ? <>Run <code className="text-orange-400">/vphone-setup</code> to configure via Apple Virtualization.framework (Apple Silicon + SIP disabled + Xcode required).</>
+                                        : <>Run <code className="text-orange-400">python3 scripts/prepare_qemu_boot.py</code> then <code className="text-orange-400">bash scripts/vphone_qemu.sh</code>. Intel/Hackintosh: <code className="text-orange-400">brew install qemu</code>. Parrot OS: <code className="text-orange-400">sudo apt install qemu-system-arm</code>.</>
+                                    }
                                 </p>
                             </div>
                         </CardContent>
