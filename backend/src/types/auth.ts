@@ -3,7 +3,7 @@ export interface User {
     email: string;
     password_hash: string;
     name: string | null;
-    role: 'admin' | 'user';
+    role: 'admin' | 'tier1' | 'tier2' | 'tier3' | 'vip' | 'user';
     created_at: number;
     updated_at: number;
     last_login: number | null;
@@ -13,7 +13,7 @@ export interface UserPublic {
     id: string;
     email: string;
     name: string | null;
-    role: 'admin' | 'user';
+    role: 'admin' | 'tier1' | 'tier2' | 'tier3' | 'vip' | 'user';
     created_at: number;
     last_login: number | null;
 }

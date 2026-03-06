@@ -13,7 +13,7 @@ import { existsSync } from 'fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const rootDir = join(__dirname, '..');
-const mobsfDir = join(rootDir, 'MOBSF');
+const mobsfDir = join(rootDir, 'core', 'mobsf');
 
 // ANSI color codes
 const colors = {

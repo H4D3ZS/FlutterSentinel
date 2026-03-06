@@ -5,7 +5,7 @@ interface User {
     id: string;
     email: string;
     name: string | null;
-    role: 'admin' | 'user';
+    role: 'admin' | 'tier1' | 'tier2' | 'tier3' | 'vip' | 'user';
 }
 
 interface AuthState {

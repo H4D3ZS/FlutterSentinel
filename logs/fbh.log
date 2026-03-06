@@ -89,3 +89,8 @@
 {"timestamp": "2026-01-27T08:51:28+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: test_app", "module": "target", "filename": "target.py", "lineno": 35}
 {"timestamp": "2026-01-27T08:52:09+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: fbh_verification_test", "module": "target", "filename": "target.py", "lineno": 35}
 {"timestamp": "2026-01-27T08:52:17+0800", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: fbh_verification_test", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-03-06T02:52:27+0800", "level": "INFO", "logger": "fbh", "message": "[*] Dispatching AI PoC request for: JWT Weak Secret", "module": "ai_hunter", "filename": "ai_hunter.py", "lineno": 72}
+{"timestamp": "2026-03-06T02:52:27+0800", "level": "ERROR", "logger": "fbh", "message": "[-] AI PoC generation failed (HTTP 500): <Mock name='post().text' id='4566924464'>", "module": "ai_hunter", "filename": "ai_hunter.py", "lineno": 87}
+{"timestamp": "2026-03-06T02:52:27+0800", "level": "INFO", "logger": "fbh", "message": "[*] Dispatching AI PoC request for: JWT Weak Secret", "module": "ai_hunter", "filename": "ai_hunter.py", "lineno": 72}
+{"timestamp": "2026-03-06T02:52:27+0800", "level": "WARNING", "logger": "fbh", "message": "\u26a0\ufe0f  super-tart-vphone binary not found. Run vphone_setup.sh first.", "module": "vphone_manager", "filename": "vphone_manager.py", "lineno": 109}
+{"timestamp": "2026-03-06T02:52:27+0800", "level": "WARNING", "logger": "fbh", "message": "\u26a0\ufe0f  super-tart-vphone binary not found. Run vphone_setup.sh first.", "module": "vphone_manager", "filename": "vphone_manager.py", "lineno": 109}

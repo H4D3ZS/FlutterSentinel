@@ -1,11 +1,26 @@
-import axios from 'axios';
+import axios, { InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 
-const api = axios.create({
+const axiosInstance = axios.create({
     baseURL: '/fbh/api',
     headers: {
         'Content-Type': 'application/json',
     },
 });
+
+// Node.js backend instance (port 4000, proxied via Vite as /api)
+const nodeApi = axios.create({
+    baseURL: '/api',
+    headers: { 'Content-Type': 'application/json' },
+});
+
+// Attach auth token to Node backend requests too
+nodeApi.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+    const token = localStorage.getItem('fbh_access_token');
+    if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+});
+
+export const instance = axiosInstance;
 
 export interface Finding {
     id: string;
@@ -50,20 +65,20 @@ export interface GlobalStats {
 }
 
 // Request interceptor to add the access token to every request
-api.interceptors.request.use((config) => {
+axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('fbh_access_token');
-    if (token) {
+    if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
-}, (error) => {
+}, (error: any) => {
     return Promise.reject(error);
 });
 
 // Response interceptor to handle token refresh or redirect to login
-api.interceptors.response.use((response) => {
+axiosInstance.interceptors.response.use((response: AxiosResponse) => {
     return response;
-}, async (error) => {
+}, async (error: any) => {
     const originalRequest = error.config;
     if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
@@ -72,12 +87,14 @@ api.interceptors.response.use((response) => {
             if (!refreshToken) {
                 throw new Error('No refresh token available');
             }
-            
+
             const res = await axios.post('/fbh/api/token/refresh/', { refresh: refreshToken });
             const { access } = res.data;
             localStorage.setItem('fbh_access_token', access);
-            api.defaults.headers.common['Authorization'] = `Bearer ${access}`;
-            return api(originalRequest);
+            if (axiosInstance.defaults.headers.common) {
+                axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${access}`;
+            }
+            return axiosInstance(originalRequest);
         } catch (err) {
             // Refresh token expired or failed
             localStorage.removeItem('fbh_access_token');
@@ -88,9 +105,9 @@ api.interceptors.response.use((response) => {
     return Promise.reject(error);
 });
 
-export const FBH_API = {
+const methods = {
     login: async (username: string, password: string) => {
-        const response = await api.post('/token/', { username, password });
+        const response = await axiosInstance.post('/token/', { username, password });
         const { access, refresh } = response.data;
         localStorage.setItem('fbh_access_token', access);
         localStorage.setItem('fbh_refresh_token', refresh);
@@ -108,61 +125,338 @@ export const FBH_API = {
 
     // Global stats
     getGlobalStats: async () => {
-        const response = await api.get<GlobalStats>('/stats/global/');
+        try {
+            const response = await nodeApi.get<GlobalStats>('/stats/global');
+            return response.data;
+        } catch {
+            const response = await axiosInstance.get<GlobalStats>('/stats/global/');
+            return response.data;
+        }
+    },
+
+    // Intelligence & Discovery
+    ipaSearch: async (query: string) => {
+        const response = await axiosInstance.get(`/discovery/search/?q=${encodeURIComponent(query)}`);
         return response.data;
     },
 
-    // Workspaces
-    getWorkspaces: async () => {
-        const response = await api.get<{ status: string; workspaces: any[] }>('/workspaces/');
+    ipaDownload: async (bundleId: string, targetId?: string, appName?: string) => {
+        const response = await axiosInstance.post('/discovery/download/', {
+            bundle_id: bundleId,
+            target_id: targetId,
+            app_name: appName
+        });
         return response.data;
     },
 
-    createWorkspace: async (data: { name: string; description?: string }) => {
-        const response = await api.post('/workspaces/add/', data);
+    discoverPrograms: async (data: { platform: string; limit: number; auto_add: boolean }) => {
+        const response = await axiosInstance.post('/discovery/bug-bounty/', data);
         return response.data;
     },
 
-    // Targets
+    // Scans & Analysis
+    scanTarget: async (targetName: string) => {
+        const response = await axiosInstance.post(`/targets/${targetName}/scan/`);
+        return response.data;
+    },
+
+    startScan: async (hash: string, type: string) => {
+        const response = await axiosInstance.post('/scan/start/', { hash, type });
+        return response.data;
+    },
+
+    getScanResults: async (hash: string) => {
+        const response = await axiosInstance.get(`/scan/results/${hash}/`);
+        return response.data;
+    },
+
+    deleteScan: async (scanId: string) => {
+        const response = await axiosInstance.delete(`/scan/${scanId}/`);
+        return response.data;
+    },
+
+    getMobSFScans: async () => {
+        const response = await axiosInstance.get('/mobsf/scans/');
+        return response.data;
+    },
+
+    sovereignScan: async (target: string) => {
+        const response = await axiosInstance.post('/scan/sovereign/', { target });
+        return response.data;
+    },
+
+    runFBHBotAnalysis: async (target: string, appPath?: string, platform?: string) => {
+        const response = await axiosInstance.post('/analysis/fbhbot/', {
+            target,
+            app_path: appPath,
+            platform
+        });
+        return response.data;
+    },
+
+    // Targets & Workspaces
     getTargets: async (workspaceId?: number) => {
-        const params = workspaceId ? { workspace_id: workspaceId } : {};
-        const response = await api.get<{ targets: Target[] }>('/targets/', { params });
-        return response.data.targets;
+        try {
+            // Call the Node.js backend which is proxied via Vite at /api
+            const params = workspaceId ? { workspace_id: workspaceId } : {};
+            const response = await nodeApi.get<{ targets: Target[] }>('/targets', { params });
+            return response.data as any;
+        } catch {
+            // fallback to legacy endpoint
+            const params = workspaceId ? { workspace_id: workspaceId } : {};
+            const response = await axiosInstance.get<{ targets: Target[] }>('/targets/', { params });
+            return response.data as any;
+        }
     },
 
-    addTarget: async (data: { name: string; package: string; platform: string; store_url?: string; auto_download?: boolean }) => {
-        const response = await api.post('/targets/', data);
+    addTarget: async (data: any) => {
+        const payload = {
+            ...data,
+            package: data.package || data.bundleId
+        };
+        const response = await axiosInstance.post('/targets/', payload);
+        return response.data;
+    },
+
+    deleteTarget: async (id: string | number) => {
+        const response = await axiosInstance.delete(`/targets/${id}/`);
         return response.data;
     },
 
     getTargetDetail: async (name: string) => {
-        const response = await api.get(`/targets/${name}/`);
+        const response = await axiosInstance.get(`/targets/${name}/`);
         return response.data;
     },
 
-    // Scans
+    getWorkspaces: async () => {
+        const response = await axiosInstance.get<{ status: string; workspaces: any[] }>('/workspaces/');
+        return response.data;
+    },
+
+    createWorkspace: async (data: { name: string; description?: string }) => {
+        const response = await axiosInstance.post('/workspaces/add/', data);
+        return response.data;
+    },
+
+    addWorkspace: async (data: { name: string; description?: string }) => {
+        const response = await axiosInstance.post('/workspaces/add/', data);
+        return response.data;
+    },
+
+    // Missions & Playbooks
+    getPlaybooks: async () => {
+        const response = await axiosInstance.get('/playbooks/');
+        return response.data;
+    },
+
+    getMissions: async () => {
+        const response = await axiosInstance.get('/missions/');
+        return response.data;
+    },
+
+    triggerMission: async (target: string, playbookName: string, playbookId?: string, strategy?: string) => {
+        const response = await axiosInstance.post('/missions/trigger/', {
+            target,
+            playbook_name: playbookName,
+            playbook_id: playbookId,
+            strategy
+        });
+        return response.data;
+    },
+
+    createSchedule: async (target: string, frequency: string) => {
+        const response = await axiosInstance.post('/missions/schedule/', { target, frequency });
+        return response.data;
+    },
+
+    getTaskStatus: async (taskId: number) => {
+        const response = await axiosInstance.get<{ status: string; task: any }>(`/tasks/${taskId}/status/`);
+        return response.data;
+    },
+
+    // Exploit Forge
+    getForgeSessions: async () => {
+        const response = await axiosInstance.get('/forge/sessions/');
+        return response.data;
+    },
+
+    runForge: async (data: any, appName?: string) => {
+        const response = await axiosInstance.post('/forge/run/', { ...data, app_name: appName });
+        return response.data;
+    },
+
+    deleteForgeSession: async (sessionId: string) => {
+        const response = await axiosInstance.delete(`/forge/sessions/${sessionId}/`);
+        return response.data;
+    },
+
+    clearForgeSessions: async () => {
+        const response = await axiosInstance.post('/forge/sessions/clear/');
+        return response.data;
+    },
+
+    // Utils & Reports
+    downloadReport: async (targetName: string, format: string = 'pdf') => {
+        const response = await axiosInstance.get(`/reports/download/${targetName}/?format=${format}`, {
+            responseType: 'blob'
+        });
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `FBH_Report_${targetName}.${format}`);
+        document.body.appendChild(link);
+        link.click();
+        return response.data;
+    },
+
+    getSwarmAlerts: async () => {
+        const response = await axiosInstance.get('/alerts/swarm/');
+        return response.data;
+    },
+
+    verifyFirebaseUrl: async (url: string) => {
+        const response = await axiosInstance.post('/verify/firebase/', { url });
+        return response.data;
+    },
+
+    verifyGithubKey: async (key: string) => {
+        const response = await axiosInstance.post('/verify/github/', { key });
+        return response.data;
+    },
+
+    verifyGoogleKey: async (key: string) => {
+        const response = await axiosInstance.post('/verify/google/', { key });
+        return response.data;
+    },
+
+    verifySlackKey: async (key: string) => {
+        const response = await axiosInstance.post('/verify/slack/', { key });
+        return response.data;
+    },
+
+    verifyStripeKey: async (key: string) => {
+        const response = await axiosInstance.post('/verify/stripe/', { key });
+        return response.data;
+    },
+
+    // Analysis & Intelligence (existing methods, re-ordered for clarity)
+    getDelta: async (targetName: string) => {
+        const response = await axiosInstance.get<{ delta: any }>(`/targets/${targetName}/delta/`);
+        return response.data.delta;
+    },
+
+    generatePoC: async (findingId: string) => {
+        const response = await axiosInstance.post<{ poc: string; language: string }>('/poc/generate/', { finding_id: findingId });
+        return response.data;
+    },
+
+    analyzeChains: async (targetName: string) => {
+        const response = await axiosInstance.get<{ chains: any[]; summary: string }>(`/chains/${targetName}/`);
+        return response.data;
+    },
+
+    verifyFinding: async (findingId: string) => {
+        const response = await axiosInstance.post<{ is_persistent: boolean; message: string; new_status: string }>('/finding/verify/', { finding_id: findingId });
+        return response.data;
+    },
+
+    submitPatch: async (findingId: string, fixCode: string, targetName: string) => {
+        const response = await axiosInstance.post<{ pr_url: string; message: string; patch_location: string }>('/finding/patch/', {
+            finding_id: findingId,
+            fix_code: fixCode,
+            target_name: targetName
+        });
+        return response.data;
+    },
+
+    generateWafRules: async (findingId: string) => {
+        const response = await axiosInstance.get<{ rules: any[] }>(`/finding/waf/${findingId}/`);
+        return response.data;
+    },
+
+    huntThreats: async (targetName: string) => {
+        const response = await axiosInstance.get<{ threats: any[] }>(`/ir/hunt/${targetName}/`);
+        return response.data;
+    },
+
+    analyzeTraffic: async (targetName: string, samples: any[]) => {
+        const response = await axiosInstance.post<{ anomalies: any[] }>(`/ir/analyze/${targetName}/`, { samples });
+        return response.data;
+    },
+
+    executePlaybook: async (target: string, incidentType: string, severity: string) => {
+        const response = await axiosInstance.post<{ result: any }>('/ir/playbook/', { target, incident_type: incidentType, severity });
+        return response.data;
+    },
+
+    generateFridaScript: async (scriptType: string, platform: string = 'android') => {
+        const response = await axiosInstance.post<{ script: string }>('/frida/generate/', { script_type: scriptType, platform });
+        return response.data;
+    },
+
+    applyBinaryPatch: async (data: { target: string; patch_type: string; file_pattern?: string; method_name?: string }) => {
+        const response = await axiosInstance.post<{ status: string; message: string; patches?: any[] }>('/binary/patch/', data);
+        return response.data;
+    },
+
+    generateBountyReport: async (targetName: string) => {
+        const response = await axiosInstance.get<{ report: string }>(`/target/bounty-report/${targetName}/`);
+        return response.data;
+    },
+
+    generatePoCCommand: async (findingId: string) => {
+        const response = await axiosInstance.post<{ poc_command: string }>('/poc/generate/', { finding_id: findingId });
+        return response.data;
+    },
+
+    auditSignatures: async (targetName: string) => {
+        const response = await axiosInstance.get<{ anti_tamper_findings: any[] }>(`/target/audit-signatures/${targetName}/`);
+        return response.data;
+    },
+
+    getReflutterBlueprint: async (targetName: string) => {
+        const response = await axiosInstance.get<{ status: string; message?: string; engine_hash?: string; blueprint?: any }>(`/target/reflutter-blueprint/${targetName}/`);
+        return response.data;
+    },
+
+    sendRepeaterRequest: async (data: { method: string; url: string; headers: any; body: string }) => {
+        const response = await axiosInstance.post('/repeater/send/', data);
+        return response.data;
+    },
+
+    // Settings (existing methods)
+    getSettings: async () => {
+        const response = await axiosInstance.get<{ settings: Record<string, string> }>('/settings/');
+        return response.data;
+    },
+
+    updateSettings: async (settings: Record<string, string>) => {
+        const response = await axiosInstance.post('/settings/save/', settings);
+        return response.data;
+    },
+
+    saveSettings: (data: Record<string, string>) => {
+        return axiosInstance.post('/settings/save/', data);
+    },
+
+    // Other existing methods
     massScan: async () => {
-        const response = await api.post('/scan/mass-audit/');
-        return response.data;
-    },
-
-    triggerScan: async (name: string) => {
-        const response = await api.post(`/targets/${name}/scan/`);
+        const response = await axiosInstance.post('/scan/mass-audit/');
         return response.data;
     },
 
     runAgent: async (target: string, agent: string) => {
-        const response = await api.post('/agents/run/', { target, agent });
+        const response = await axiosInstance.post('/agents/run/', { target, agent });
         return response.data;
     },
 
     generateFindingFix: async (findingId: string) => {
-        const response = await api.post(`/findings/${findingId}/generate-fix/`);
+        const response = await axiosInstance.post(`/findings/${findingId}/generate-fix/`);
         return response.data;
     },
 
     exportNuclei: async (name: string) => {
-        const response = await api.get(`/targets/${name}/nuclei/export/`, {
+        const response = await axiosInstance.get(`/targets/${name}/nuclei/export/`, {
             responseType: 'blob',
         });
         const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -177,7 +471,7 @@ export const FBH_API = {
     importBurpXML: async (name: string, file: File) => {
         const formData = new FormData();
         formData.append('file', file);
-        const response = await api.post(`/targets/${name}/burp/import/`, formData, {
+        const response = await axiosInstance.post(`/targets/${name}/burp/import/`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -185,117 +479,22 @@ export const FBH_API = {
         return response.data;
     },
 
-    getTaskStatus: async (taskId: number) => {
-        const response = await api.get<{ status: string; task: any }>(`/tasks/${taskId}/status/`);
-        return response.data;
-    },
-
-    // Analysis & Intelligence
-    getDelta: async (targetName: string) => {
-        const response = await api.get<{ delta: any }>(`/targets/${targetName}/delta/`);
-        return response.data.delta;
-    },
-
-    generatePoC: async (findingId: string) => {
-        const response = await api.post<{ poc: string; language: string }>('/poc/generate/', { finding_id: findingId });
-        return response.data;
-    },
-
-    analyzeChains: async (targetName: string) => {
-        const response = await api.get<{ chains: any[]; summary: string }>(`/chains/${targetName}/`);
-        return response.data;
-    },
-
-    verifyFinding: async (findingId: string) => {
-        const response = await api.post<{ is_persistent: boolean; message: string; new_status: string }>('/finding/verify/', { finding_id: findingId });
-        return response.data;
-    },
-
-    submitPatch: async (findingId: string, fixCode: string, targetName: string) => {
-        const response = await api.post<{ pr_url: string; message: string; patch_location: string }>('/finding/patch/', {
-            finding_id: findingId,
-            fix_code: fixCode,
-            target_name: targetName
+    uploadApp: async (file: File, onProgress?: (progress: number) => void) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await axiosInstance.post('/upload/', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+            onUploadProgress: (progressEvent) => {
+                if (onProgress && progressEvent.total) {
+                    onProgress(Math.round((progressEvent.loaded * 100) / progressEvent.total));
+                }
+            }
         });
-        return response.data;
-    },
-
-    generateWafRules: async (findingId: string) => {
-        const response = await api.get<{ rules: any[] }>(`/finding/waf/${findingId}/`);
-        return response.data;
-    },
-
-    huntThreats: async (targetName: string) => {
-        const response = await api.get<{ threats: any[] }>(`/ir/hunt/${targetName}/`);
-        return response.data;
-    },
-
-    analyzeTraffic: async (targetName: string, samples: any[]) => {
-        const response = await api.post<{ anomalies: any[] }>(`/ir/analyze/${targetName}/`, { samples });
-        return response.data;
-    },
-
-    executePlaybook: async (target: string, incidentType: string, severity: string) => {
-        const response = await api.post<{ result: any }>('/ir/playbook/', { target, incident_type: incidentType, severity });
-        return response.data;
-    },
-
-    generateFridaScript: async (scriptType: string, platform: string = 'android') => {
-        const response = await api.post<{ script: string }>('/frida/generate/', { script_type: scriptType, platform });
-        return response.data;
-    },
-
-    applyBinaryPatch: async (data: { target: string; patch_type: string; file_pattern?: string; method_name?: string }) => {
-        const response = await api.post<{ status: string; message: string; patches?: any[] }>('/binary/patch/', data);
-        return response.data;
-    },
-
-    generateBountyReport: async (targetName: string) => {
-        const response = await api.get<{ report: string }>(`/target/bounty-report/${targetName}/`);
-        return response.data;
-    },
-
-    generatePoCCommand: async (findingId: string) => {
-        const response = await api.post<{ poc_command: string }>('/poc/generate/', { finding_id: findingId });
-        return response.data;
-    },
-
-    auditSignatures: async (targetName: string) => {
-        const response = await api.get<{ anti_tamper_findings: any[] }>(`/target/audit-signatures/${targetName}/`);
-        return response.data;
-    },
-
-    getReflutterBlueprint: async (targetName: string) => {
-        const response = await api.get<{ status: string; message?: string; engine_hash?: string; blueprint?: any }>(`/target/reflutter-blueprint/${targetName}/`);
-        return response.data;
-    },
-
-    sendRepeaterRequest: async (data: { method: string; url: string; headers: any; body: string }) => {
-        const response = await api.post('/repeater/send/', data);
-        return response.data;
-    },
-
-    // Discovery
-    discoverPrograms: async (data: { platform: string; limit: number; auto_add: boolean }) => {
-        const response = await api.post('/discovery/bug-bounty/', data);
-        return response.data;
-    },
-
-    // Settings
-    getSettings: async () => {
-        const response = await api.get<{ settings: Record<string, string> }>('/settings/');
-        return response.data;
-    },
-
-    updateSettings: async (settings: Record<string, string>) => {
-        const response = await api.post('/settings/save/', settings);
-        return response.data;
-    },
-
-    saveSettings: async (data: Record<string, string>) => {
-        const response = await api.post('/settings/save/', data);
         return response.data;
     },
 };
 
-export default api;
+export const api = methods;
+export const FBH_API = methods;
+
+export default axiosInstance;

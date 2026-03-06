@@ -63,7 +63,7 @@ case "$1" in
                 echo -e "${BLUE}[*] Platform: $PLATFORM${NC}"
                 
                 python3 -c "
-from fbh.services.target_service import TargetService
+from fbh.infrastructure.adapters.target_service import TargetService
 target = TargetService.create_target('$NAME', '$PACKAGE', '$PLATFORM', '$STORE_URL', auto_download=True, auto_scan=True)
 print(f'[+] Target {target.name} created successfully')
 print(f'[+] Workspace: {target.workspace}')
@@ -72,7 +72,9 @@ print(f'[+] Workspace: {target.workspace}')
             "list")
                 echo -e "${BLUE}[*] Active targets:${NC}"
                 python3 -c "
-from fbh.core.target import Target
+from fbh.domain.entities.target import Target
+from fbh.application.use_cases.poc_generator import PoCGenerator
+from fbh.infrastructure.database.database import db
 targets = Target.list_all()
 for t in targets:
     stats = t.get_stats()
@@ -88,7 +90,9 @@ for t in targets:
                 TARGET="$3"
                 echo -e "${BLUE}[*] Target information: $TARGET${NC}"
                 python3 -c "
-from fbh.core.target import Target
+from fbh.domain.entities.target import Target
+from fbh.application.use_cases.poc_generator import PoCGenerator
+from fbh.infrastructure.database.database import db
 from fbh.database import db
 target = Target('$TARGET')
 stats = target.get_stats()
@@ -123,15 +127,20 @@ if findings:
                 fi
                 
                 TARGET="$3"
-                TYPES="${4:-all}"
+                AI_FLAG=False
+                if [[ "$*" == *"--ai"* ]]; then
+                    AI_FLAG=True
+                fi
                 
                 echo -e "${PURPLE}[*] Generating exploits for: $TARGET${NC}"
-                echo -e "${PURPLE}[*] Exploit types: $TYPES${NC}"
+                if [ "$AI_FLAG" == "True" ]; then
+                    echo -e "${PURPLE}[*] Mode: AI-Enhanced (A.I_Hunter)${NC}"
+                fi
                 
                 python3 -c "
-from fbh.core.target import Target
-from fbh.core.poc_generator import PoCGenerator
-from fbh.database import db
+from fbh.domain.entities.target import Target
+from fbh.application.use_cases.poc_generator import PoCGenerator
+from fbh.infrastructure.database.database import db
 
 target = Target('$TARGET')
 findings = db.get_findings(target_id=target.db_id)
@@ -139,7 +148,7 @@ findings = db.get_findings(target_id=target.db_id)
 exploit_count = 0
 for finding in findings:
     if finding['severity'] in ['critical', 'high']:
-        poc = PoCGenerator.generate_python_poc(dict(finding))
+        poc = PoCGenerator.generate_python_poc(dict(finding), use_ai=$AI_FLAG)
         if poc:
             exploit_count += 1
             print(f'[+] Generated PoC for: {finding[\"title\"]}')
@@ -220,11 +229,11 @@ else:
                 echo -e "${CYAN}[*] Modules: $MODULES${NC}"
                 
                 python3 -c "
-from fbh.core.workflow import WorkflowEngine
-from fbh.core.target import Target
+from fbh.application.services.workflow import Workflow
+from fbh.domain.entities.target import Target
 
 target = Target('$TARGET')
-engine = WorkflowEngine()
+engine = Workflow()
 
 print('[*] Starting comprehensive security scan...')
 result = engine.run_standard_scan('$TARGET')
@@ -245,8 +254,8 @@ else:
                 
                 TARGET="$3"
                 python3 -c "
-from fbh.core.target import Target
-from fbh.database import db
+from fbh.domain.entities.target import Target
+from fbh.infrastructure.database.database import db
 
 target = Target('$TARGET')
 scans = db.get_scans(target_id=target.db_id, limit=5)
@@ -261,7 +270,7 @@ for scan in scans:
             "stats")
                 echo -e "${BLUE}[*] Global scan statistics:${NC}"
                 python3 -c "
-from fbh.database import db
+from fbh.infrastructure.database.database import db
 stats = db.get_stats()
 
 print(f'Total Scans: {stats.get(\"total_scans\", 0)}')
@@ -289,9 +298,9 @@ for severity, count in stats.get('findings_by_severity', {}).items():
                 echo -e "${YELLOW}[*] Verifying exploits for: $TARGET${NC}"
                 
                 python3 -c "
-from fbh.core.target import Target
-from fbh.core.verifier import VerificationAgent
-from fbh.database import db
+from fbh.domain.entities.target import Target
+from fbh.application.services.verifier import VerificationAgent
+from fbh.infrastructure.database.database import db
 
 target = Target('$TARGET')
 findings = db.get_findings(target_id=target.db_id)
@@ -337,9 +346,9 @@ print(f'[*] Resolved: {verified_count - persistent_count}')
                 echo -e "${GREEN}[*] Platform: $PLATFORM${NC}"
                 
                 python3 -c "
-from fbh.core.target import Target
-from fbh.core.reporting.bounty_engine import BountyReporter
-from fbh.database import db
+from fbh.domain.entities.target import Target
+from fbh.infrastructure.adapters.reporting.bounty_engine import BountyReporter
+from fbh.infrastructure.database.database import db
 
 target = Target('$TARGET')
 findings = db.get_findings(target_id=target.db_id)
@@ -372,8 +381,8 @@ else:
                 echo -e "${GREEN}[*] Generating technical report for: $TARGET${NC}"
                 
                 python3 -c "
-from fbh.core.target import Target
-from fbh.core.reporter import Reporter
+from fbh.domain.entities.target import Target
+from fbh.application.services.reporter import Reporter
 
 target = Target('$TARGET')
 reporter = Reporter(target)
@@ -405,9 +414,9 @@ print(f'[+] Report generated: {report_file}')
         echo -e "${PURPLE}[*] Analyzing attack chains for: $TARGET${NC}"
         
         python3 -c "
-from fbh.core.target import Target
-from fbh.core.chainer import VulnerabilityChainer
-from fbh.database import db
+from fbh.domain.entities.target import Target
+from fbh.application.services.chainer import VulnerabilityChainer
+from fbh.infrastructure.database.database import db
 
 target = Target('$TARGET')
 findings = db.get_findings(target_id=target.db_id)
@@ -447,7 +456,7 @@ else:
                 echo -e "${CYAN}[*] Generating Frida script: $SCRIPT_TYPE${NC}"
                 
                 python3 -c "
-from fbh.core.agents.frida_orchestrator import FridaOrchestrator
+from fbh.infrastructure.adapters.agents.frida_orchestrator import FridaOrchestrator
 
 script = FridaOrchestrator.generate_script('$SCRIPT_TYPE', '$PLATFORM')
 
@@ -480,7 +489,7 @@ else:
         echo -e "${YELLOW}[*] Patch type: $PATCH_TYPE${NC}"
         
         python3 -c "
-from fbh.core.agents.binary_patcher import BinaryPatcher
+from fbh.infrastructure.adapters.agents.binary_patcher import BinaryPatcher
 
 if '$PATCH_TYPE' == 'boolean_flip':
     result = BinaryPatcher.patch_smali_boolean_gate('$TARGET', '**/SecurityManager.smali', 'isRootDetected')

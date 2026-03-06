@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
     LayoutDashboard,
     ShieldCheck,
@@ -13,8 +13,11 @@ import {
     Bell,
     ExternalLink,
     Terminal,
-    Bug
+    Bug,
+    Book,
+    Smartphone
 } from 'lucide-react';
+import { useAuthStore } from '@/stores/useAuthStore';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import {
@@ -29,6 +32,8 @@ interface SidebarProps {
     className?: string;
     isCollapsed: boolean;
     toggleCollapse: () => void;
+    isMobileOpen?: boolean;
+    closeMobile?: () => void;
 }
 
 const SidebarNavItem = ({
@@ -36,21 +41,27 @@ const SidebarNavItem = ({
     icon: Icon,
     children,
     isCollapsed,
-    badge
+    badge,
+    closeMobile
 }: {
     to: string,
     icon: any,
     children: React.ReactNode,
     isCollapsed: boolean,
-    badge?: string
+    badge?: string,
+    closeMobile?: () => void
 }) => {
+    const location = useLocation();
+    const isActive = location.pathname === to || (to !== '/' && location.pathname.startsWith(to));
+
     return (
         <TooltipProvider delayDuration={0}>
             <Tooltip>
                 <TooltipTrigger asChild>
                     <NavLink
                         to={to}
-                        className={({ isActive }) => cn(
+                        onClick={closeMobile} // Call closeMobile when NavLink is clicked
+                        className={cn(
                             "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group relative",
                             isActive
                                 ? "bg-primary/10 text-primary shadow-[0_0_15px_rgba(59,130,246,0.1)] border-r-2 border-primary"
@@ -72,7 +83,7 @@ const SidebarNavItem = ({
                     </NavLink>
                 </TooltipTrigger>
                 {isCollapsed && (
-                    <TooltipContent side="right" className="bg-slate-900 border-border text-slate-100 font-sans text-xs">
+                    <TooltipContent side="right" className="bg-slate-900 border-border text-slate-100 font-sans text-xs hidden md:block">
                         {children}
                     </TooltipContent>
                 )}
@@ -81,11 +92,13 @@ const SidebarNavItem = ({
     );
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ className, isCollapsed, toggleCollapse }) => {
+const Sidebar: React.FC<SidebarProps> = ({ className, isCollapsed, toggleCollapse, isMobileOpen, closeMobile }) => {
+    const user = useAuthStore((state) => state.user);
     return (
         <aside className={cn(
-            "bg-slate-950/80 backdrop-blur-xl border-r border-border/40 flex flex-col transition-all duration-300 z-50",
-            isCollapsed ? "w-[72px]" : "w-64",
+            "shrink-0 bg-slate-950/95 md:bg-slate-950/80 backdrop-blur-xl border-r border-border/40 flex flex-col transition-transform duration-300 z-50 fixed md:relative inset-y-0 left-0",
+            isCollapsed && !isMobileOpen ? "md:w-[72px]" : "w-64",
+            isMobileOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0",
             className
         )}>
             {/* Header */}
@@ -103,9 +116,10 @@ const Sidebar: React.FC<SidebarProps> = ({ className, isCollapsed, toggleCollaps
                         </h1>
                     </div>
                 )}
+                {/* Desktop Collapse Button */}
                 <button
                     onClick={toggleCollapse}
-                    className="p-1.5 rounded-lg border border-border/40 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                    className="p-1.5 rounded-lg border border-border/40 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors hidden md:block"
                 >
                     {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
                 </button>
@@ -118,24 +132,45 @@ const Sidebar: React.FC<SidebarProps> = ({ className, isCollapsed, toggleCollaps
                         <p className="px-3 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Core</p>
                     )}
                     <SidebarNavItem to="/" icon={LayoutDashboard} isCollapsed={isCollapsed}>Overview</SidebarNavItem>
-                    <SidebarNavItem to="/mobsf" icon={ShieldAlert} isCollapsed={isCollapsed} badge="API">MobSF Analysis</SidebarNavItem>
-                    <SidebarNavItem to="/trends" icon={BarChart3} isCollapsed={isCollapsed}>Trends & Intel</SidebarNavItem>
+                    {['tier3', 'vip', 'admin'].includes(user?.role || '') && (
+                        <SidebarNavItem to="/mobsf" icon={ShieldAlert} isCollapsed={isCollapsed} badge="API">MobSF Analysis</SidebarNavItem>
+                    )}
+                    {['vip', 'admin'].includes(user?.role || '') && (
+                        <SidebarNavItem to="/vphone" icon={Smartphone} isCollapsed={isCollapsed} badge="VM">VPhone</SidebarNavItem>
+                    )}
+                    {['tier2', 'tier3', 'vip', 'admin'].includes(user?.role || '') && (
+                        <SidebarNavItem to="/trends" icon={BarChart3} isCollapsed={isCollapsed}>Trends & Intel</SidebarNavItem>
+                    )}
+                    {user?.role === 'admin' && (
+                        <SidebarNavItem to="/admin-tickets" icon={ShieldCheck} isCollapsed={isCollapsed} badge="ADMIN">Admin Panel</SidebarNavItem>
+                    )}
                 </nav>
 
                 <nav className="space-y-1">
                     {!isCollapsed && (
                         <p className="px-3 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Autonomous</p>
                     )}
-                    <SidebarNavItem to="/agents" icon={Cpu} isCollapsed={isCollapsed} badge="AI">Mission Control</SidebarNavItem>
-                    <SidebarNavItem to="/ir" icon={Terminal} isCollapsed={isCollapsed}>Swarm Defense</SidebarNavItem>
+                    {['vip', 'admin'].includes(user?.role || '') && (
+                        <SidebarNavItem to="/agents" icon={Cpu} isCollapsed={isCollapsed} badge="AI">Mission Control</SidebarNavItem>
+                    )}
+                    {['tier3', 'vip', 'admin'].includes(user?.role || '') && (
+                        <SidebarNavItem to="/ai-hunter" icon={Search} isCollapsed={isCollapsed}>AI Hunter</SidebarNavItem>
+                    )}
+                    {['tier2', 'tier3', 'vip', 'admin'].includes(user?.role || '') && (
+                        <SidebarNavItem to="/fbh-bot" icon={Bug} isCollapsed={isCollapsed}>FBH Bot</SidebarNavItem>
+                    )}
+                    {['vip', 'admin'].includes(user?.role || '') && (
+                        <SidebarNavItem to="/ir" icon={Terminal} isCollapsed={isCollapsed}>Swarm Defense</SidebarNavItem>
+                    )}
                 </nav>
 
                 <nav className="space-y-1">
                     {!isCollapsed && (
                         <p className="px-3 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Resources</p>
                     )}
-                    <SidebarNavItem to="/targets" icon={Search} isCollapsed={isCollapsed}>Shadow Scans</SidebarNavItem>
-                    <SidebarNavItem to="/reports" icon={Bug} isCollapsed={isCollapsed}>Exfil Reports</SidebarNavItem>
+                    <SidebarNavItem to="/methodology" icon={Book} isCollapsed={isCollapsed} closeMobile={closeMobile}>Methodology</SidebarNavItem>
+                    <SidebarNavItem to="/targets" icon={Search} isCollapsed={isCollapsed} closeMobile={closeMobile}>Shadow Scans</SidebarNavItem>
+                    <SidebarNavItem to="/reports" icon={Bug} isCollapsed={isCollapsed} closeMobile={closeMobile}>Exfil Reports</SidebarNavItem>
                 </nav>
             </div>
 

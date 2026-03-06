@@ -31,14 +31,14 @@ else
 fi
 
 # 2. Check MOBSF directory
-if [ ! -d "MOBSF" ]; then
-    echo -e "${RED}[!] MOBSF directory not found!${NC}"
+if [ ! -d "core/mobsf" ]; then
+    echo -e "${RED}[!] core/mobsf directory not found!${NC}"
     exit 1
 fi
 
 # 3. Launch MobSF logic
 echo -e "${BLUE}[*] Launching FBH Platform...${NC}"
-cd MOBSF
+cd core/mobsf
 
 # Check if running via poetry or standard
 if [ -f "poetry.lock" ]; then

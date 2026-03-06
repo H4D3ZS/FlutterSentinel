@@ -40,7 +40,7 @@ import {
     Layers
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import api from '@/lib/api';
+import axios from 'axios';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -57,6 +57,14 @@ import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+
+// Route through Node.js backend — all authenticated via authMiddleware
+const nodeApi = axios.create({ baseURL: '/api' });
+nodeApi.interceptors.request.use((config) => {
+    const token = localStorage.getItem('fbh_access_token');
+    if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+});
 
 interface IntelNode {
     id: number;
@@ -138,7 +146,7 @@ const TargetDetail: React.FC = () => {
         if (!target?.name && !target?.package) return;
         setIntelligenceLoading(true);
         try {
-            const response = await api.post('/intel/explore', {
+            const response = await nodeApi.post('/intel/explore', {
                 target: target.name || target.package,
                 query: target.name || target.package,
                 mode
@@ -167,8 +175,8 @@ const TargetDetail: React.FC = () => {
         if (!id) return;
         setLoading(true);
         try {
-            // We use the MobSF report endpoint via our proxy
-            const response = await api.post('/mobsf/report', { hash: id });
+            // MobSF report via Node.js proxy (enforces authMiddleware)
+            const response = await nodeApi.post('/mobsf/report', { hash: id });
             const data = response.data;
 
             // Transform MobSF data if needed (MobSF report structure is nested)

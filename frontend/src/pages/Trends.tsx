@@ -37,7 +37,7 @@ import {
     Loader2,
     AlertTriangle
 } from 'lucide-react';
-import api from '@/lib/api';
+import { api } from '@/services/api';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -83,23 +83,26 @@ const Trends: React.FC = () => {
 
     const fetchTrends = async () => {
         try {
-            // Fetch scans from MobSF proxy to generate analytics mock
-            const response = await api.get('/mobsf/scans');
-            const scans = response.data || [];
+            // Fetch live targets to map their actual vulnerability telemetry
+            const response = await api.getTargets();
+            const rawTargets = Array.isArray(response) ? response : (response.targets || []);
 
-            // Generate mock trends based on actual scans for realism
-            const MockTrends = scans.slice(0, 8).map((s: any) => ({
-                target: s.FILE_NAME || 'Unknown',
-                counts: {
-                    critical: Math.floor(Math.random() * 3),
-                    high: Math.floor(Math.random() * 5),
-                    medium: Math.floor(Math.random() * 10),
-                    low: Math.floor(Math.random() * 15),
-                    info: Math.floor(Math.random() * 20),
-                }
-            }));
+            // Map live trends from actual target findings
+            const liveTrends = rawTargets.map((t: any) => {
+                const severities = t.stats?.findings_by_severity || {};
+                return {
+                    target: t.name || t.package || 'Unknown',
+                    counts: {
+                        critical: severities.critical || 0,
+                        high: severities.high || 0,
+                        medium: severities.medium || 0,
+                        low: severities.low || 0,
+                        info: severities.info || 0,
+                    }
+                };
+            });
 
-            setTrends(MockTrends);
+            setTrends(liveTrends);
         } catch (error) {
             console.error('Failed to fetch trends:', error);
         } finally {

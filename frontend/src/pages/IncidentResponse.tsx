@@ -16,7 +16,7 @@ import {
     Crosshair
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import api from '@/lib/api';
+import { api, instance } from '@/services/api';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -37,14 +37,34 @@ const IncidentResponse: React.FC = () => {
     const [hunting, setHunting] = useState(false);
     const [selectedIncident, setSelectedIncident] = useState<any>(null);
 
-    const mockIncidents = [
-        { id: 'IR-001', type: 'Credential Stuffing', target: 'EU-Auth-Gateway', severity: 'High', status: 'Live', time: '2m ago' },
-        { id: 'IR-002', type: 'Data Exfiltration', target: 'Sentinel-DB-Main', severity: 'Critical', status: 'Confirmed', time: '15m ago' },
-        { id: 'IR-003', type: 'API Key Leakage', target: 'Cloud-Storage-01', severity: 'Medium', status: 'Mitigating', time: '1h ago' }
-    ];
-
+    // Placeholder initial state until real data arrives or fails
     useEffect(() => {
-        setIncidents(mockIncidents);
+        let isMounted = true;
+        const fetchAlerts = async () => {
+            try {
+                setLoading(true);
+                const data = await api.getSwarmAlerts();
+                if (isMounted) {
+                    // Adapt list format to what UI expects based on API implementation
+                    const fetchedIncidents = data.alerts || data || [];
+                    setIncidents(fetchedIncidents.length > 0 ? fetchedIncidents : []);
+                }
+            } catch (error) {
+                console.error('Failed to fetch live swarm alerts:', error);
+                // Fallback to empty array on failure
+                if (isMounted) setIncidents([]);
+            } finally {
+                if (isMounted) setLoading(false);
+            }
+        };
+
+        fetchAlerts();
+        const interval = setInterval(fetchAlerts, 15000); // Poll every 15s
+
+        return () => {
+            isMounted = false;
+            clearInterval(interval);
+        };
     }, []);
 
     const handleHunt = async () => {

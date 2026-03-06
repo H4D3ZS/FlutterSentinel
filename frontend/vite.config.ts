@@ -2,9 +2,9 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
     plugins: [react()],
-    base: '/static/fbh/dist/',
+    base: command === 'serve' ? '/' : '/static/fbh/dist/',
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),
@@ -23,10 +23,21 @@ export default defineConfig({
     },
     server: {
         proxy: {
+            '/api': {
+                target: 'http://localhost:4000',
+                changeOrigin: true,
+            },
             '/fbh/api': {
                 target: 'http://localhost:8000',
                 changeOrigin: true,
             },
         },
     },
-});
+    // @ts-ignore - Vitest types
+    test: {
+        globals: true,
+        environment: 'jsdom',
+        setupFiles: ['./src/test/setup.ts'],
+        include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    },
+}));

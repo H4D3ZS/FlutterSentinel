@@ -1,0 +1,345 @@
+/* ============================================================
+   Component Styles — Modals, Dialogs, Panels
+   ============================================================ */
+
+/* --- Modal Overlay --- */
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 150ms ease forwards;
+}
+
+.modalContent {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-xl);
+    max-width: 560px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: scaleIn 200ms ease forwards;
+}
+
+.modalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-xl);
+}
+
+.modalTitle {
+    font-size: var(--font-2xl);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.modalClose {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: var(--font-xl);
+    transition: all var(--transition-fast);
+}
+
+.modalClose:hover {
+    background: var(--glass-hover);
+    color: var(--text-primary);
+}
+
+.modalBody {
+    margin-bottom: var(--space-xl);
+}
+
+.modalFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+}
+
+/* --- Conflict Dialog --- */
+.conflictPanel {
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.conflictHeader {
+    background: rgba(239, 68, 68, 0.1);
+    padding: var(--space-md) var(--space-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--color-red);
+    font-size: var(--font-sm);
+    font-weight: 600;
+}
+
+.conflictField {
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.conflictFieldName {
+    font-size: var(--font-sm);
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-md);
+}
+
+.conflictValues {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+}
+
+.conflictValue {
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    background: var(--bg-tertiary);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.conflictValue:hover {
+    border-color: var(--accent-primary);
+    background: var(--accent-glow);
+}
+
+.conflictValue.selected {
+    border-color: var(--accent-primary);
+    background: var(--accent-glow);
+}
+
+.conflictValueLabel {
+    font-size: var(--font-xs);
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.conflictValueContent {
+    font-size: var(--font-md);
+    color: var(--text-primary);
+    word-break: break-word;
+}
+
+/* --- Automation Panel --- */
+.automationPanel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 420px;
+    background: var(--bg-secondary);
+    border-left: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-lg);
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    animation: slideInRight 250ms ease forwards;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.automationHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg) var(--space-xl);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.automationTitle {
+    font-size: var(--font-xl);
+    font-weight: 600;
+}
+
+.automationList {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-lg);
+}
+
+.automationItem {
+    padding: var(--space-md);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-sm);
+    transition: all var(--transition-fast);
+}
+
+.automationItem:hover {
+    border-color: var(--border-default);
+}
+
+.automationItemHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-sm);
+}
+
+.automationItemName {
+    font-size: var(--font-md);
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.automationItemMeta {
+    font-size: var(--font-xs);
+    color: var(--text-tertiary);
+    line-height: 1.5;
+}
+
+.automationToggle {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.toggleSwitch {
+    width: 36px;
+    height: 20px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.toggleSwitch.active {
+    background: var(--accent-primary);
+    border-color: var(--accent-secondary);
+}
+
+.toggleKnob {
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform var(--transition-fast);
+}
+
+.toggleSwitch.active .toggleKnob {
+    transform: translateX(16px);
+}
+
+/* --- Log Panel --- */
+.logSection {
+    border-top: 1px solid var(--border-subtle);
+    padding: var(--space-lg);
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.logTitle {
+    font-size: var(--font-sm);
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-sm);
+}
+
+.logEntry {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-xs) 0;
+    font-size: var(--font-xs);
+    color: var(--text-tertiary);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.logEntry:last-child {
+    border-bottom: none;
+}
+
+.logSuccess {
+    color: var(--color-green);
+}
+
+.logError {
+    color: var(--color-red);
+}
+
+.logDepth {
+    color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+}
+
+/* --- Form Elements --- */
+.formGroup {
+    margin-bottom: var(--space-lg);
+}
+
+.formLabel {
+    display: block;
+    font-size: var(--font-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xs);
+}
+
+.formInput {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: var(--font-md);
+    font-family: var(--font-family);
+    transition: border-color var(--transition-fast);
+}
+
+.formInput:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.formSelect {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: var(--font-md);
+    font-family: var(--font-family);
+    cursor: pointer;
+}
+
+.formSelect:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}

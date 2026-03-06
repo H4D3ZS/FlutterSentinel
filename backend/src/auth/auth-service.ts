@@ -28,14 +28,14 @@ export class AuthService {
      * Generate JWT access token
      */
     static generateAccessToken(payload: JWTPayload): string {
-        return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+        return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN as any });
     }
 
     /**
      * Generate JWT refresh token
      */
     static generateRefreshToken(payload: JWTPayload): string {
-        return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRES_IN });
+        return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRES_IN as any });
     }
 
     /**
@@ -70,8 +70,8 @@ export class AuthService {
         const { email, password, name } = data;
 
         // Check if user already exists
-        const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
-        if (existing) {
+        const existingResult = await db.query('SELECT id FROM users WHERE email = $1', [email]);
+        if (existingResult.rows.length > 0) {
             throw new Error('User already exists');
         }
 
@@ -82,13 +82,14 @@ export class AuthService {
         const userId = randomUUID();
         const now = Date.now();
 
-        db.prepare(`
+        await db.query(`
             INSERT INTO users (id, email, password_hash, name, role, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        `).run(userId, email, password_hash, name || null, 'user', now, now);
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `, [userId, email, password_hash, name || null, 'user', now, now]);
 
         // Get created user
-        const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as User;
+        const userResult = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
+        const user = userResult.rows[0] as User;
 
         // Generate tokens
         const payload: JWTPayload = {
@@ -104,10 +105,10 @@ export class AuthService {
         const tokenId = randomUUID();
         const expiresAt = now + 7 * 24 * 60 * 60 * 1000; // 7 days
 
-        db.prepare(`
+        await db.query(`
             INSERT INTO refresh_tokens (id, user_id, token, expires_at, created_at)
-            VALUES (?, ?, ?, ?, ?)
-        `).run(tokenId, user.id, refresh_token, expiresAt, now);
+            VALUES ($1, $2, $3, $4, $5)
+        `, [tokenId, user.id, refresh_token, expiresAt, now]);
 
         return {
             user: this.toPublicUser(user),
@@ -124,7 +125,8 @@ export class AuthService {
         const { email, password } = data;
 
         // Get user
-        const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email) as User | undefined;
+        const userResult = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+        const user = userResult.rows[0] as User | undefined;
         if (!user) {
             throw new Error('Invalid credentials');
         }
@@ -137,7 +139,7 @@ export class AuthService {
 
         // Update last login
         const now = Date.now();
-        db.prepare('UPDATE users SET last_login = ? WHERE id = ?').run(now, user.id);
+        await db.query('UPDATE users SET last_login = $1 WHERE id = $2', [now, user.id]);
 
         // Generate tokens
         const payload: JWTPayload = {
@@ -153,10 +155,10 @@ export class AuthService {
         const tokenId = randomUUID();
         const expiresAt = now + 7 * 24 * 60 * 60 * 1000; // 7 days
 
-        db.prepare(`
+        await db.query(`
             INSERT INTO refresh_tokens (id, user_id, token, expires_at, created_at)
-            VALUES (?, ?, ?, ?, ?)
-        `).run(tokenId, user.id, refresh_token, expiresAt, now);
+            VALUES ($1, $2, $3, $4, $5)
+        `, [tokenId, user.id, refresh_token, expiresAt, now]);
 
         // Update user with new last_login
         user.last_login = now;
@@ -180,7 +182,8 @@ export class AuthService {
         }
 
         // Check if refresh token exists in database
-        const tokenRecord = db.prepare('SELECT * FROM refresh_tokens WHERE token = ?').get(refreshToken);
+        const tokenResult = await db.query('SELECT * FROM refresh_tokens WHERE token = $1', [refreshToken]);
+        const tokenRecord = tokenResult.rows[0];
         if (!tokenRecord) {
             throw new Error('Refresh token not found');
         }
@@ -197,37 +200,49 @@ export class AuthService {
     /**
      * Logout user (invalidate refresh token)
      */
-    static logout(refreshToken: string): void {
-        db.prepare('DELETE FROM refresh_tokens WHERE token = ?').run(refreshToken);
+    static async logout(refreshToken: string): Promise<void> {
+        await db.query('DELETE FROM refresh_tokens WHERE token = $1', [refreshToken]);
     }
 
     /**
      * Get user by ID
      */
-    static getUserById(userId: string): UserPublic | null {
-        const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as User | undefined;
+    static async getUserById(userId: string): Promise<UserPublic | null> {
+        const result = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
+        const user = result.rows[0] as User | undefined;
         return user ? this.toPublicUser(user) : null;
     }
 
     /**
-     * Create default admin user if none exists
+     * Create default seed users if no admin exists
      */
     static async createDefaultAdmin(): Promise<void> {
-        const adminCount = db.prepare('SELECT COUNT(*) as count FROM users WHERE role = ?').get('admin') as { count: number };
+        const adminCountResult = await db.query('SELECT COUNT(*) as count FROM users WHERE role = $1', ['admin']);
+        const count = parseInt(adminCountResult.rows[0].count, 10);
 
-        if (adminCount.count === 0) {
-            console.log('📝 Creating default admin user...');
+        if (count === 0) {
+            console.log('📝 Creating default demo users (admin, vip, tiers)...');
 
-            const password_hash = await this.hashPassword('admin123');
-            const userId = randomUUID();
+            const defaultUsers = [
+                { email: 'admin@fbhbot.com', pass: 'admin123', name: 'Commander', role: 'admin' },
+                { email: 'vip@fbhbot.com', pass: 'vip123', name: 'VIP Operative', role: 'vip' },
+                { email: 'tier3@fbhbot.com', pass: 'client123', name: 'Tier 3 Client', role: 'tier3' },
+                { email: 'tier2@fbhbot.com', pass: 'client123', name: 'Tier 2 Client', role: 'tier2' },
+                { email: 'tier1@fbhbot.com', pass: 'client123', name: 'Tier 1 Client', role: 'tier1' },
+            ];
+
             const now = Date.now();
 
-            db.prepare(`
-                INSERT INTO users (id, email, password_hash, name, role, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            `).run(userId, 'admin@fbh.local', password_hash, 'Administrator', 'admin', now, now);
+            for (const user of defaultUsers) {
+                const password_hash = await this.hashPassword(user.pass);
+                const userId = randomUUID();
+                await db.query(`
+                    INSERT INTO users (id, email, password_hash, name, role, created_at, updated_at)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7)
+                `, [userId, user.email, password_hash, user.name, user.role, now, now]);
+            }
 
-            console.log('✅ Default admin created: admin@fbh.local / admin123');
+            console.log('✅ Default accounts created based on implementation plan.');
             console.log('⚠️  Please change the password after first login!');
         }
     }

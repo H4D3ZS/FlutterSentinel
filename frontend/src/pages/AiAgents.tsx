@@ -17,7 +17,7 @@ import {
     Command,
     Loader2
 } from 'lucide-react';
-import api from '@/lib/api';
+import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -32,6 +32,14 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+
+// Use the Node.js backend API (port 4000, proxied via Vite as /api)
+const nodeApi = axios.create({ baseURL: '/api' });
+nodeApi.interceptors.request.use((config) => {
+    const token = localStorage.getItem('fbh_access_token');
+    if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+});
 
 interface LogEntry {
     id: string;
@@ -50,18 +58,22 @@ const AiAgents: React.FC = () => {
     const logEndRef = useRef<HTMLDivElement>(null);
     const eventSourceRef = useRef<EventSource | null>(null);
 
-    // Fetch targets from MobSF via our proxy
+    // Fetch targets from MobSF via Node.js authenticated proxy
     useEffect(() => {
-        api.get('/mobsf/scans').then(res => {
-            setTargets(res.data || []);
-        });
+        nodeApi.get('/mobsf/scans').then(res => {
+            setTargets(res.data?.results || res.data || []);
+        }).catch(() => { /* MobSF offline — silent fail */ });
     }, []);
 
-    // Set up real-time SSE stream
+    // Set up real-time SSE stream — use absolute /api path through Node.js
     useEffect(() => {
         const setupStream = () => {
-            // FBHBot SSE stream proxied through our backend
-            const eventSource = new EventSource(`${api.defaults.baseURL}/fbhbot/stream`);
+            // FBHBot SSE stream proxied through backend at /api/fbhbot/stream
+            const token = localStorage.getItem('fbh_access_token');
+            const streamUrl = token
+                ? `/api/fbhbot/stream?token=${encodeURIComponent(token)}`
+                : '/api/fbhbot/stream';
+            const eventSource = new EventSource(streamUrl);
             eventSourceRef.current = eventSource;
 
             eventSource.onmessage = (event) => {
@@ -74,7 +86,7 @@ const AiAgents: React.FC = () => {
             };
 
             eventSource.onerror = () => {
-                console.error('SSE Stream Connection Lost. Retrying...');
+                console.warn('SSE Stream Connection Lost. Retrying in 5s...');
                 eventSource.close();
                 setTimeout(setupStream, 5000);
             };
@@ -116,7 +128,7 @@ const AiAgents: React.FC = () => {
         addLog(`DEPLOYING SENTINEL OVER ${selectedTarget}...`, 'bot');
 
         try {
-            await api.post('/fbhbot/input', {
+            await nodeApi.post('/fbhbot/input', {
                 text: `deploy agent ${agentId} on target ${selectedTarget}`,
                 missionId: 'global'
             });
@@ -142,7 +154,7 @@ const AiAgents: React.FC = () => {
         addLog(`> ${input}`, 'info');
 
         try {
-            await api.post('/fbhbot/input', {
+            await nodeApi.post('/fbhbot/input', {
                 text: input,
                 missionId: 'global'
             });

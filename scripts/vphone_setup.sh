@@ -102,8 +102,13 @@ check_prerequisites() {
     if [[ "$(uname -m)" == "arm64" ]]; then
         log "Apple Silicon detected ✓"
     else
-        error "Apple Silicon required (found: $(uname -m))"
-        all_good=false
+        warn "Non-Apple Silicon detected ($(uname -m))"
+        if [[ "${USE_QEMU:-false}" == "true" ]]; then
+            log "QEMU mode enabled, bypassing Apple Silicon check ✓"
+        else
+            error "Apple Silicon required. Use --qemu to bypass."
+            all_good=false
+        fi
     fi
 
     # 2. SIP status
@@ -112,10 +117,14 @@ check_prerequisites() {
     if echo "$sip_status" | grep -qi "disabled"; then
         log "SIP disabled ✓"
     else
-        error "SIP must be disabled"
-        info "  → Boot to Recovery Mode"
-        info "  → Run: csrutil disable"
-        all_good=false
+        if [[ "${USE_QEMU:-false}" == "true" ]]; then
+            log "QEMU mode enabled, bypassing SIP check ✓"
+        else
+            error "SIP must be disabled"
+            info "  → Boot to Recovery Mode"
+            info "  → Run: csrutil disable"
+            all_good=false
+        fi
     fi
 
     # 3. AMFI
@@ -609,11 +618,16 @@ main() {
     # Parse arguments
     local start_step=0
     local check_only=false
+    export USE_QEMU=false
 
     while [[ $# -gt 0 ]]; do
         case $1 in
             --check)
                 check_only=true
+                shift
+                ;;
+            --qemu)
+                export USE_QEMU=true
                 shift
                 ;;
             --step)
