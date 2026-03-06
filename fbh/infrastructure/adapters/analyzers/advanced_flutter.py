@@ -291,7 +291,11 @@ class FirebaseTester:
         }
         
         for path in self.TEST_PATHS:
-            test_url = firebase_url.rstrip("/") + path
+            # Ensure proper slash between URL and path
+            base_url = firebase_url.rstrip("/")
+            if not path.startswith("/"):
+                path = "/" + path
+            test_url = base_url + path
             
             try:
                 response = requests.get(test_url, timeout=10)

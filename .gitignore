@@ -63,7 +63,9 @@ MOBSF/StaticAnalyzer/tools/
 targets/*/workspace/
 data/
 database/*.db
-
+database/*.db-shm
+database/*.db-wal
+core/mobsf/mobsf/secret
 # Build outputs
 *.apk
 *.ipa
@@ -89,3 +91,10 @@ openclaw/
 tmp/
 temp/
 .cache/
+
+# Bug Bounty Findings and POCs
+targets/meesho/
+targets/viator/
+target/
+26.3/
+requirements.txt

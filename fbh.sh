@@ -231,19 +231,21 @@ else:
                 python3 -c "
 from fbh.application.services.workflow import Workflow
 from fbh.domain.entities.target import Target
+import json
 
 target = Target('$TARGET')
-engine = Workflow()
-
-print('[*] Starting comprehensive security scan...')
-result = engine.run_standard_scan('$TARGET')
-
-if result.get('success'):
+try:
+    # Use comprehensive scan workflow
+    engine = Workflow.load('comprehensive_scan')
+    print('[*] Starting comprehensive security scan via FBH Workflow Engine...')
+    results = engine.run_on_target(target)
+    
+    findings_count = sum(r.get('findings', 0) for r in results.values() if isinstance(r, dict))
     print(f'[+] Scan completed successfully')
-    print(f'[+] Findings: {result.get(\"findings_count\", 0)}')
-    print(f'[+] Critical: {result.get(\"critical_count\", 0)}')
-else:
-    print(f'[!] Scan failed: {result.get(\"error\")}')
+    print(f'[+] Modules executed: {list(results.keys())}')
+    print(f'[+] Total findings detected: {findings_count}')
+except Exception as e:
+    print(f'[!] Scan failed: {e}')
 "
                 ;;
             "status")

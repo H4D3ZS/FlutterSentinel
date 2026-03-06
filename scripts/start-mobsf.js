@@ -62,13 +62,13 @@ function checkPrerequisites() {
 }
 
 function startMobSF() {
-    log('🚀 Starting MobSF server...', 'cyan');
-    log('📍 Directory: ' + mobsfDir, 'cyan');
-    log('🌐 URL: http://localhost:8000', 'green');
+    log('🚀 Starting MobSF backend service...', 'cyan');
+    log('🔒 Running as internal API (proxied via FlutterSentinel backend)', 'cyan');
+    log('⚠️  Access MobSF features through the FlutterSentinel UI, not :8000', 'yellow');
 
     const mobsf = spawn(
         'poetry',
-        ['run', 'python', 'manage.py', 'runserver', '0.0.0.0:8000'],
+        ['run', 'python', 'manage.py', 'runserver', '127.0.0.1:8000'],
         {
             cwd: mobsfDir,
             stdio: 'inherit',

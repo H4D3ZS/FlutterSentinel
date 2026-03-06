@@ -69,8 +69,7 @@ class FlutterEngineAuditor(Scanner):
                                 "title": f"Sensitive {key} Leak in Dart AOT",
                                 "description": f"Found reference to {key} endpoint in compiled libapp.so: {matches[0]}",
                                 "location": str(lib.relative_to(search_dir)),
-                                "remediation": "Obfuscate sensitive strings in Dart code or
-                                    or fetch them from a secure backend at runtime."
+                                "remediation": "Obfuscate sensitive strings in Dart code or fetch them from a secure backend at runtime."
                             })
             except Exception as e:
                 pass

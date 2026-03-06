@@ -19,7 +19,8 @@ import AIHunterDashboard from './pages/ai-hunter/AIHunterDashboard';
 import Methodology from './pages/Methodology';
 import AdminDashboardTicketManagement from './pages/AdminDashboardTicketManagement';
 import VPhone from './pages/VPhone';
-import { Search, FileText } from 'lucide-react';
+import ReportGenerator from './pages/ReportGenerator';
+import { Search } from 'lucide-react';
 import { Toaster } from '@/components/ui/sonner';
 
 /**
@@ -79,7 +80,7 @@ const App = () => {
 
                     {/* Expansion Channels */}
                     <Route path="/targets" element={<UnderConstruction title="Shadow Scanning Grid" description="The global offensive mesh is currently being synchronized. Tactical target mapping will be available shortly." icon={Search} />} />
-                    <Route path="/reports" element={<UnderConstruction title="Exfilitration Archives" description="Secure data silos are being established for tactical report persistence. Access will be granted in the next cycle." icon={FileText} />} />
+                    <Route path="/reports" element={<ReportGenerator />} />
                 </Route>
 
                 {/* Fallback */}

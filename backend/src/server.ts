@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit';
 import multer from 'multer';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { AuthService } from './auth/auth-service.js';
 import { authMiddleware, adminMiddleware } from './middleware/auth.js';
@@ -626,5 +627,108 @@ async function startServer() {
         process.exit(1);
     }
 }
+
+// ============================================================================
+// REPORTS API — Auto-read target markdown & save generated reports
+// ============================================================================
+
+const TARGETS_DIR = path.resolve(__dirname, '../../targets');
+const REPORTS_DIR = path.resolve(__dirname, '../../reports');
+
+// GET /api/reports/targets
+// Returns all target directories along with their discovered .md files
+app.get('/api/reports/targets', authMiddleware, (_req: Request, res: Response) => {
+    try {
+        if (!fs.existsSync(TARGETS_DIR)) {
+            return res.json({ targets: [] });
+        }
+        const entries = fs.readdirSync(TARGETS_DIR, { withFileTypes: true });
+        const targets = entries
+            .filter(e => e.isDirectory())
+            .map(e => {
+                const targetPath = path.join(TARGETS_DIR, e.name);
+                const mdFiles = fs.readdirSync(targetPath)
+                    .filter(f => f.endsWith('.md') || f.endsWith('.txt'))
+                    .map(f => ({ name: f, path: path.join(targetPath, f) }));
+                return { name: e.name, mdFiles };
+            })
+            .filter(t => t.mdFiles.length > 0);
+        res.json({ targets });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// GET /api/reports/read?target=<name>&file=<filename>
+// Returns the raw markdown content of the specified file
+app.get('/api/reports/read', authMiddleware, (req: Request, res: Response) => {
+    try {
+        const { target, file } = req.query as { target: string; file: string };
+        if (!target || !file) {
+            return res.status(400).json({ error: 'target and file are required' });
+        }
+        // Prevent directory traversal
+        const safeName = path.basename(target);
+        const safeFile = path.basename(file);
+        const filePath = path.join(TARGETS_DIR, safeName, safeFile);
+
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ error: 'File not found' });
+        }
+        const content = fs.readFileSync(filePath, 'utf8');
+        res.json({ content, target: safeName, file: safeFile });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// POST /api/reports/save
+// Saves a generated report to reports/<target>/report_docs/<platform>_report.md
+app.post('/api/reports/save', authMiddleware, (req: Request, res: Response) => {
+    try {
+        const { target, platform, content } = req.body as {
+            target: string;
+            platform: 'hackerone' | 'bugcrowd';
+            content: string;
+        };
+        if (!target || !platform || !content) {
+            return res.status(400).json({ error: 'target, platform, and content are required' });
+        }
+        const safeName = path.basename(target);
+        const reportDir = path.join(REPORTS_DIR, safeName, 'report_docs');
+        fs.mkdirSync(reportDir, { recursive: true });
+
+        const filename = `${platform}_report.md`;
+        const outPath = path.join(reportDir, filename);
+        fs.writeFileSync(outPath, content, 'utf8');
+
+        res.json({ success: true, path: outPath, filename });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// GET /api/reports/saved
+// Lists all saved reports grouped by target
+app.get('/api/reports/saved', authMiddleware, (_req: Request, res: Response) => {
+    try {
+        if (!fs.existsSync(REPORTS_DIR)) {
+            return res.json({ reports: [] });
+        }
+        const entries = fs.readdirSync(REPORTS_DIR, { withFileTypes: true });
+        const reports = entries
+            .filter(e => e.isDirectory())
+            .map(e => {
+                const docsDir = path.join(REPORTS_DIR, e.name, 'report_docs');
+                const docs = fs.existsSync(docsDir)
+                    ? fs.readdirSync(docsDir).filter(f => f.endsWith('.md'))
+                    : [];
+                return { target: e.name, docs };
+            });
+        res.json({ reports });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 startServer();

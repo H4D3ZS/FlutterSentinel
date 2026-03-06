@@ -64,7 +64,7 @@ const Login: React.FC = () => {
 
         try {
             const response = await api.post('/auth/login', data);
-            const { user, access_token, refresh_token } = response.data;
+            const { user, access_token, refresh_token } = response.data as { user: any, access_token: string, refresh_token: string };
 
             setAuth(user, access_token, refresh_token);
 
@@ -79,7 +79,7 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden font-sans">
+        <div className="fixed inset-0 w-screen h-screen bg-slate-950 flex items-center justify-center p-4 overflow-hidden font-sans m-0">
             <TerminalBackground />
 
             <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
