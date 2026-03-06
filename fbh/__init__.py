@@ -19,15 +19,13 @@ Version: 2.0.0
 __version__ = "2.0.0"
 __author__ = "Security Researcher"
 
-from fbh.core.target import Target
-from fbh.core.scanner import Scanner
-from fbh.core.workflow import Workflow
-from fbh.core.reporter import Reporter
-from fbh.database import Database
+from fbh.domain.entities.target import Target
+from fbh.application.services.workflow import WorkflowEngine as Workflow
+from fbh.application.services.reporter import Reporter
+from fbh.infrastructure.database.database import Database
 
 __all__ = [
     "Target",
-    "Scanner", 
     "Workflow",
     "Reporter",
     "Database",

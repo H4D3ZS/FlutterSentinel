@@ -5,17 +5,32 @@ import TopBar from '@/components/dashboard/TopBar';
 
 const DashboardLayout: React.FC = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isMobileOpen, setIsMobileOpen] = useState(false);
 
     const toggleCollapse = () => {
         setIsCollapsed(!isCollapsed);
     };
 
+    const toggleMobile = () => {
+        setIsMobileOpen(!isMobileOpen);
+    };
+
     return (
-        <div className="flex h-screen w-full bg-slate-950 text-slate-100 overflow-hidden font-sans">
+        <div className="flex h-screen w-full bg-slate-950 text-slate-100 overflow-hidden font-sans relative">
+            {/* Mobile Overlay */}
+            {isMobileOpen && (
+                <div
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+                    onClick={() => setIsMobileOpen(false)}
+                />
+            )}
+
             {/* Sidebar */}
             <Sidebar
                 isCollapsed={isCollapsed}
                 toggleCollapse={toggleCollapse}
+                isMobileOpen={isMobileOpen}
+                closeMobile={() => setIsMobileOpen(false)}
             />
 
             {/* Main Content Area */}
@@ -23,7 +38,7 @@ const DashboardLayout: React.FC = () => {
                 {/* Background Grid/Noise Effect */}
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
 
-                <TopBar />
+                <TopBar toggleMobile={toggleMobile} />
 
                 <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 relative">
                     {/* Content wrapper for transitions */}

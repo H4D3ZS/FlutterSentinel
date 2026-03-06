@@ -17,7 +17,7 @@ import {
     Activity
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import api from '@/lib/api';
+import axios from 'axios';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -34,6 +34,14 @@ import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { toast } from 'sonner';
 
+// Route through Node.js backend so auth middleware is enforced
+const nodeApi = axios.create({ baseURL: '/api' });
+nodeApi.interceptors.request.use((config) => {
+    const token = localStorage.getItem('fbh_access_token');
+    if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+});
+
 const MobSF: React.FC = () => {
     const [scans, setScans] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -43,8 +51,8 @@ const MobSF: React.FC = () => {
 
     const fetchScans = useCallback(async () => {
         try {
-            const response = await api.get('/mobsf/scans');
-            setScans(response.data || []);
+            const response = await nodeApi.get('/mobsf/scans');
+            setScans(response.data?.results || response.data || []);
         } catch (error) {
             console.error('Failed to fetch MobSF scans:', error);
         } finally {
@@ -67,10 +75,8 @@ const MobSF: React.FC = () => {
         formData.append('file', file);
 
         try {
-            const response = await api.post('/mobsf/upload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+            const response = await nodeApi.post('/mobsf/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
                 onUploadProgress: (progressEvent) => {
                     const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1));
                     setUploadProgress(percentCompleted);
@@ -79,7 +85,7 @@ const MobSF: React.FC = () => {
 
             // After upload, trigger scan
             if (response.data?.hash) {
-                await api.post('/mobsf/scan', {
+                await nodeApi.post('/mobsf/scan', {
                     hash: response.data.hash,
                     scan_type: file.name.endsWith('.ipa') ? 'ipa' : 'apk'
                 });
@@ -95,7 +101,7 @@ const MobSF: React.FC = () => {
 
     const deleteScan = async (hash: string) => {
         try {
-            await api.post('/mobsf/delete', { hash });
+            await nodeApi.post('/mobsf/delete', { hash });
             fetchScans();
         } catch (error) {
             console.error('Delete failed:', error);

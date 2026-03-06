@@ -1,93 +1,104 @@
 import Database from 'better-sqlite3';
+import type { Database as SqliteDatabase } from 'better-sqlite3';
+import pg from 'pg';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 
+const { Pool } = pg;
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DB_PATH = process.env.DATABASE_PATH || path.join(__dirname, '../../data/fbh.db');
+// PostgreSQL Primary Connection
+const PG_URL = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/fbh';
+export const db = new Pool({
+    connectionString: PG_URL
+});
 
-// Ensure data directory exists
+// SQLite Offline Sync Fallback
+const DB_PATH = process.env.SQLITE_DATABASE_PATH || path.join(__dirname, '../../data/fbh.db');
 const dataDir = path.dirname(DB_PATH);
 if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
 }
+export const sqliteDb: SqliteDatabase = new Database(DB_PATH);
+sqliteDb.pragma('foreign_keys = ON');
 
-export const db = new Database(DB_PATH);
+export async function initializeDatabase() {
+    console.log('🗄️  Initializing PostgreSQL database...');
 
-// Enable foreign keys
-db.pragma('foreign_keys = ON');
+    try {
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS users (
+                id TEXT PRIMARY KEY,
+                email TEXT UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL,
+                name TEXT,
+                role TEXT DEFAULT 'user',
+                created_at BIGINT NOT NULL,
+                updated_at BIGINT NOT NULL,
+                last_login BIGINT
+            )
+        `);
 
-// Initialize database schema
-export function initializeDatabase() {
-    console.log('🗄️  Initializing database...');
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS refresh_tokens (
+                id TEXT PRIMARY KEY,
+                user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                token TEXT UNIQUE NOT NULL,
+                expires_at BIGINT NOT NULL,
+                created_at BIGINT NOT NULL
+            )
+        `);
 
-    // Users table
-    db.exec(`
-        CREATE TABLE IF NOT EXISTS users (
-            id TEXT PRIMARY KEY,
-            email TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL,
-            name TEXT,
-            role TEXT DEFAULT 'user',
-            created_at INTEGER NOT NULL,
-            updated_at INTEGER NOT NULL,
-            last_login INTEGER
-        )
-    `);
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS sessions (
+                id TEXT PRIMARY KEY,
+                user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                service TEXT NOT NULL,
+                session_data TEXT,
+                expires_at BIGINT NOT NULL,
+                created_at BIGINT NOT NULL
+            )
+        `);
 
-    // Refresh tokens table
-    db.exec(`
-        CREATE TABLE IF NOT EXISTS refresh_tokens (
-            id TEXT PRIMARY KEY,
-            user_id TEXT NOT NULL,
-            token TEXT UNIQUE NOT NULL,
-            expires_at INTEGER NOT NULL,
-            created_at INTEGER NOT NULL,
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-        )
-    `);
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS api_keys (
+                id TEXT PRIMARY KEY,
+                user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                key_hash TEXT UNIQUE NOT NULL,
+                name TEXT,
+                last_used BIGINT,
+                created_at BIGINT NOT NULL,
+                expires_at BIGINT
+            )
+        `);
 
-    // Sessions table (for MobSF sessions)
-    db.exec(`
-        CREATE TABLE IF NOT EXISTS sessions (
-            id TEXT PRIMARY KEY,
-            user_id TEXT NOT NULL,
-            service TEXT NOT NULL,
-            session_data TEXT,
-            expires_at INTEGER NOT NULL,
-            created_at INTEGER NOT NULL,
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-        )
-    `);
+        await db.query(`
+            CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+            CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id ON refresh_tokens(user_id);
+            CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
+            CREATE INDEX IF NOT EXISTS idx_api_keys_user_id ON api_keys(user_id);
+        `);
 
-    // API keys table
-    db.exec(`
-        CREATE TABLE IF NOT EXISTS api_keys (
-            id TEXT PRIMARY KEY,
-            user_id TEXT NOT NULL,
-            key_hash TEXT UNIQUE NOT NULL,
-            name TEXT,
-            last_used INTEGER,
-            created_at INTEGER NOT NULL,
-            expires_at INTEGER,
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-        )
-    `);
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS settings (
+                id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+                user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
+                key TEXT NOT NULL,
+                value TEXT NOT NULL,
+                is_global BOOLEAN DEFAULT FALSE,
+                updated_at BIGINT NOT NULL,
+                UNIQUE(user_id, key)
+            )
+        `);
 
-    // Create indexes
-    db.exec(`
-        CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-        CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id ON refresh_tokens(user_id);
-        CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
-        CREATE INDEX IF NOT EXISTS idx_api_keys_user_id ON api_keys(user_id);
-    `);
-
-    console.log('✅ Database initialized successfully');
+        console.log('✅ PostgreSQL Database initialized successfully');
+    } catch (err) {
+        console.error('❌ Failed to initialize PostgreSQL database:', err);
+        throw err;
+    }
 }
-
-// Initialize on import
-initializeDatabase();
 
 export default db;

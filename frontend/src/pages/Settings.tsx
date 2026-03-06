@@ -17,6 +17,7 @@ import {
     Fingerprint
 } from 'lucide-react';
 import api from '@/lib/api';
+import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,14 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+
+// Route through Node.js backend auth
+const nodeApi = axios.create({ baseURL: '/api' });
+nodeApi.interceptors.request.use((config) => {
+    const token = localStorage.getItem('fbh_access_token');
+    if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+});
 
 const Settings: React.FC = () => {
     const [settings, setSettings] = useState<Record<string, string>>({});
@@ -49,18 +58,32 @@ const Settings: React.FC = () => {
 
     const fetchSettings = async () => {
         try {
-            const data = await api.get('/auth/me'); // Using current user for now
-            // Mock settings until backend settings table is fully integrated
+            const res = await nodeApi.get('/settings');
+            const live = res.data?.settings || {};
+            // Merge live settings with defaults so UI always shows something
             setSettings({
-                'H1_USER': 'fbh_admin',
-                'H1_TOKEN': '**********',
-                'BC_TOKEN': '**********',
-                'AI_API_KEY': '**********',
-                'SLACK_WEBHOOK': 'https://hooks.slack.com/services/FBH_WEBHOOK',
-                'MOBSF_SERVER': 'http://localhost:8000'
+                'H1_USER': '',
+                'H1_TOKEN': '',
+                'BC_TOKEN': '',
+                'AI_API_KEY': '',
+                'SLACK_WEBHOOK': '',
+                'DISCORD_WEBHOOK': '',
+                'MOBSF_SERVER': 'http://localhost:8000',
+                'MOBSF_API_KEY': '',
+                'FBHBOT_URL': 'http://localhost:3000',
+                'VPHONE_HOST': '192.168.64.2',
+                'FRIDA_PORT': '27042',
+                ...live,
             });
         } catch (error) {
             console.error('Failed to fetch settings:', error);
+            // Graceful fallback with defaults
+            setSettings({
+                'MOBSF_SERVER': 'http://localhost:8000',
+                'FBHBOT_URL': 'http://localhost:3000',
+                'VPHONE_HOST': '192.168.64.2',
+                'FRIDA_PORT': '27042',
+            });
         } finally {
             setLoading(false);
         }
@@ -69,10 +92,14 @@ const Settings: React.FC = () => {
     const handleSave = async () => {
         setSaving(true);
         try {
-            // Simulated update
-            await new Promise(r => setTimeout(r, 1500));
+            // Save each setting via the real API
+            await Promise.all(
+                Object.entries(settings).map(([key, value]) =>
+                    nodeApi.post('/settings', { key, value })
+                )
+            );
             toast.success('Configuration Saved', {
-                description: 'Security parameters updated in the persistent vault.'
+                description: 'Security parameters persisted to the vault.'
             });
         } catch (error) {
             toast.error('Vault Write Failed', {
@@ -127,6 +154,25 @@ const Settings: React.FC = () => {
             fields: [
                 { key: 'MOBSF_SERVER', label: 'MobSF Server URL', type: 'text', placeholder: 'http://127.0.0.1:8000' },
                 { key: 'MOBSF_API_KEY', label: 'MobSF API Key', type: 'password', placeholder: '••••••••••••••••' },
+            ]
+        },
+        {
+            id: 'fbhbot',
+            title: 'FBHBot Subsystem',
+            desc: 'AI orchestration engine connection settings.',
+            icon: Cpu,
+            fields: [
+                { key: 'FBHBOT_URL', label: 'FBHBot Server URL', type: 'text', placeholder: 'http://localhost:3000' },
+            ]
+        },
+        {
+            id: 'vphone',
+            title: 'VPhone Research VM',
+            desc: 'Virtualized jailbroken iPhone — Apple PCC VM configuration.',
+            icon: Globe,
+            fields: [
+                { key: 'VPHONE_HOST', label: 'VPhone Host IP', type: 'text', placeholder: '192.168.64.2' },
+                { key: 'FRIDA_PORT', label: 'Frida Server Port', type: 'text', placeholder: '27042' },
             ]
         }
     ];

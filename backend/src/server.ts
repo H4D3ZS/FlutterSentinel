@@ -10,6 +10,10 @@ import { fileURLToPath } from 'url';
 import { AuthService } from './auth/auth-service.js';
 import { authMiddleware, adminMiddleware } from './middleware/auth.js';
 import { mobsfService } from './api/mobsf-service.js';
+import { dashboardService } from './api/dashboard-service.js';
+import { vphoneService } from './api/vphone-service.js';
+import { initializeDatabase } from './db/database.js';
+import { db } from './db/database.js';
 import type { LoginRequest, RegisterRequest } from './types/auth.js';
 
 // Load environment variables
@@ -134,12 +138,12 @@ app.post('/api/auth/refresh', async (req: Request, res: Response) => {
  * POST /api/auth/logout
  * Logout user
  */
-app.post('/api/auth/logout', authMiddleware, (req: Request, res: Response) => {
+app.post('/api/auth/logout', authMiddleware, async (req: Request, res: Response) => {
     try {
         const { refresh_token } = req.body;
 
         if (refresh_token) {
-            AuthService.logout(refresh_token);
+            await AuthService.logout(refresh_token);
         }
 
         res.json({ message: 'Logged out successfully' });
@@ -153,9 +157,9 @@ app.post('/api/auth/logout', authMiddleware, (req: Request, res: Response) => {
  * GET /api/auth/me
  * Get current user
  */
-app.get('/api/auth/me', authMiddleware, (req: Request, res: Response) => {
+app.get('/api/auth/me', authMiddleware, async (req: Request, res: Response) => {
     try {
-        const user = AuthService.getUserById(req.user!.userId);
+        const user = await AuthService.getUserById(req.user!.userId);
 
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
@@ -358,6 +362,230 @@ app.get('/api/fbhbot/stream', authMiddleware, (req: Request, res: Response) => {
 });
 
 // ============================================================================
+// DASHBOARD & OPERATIONAL DATA ROUTES
+// ============================================================================
+
+/**
+ * GET /api/targets
+ * Get all scan targets with stats and compliance data
+ */
+app.get('/api/targets', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const data = await dashboardService.getTargets();
+        res.json(data);
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to get targets' });
+    }
+});
+
+/**
+ * GET /api/stats/global
+ * Get aggregated global stats for the dashboard
+ */
+app.get('/api/stats/global', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const stats = await dashboardService.getGlobalStats();
+        res.json(stats);
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to get global stats' });
+    }
+});
+
+/**
+ * GET /api/playbooks
+ * Get available AI playbooks
+ */
+app.get('/api/playbooks', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const playbooks = await dashboardService.getPlaybooks();
+        res.json({ playbooks });
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to get playbooks' });
+    }
+});
+
+/**
+ * GET /api/missions
+ * Get active missions
+ */
+app.get('/api/missions', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const missions = await dashboardService.getMissions();
+        res.json({ missions });
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to get missions' });
+    }
+});
+
+/**
+ * GET /api/alerts/swarm
+ * Get tactical swarm alerts
+ */
+app.get('/api/alerts/swarm', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const alerts = await dashboardService.getSwarmAlerts();
+        res.json({ alerts });
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to get swarm alerts' });
+    }
+});
+
+/**
+ * GET /api/admin/users
+ * Get all users from PostgreSQL (admin only)
+ */
+app.get('/api/admin/users', authMiddleware, adminMiddleware, async (req: Request, res: Response) => {
+    try {
+        const users = await dashboardService.getAdminUsers();
+        res.json({ users });
+    } catch (error: any) {
+        console.error('Admin users error:', error);
+        res.status(500).json({ error: 'Failed to get admin users' });
+    }
+});
+
+// ============================================================================
+// VPHONE — Virtualized Jailbroken iPhone Routes
+// ============================================================================
+
+/**
+ * GET /api/vphone/status
+ * VM status + Frida reachability check
+ */
+app.get('/api/vphone/status', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const status = await vphoneService.getStatus();
+        res.json(status);
+    } catch (error: any) {
+        res.status(500).json({ error: error?.message || 'Failed to get VPhone status' });
+    }
+});
+
+/**
+ * GET /api/vphone/device
+ * Full device info (UDID, iOS version, jailbreak status)
+ */
+app.get('/api/vphone/device', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const info = await vphoneService.getDeviceInfo();
+        res.json(info || { error: 'Device not connected or VM not running' });
+    } catch (error: any) {
+        res.status(500).json({ error: error?.message || 'Failed to get device info' });
+    }
+});
+
+/**
+ * POST /api/vphone/start
+ * Start the vphone VM (admin only)
+ */
+app.post('/api/vphone/start', authMiddleware, adminMiddleware, async (req: Request, res: Response) => {
+    try {
+        const result = await vphoneService.startVM();
+        res.json(result);
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error?.message || 'Failed to start VM' });
+    }
+});
+
+/**
+ * POST /api/vphone/stop
+ * Stop the vphone VM (admin only)
+ */
+app.post('/api/vphone/stop', authMiddleware, adminMiddleware, async (req: Request, res: Response) => {
+    try {
+        const result = await vphoneService.stopVM();
+        res.json(result);
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error?.message || 'Failed to stop VM' });
+    }
+});
+
+/**
+ * POST /api/vphone/install
+ * Install an IPA on the VPhone device
+ * Body: { ipa_path: string }
+ */
+app.post('/api/vphone/install', authMiddleware, adminMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { ipa_path } = req.body;
+        if (!ipa_path) return res.status(400).json({ error: 'ipa_path is required' }) as any;
+        const result = await vphoneService.installApp(ipa_path);
+        res.json(result);
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error?.message || 'Install failed' });
+    }
+});
+
+/**
+ * POST /api/vphone/scan/dynamic
+ * Trigger a Frida dynamic analysis session
+ * Body: { bundle_id: string }
+ */
+app.post('/api/vphone/scan/dynamic', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { bundle_id } = req.body;
+        if (!bundle_id) return res.status(400).json({ error: 'bundle_id is required' }) as any;
+        const result = await vphoneService.startDynamicScan(bundle_id);
+        res.json(result);
+    } catch (error: any) {
+        res.status(500).json({ status: 'failed', error: error?.message || 'Dynamic scan failed' });
+    }
+});
+
+// ============================================================================
+// SETTINGS — Persistent user / global settings
+// ============================================================================
+
+/**
+ * GET /api/settings
+ * Fetch settings for the current user (+ global settings)
+ */
+app.get('/api/settings', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const user = (req as any).user;
+        // Return user-scoped settings merged with global settings
+        const result = await db.query(
+            `SELECT key, value, is_global FROM settings
+             WHERE user_id = $1 OR is_global = TRUE
+             ORDER BY is_global ASC`,
+            [user.id]
+        );
+        const settings: Record<string, string> = {};
+        for (const row of result.rows) {
+            settings[row.key] = row.value;
+        }
+        res.json({ settings });
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to fetch settings' });
+    }
+});
+
+/**
+ * POST /api/settings
+ * Upsert a setting for the current user
+ * Body: { key: string, value: string, is_global?: boolean }
+ */
+app.post('/api/settings', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const user = (req as any).user;
+        const { key, value, is_global = false } = req.body;
+        if (!key || value === undefined) return res.status(400).json({ error: 'key and value are required' }) as any;
+        // Only admins can set global settings
+        if (is_global && user.role !== 'admin') return res.status(403).json({ error: 'Only admins can set global settings' }) as any;
+        const now = Date.now();
+        await db.query(
+            `INSERT INTO settings (id, user_id, key, value, is_global, updated_at)
+             VALUES (gen_random_uuid(), $1, $2, $3, $4, $5)
+             ON CONFLICT (user_id, key) DO UPDATE SET value = $3, updated_at = $5`,
+            [user.id, key, String(value), is_global, now]
+        );
+        res.json({ success: true });
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to save setting' });
+    }
+});
+
+// ============================================================================
 // ERROR HANDLING
 // ============================================================================
 
@@ -376,7 +604,10 @@ app.use((err: any, req: Request, res: Response, next: any) => {
 
 async function startServer() {
     try {
-        // Create default admin user
+        // 1. Initialize DB tables first
+        await initializeDatabase();
+
+        // 2. Seed default users after tables exist
         await AuthService.createDefaultAdmin();
 
         app.listen(PORT, () => {

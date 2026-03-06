@@ -7,9 +7,11 @@ import {
     Settings,
     Shield,
     Activity,
-    Cpu
+    Cpu,
+    Menu
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { useNavigate } from 'react-router-dom';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -25,19 +27,26 @@ import { cn } from '@/lib/utils';
 
 interface TopBarProps {
     className?: string;
+    toggleMobile?: () => void;
 }
 
-const TopBar: React.FC<TopBarProps> = ({ className }) => {
+const TopBar: React.FC<TopBarProps> = ({ className, toggleMobile }) => {
     const { user, logout } = useAuthStore();
+    const navigate = useNavigate();
 
     return (
         <header className={cn(
-            "h-16 px-6 border-b border-border/40 bg-slate-950/50 backdrop-blur-xl flex items-center justify-between z-40 sticky top-0",
+            "h-16 px-4 md:px-6 border-b border-border/40 bg-slate-950/50 backdrop-blur-xl flex items-center justify-between z-40 sticky top-0",
             className
         )}>
             {/* Left side: Search / Breadcrumbs */}
-            <div className="flex-1 max-w-xl">
-                <div className="relative group">
+            <div className="flex-1 max-w-xl flex items-center gap-3">
+                {toggleMobile && (
+                    <Button variant="ghost" size="icon" onClick={toggleMobile} className="md:hidden text-slate-400 hover:text-white">
+                        <Menu size={20} />
+                    </Button>
+                )}
+                <div className="relative group flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-primary transition-colors" />
                     <Input
                         placeholder="Search shadow targets, exfiltrated reports, or mission playbooks..."
@@ -86,13 +95,13 @@ const TopBar: React.FC<TopBarProps> = ({ className }) => {
                     <DropdownMenuContent align="end" className="w-56 bg-slate-900 border-border shadow-2xl">
                         <DropdownMenuLabel className="font-sans text-slate-300">Command Center</DropdownMenuLabel>
                         <DropdownMenuSeparator className="bg-border/40" />
-                        <DropdownMenuItem className="text-slate-300 focus:bg-slate-800 focus:text-primary gap-2 cursor-pointer">
+                        <DropdownMenuItem onClick={() => navigate('/settings#profile')} className="text-slate-300 focus:bg-slate-800 focus:text-primary gap-2 cursor-pointer">
                             <User size={16} /> Profile Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-slate-300 focus:bg-slate-800 focus:text-primary gap-2 cursor-pointer">
+                        <DropdownMenuItem onClick={() => navigate('/settings#preferences')} className="text-slate-300 focus:bg-slate-800 focus:text-primary gap-2 cursor-pointer">
                             <Settings size={16} /> Preferences
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-slate-300 focus:bg-slate-800 focus:text-primary gap-2 cursor-pointer">
+                        <DropdownMenuItem onClick={() => navigate('/settings#keys')} className="text-slate-300 focus:bg-slate-800 focus:text-primary gap-2 cursor-pointer">
                             <Shield size={16} /> Security Keys
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-border/40" />

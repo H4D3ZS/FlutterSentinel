@@ -34,8 +34,8 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import TerminalBackground from '@/components/TerminalBackground';
 
 const loginSchema = z.object({
-    email: z.string().email({ message: "Invalid email address" }),
-    password: z.string().min(8, { message: "Password must be at least 8 characters" }),
+    email: z.string().min(1, { message: "Operative mailbox or identifier is required" }),
+    password: z.string().min(7, { message: "Password must be at least 7 characters" }),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -160,7 +160,7 @@ const Login: React.FC = () => {
                                         <Input
                                             id="email"
                                             placeholder="operative@fbhbot.com"
-                                            type="email"
+                                            type="text"
                                             autoCapitalize="none"
                                             autoComplete="email"
                                             autoCorrect="off"
@@ -226,10 +226,29 @@ const Login: React.FC = () => {
                     </CardContent>
 
                     <CardFooter className="flex flex-col space-y-4 border-t border-border/20 pt-6">
-                        <div className="text-center">
-                            <p className="text-xs text-slate-500 mb-2">Authorized Personnel Only</p>
-                            <div className="p-2 rounded-lg bg-slate-950/80 border border-primary/20 inline-block font-mono text-[10px] text-primary/80 uppercase tracking-tighter">
-                                Demo: demo@fbhbot.com / hunter2
+                        <div className="text-center w-full">
+                            <p className="text-xs text-slate-500 mb-2">Available Demo Accounts</p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-left">
+                                <div className="p-2 rounded-lg bg-slate-950/80 border border-red-500/20 font-mono text-[9px] text-red-400 uppercase tracking-tighter flex items-center justify-between">
+                                    <span>admin@fbhbot.com</span>
+                                    <span className="opacity-50">admin123</span>
+                                </div>
+                                <div className="p-2 rounded-lg bg-slate-950/80 border border-purple-500/20 font-mono text-[9px] text-purple-400 uppercase tracking-tighter flex items-center justify-between">
+                                    <span>vip@fbhbot.com</span>
+                                    <span className="opacity-50">vip123</span>
+                                </div>
+                                <div className="p-2 rounded-lg bg-slate-950/80 border border-primary/20 font-mono text-[9px] text-primary/80 uppercase tracking-tighter flex items-center justify-between">
+                                    <span>tier3@fbhbot.com</span>
+                                    <span className="opacity-50">client123</span>
+                                </div>
+                                <div className="p-2 rounded-lg bg-slate-950/80 border border-primary/20 font-mono text-[9px] text-primary/80 uppercase tracking-tighter flex items-center justify-between">
+                                    <span>tier2@fbhbot.com</span>
+                                    <span className="opacity-50">client123</span>
+                                </div>
+                                <div className="p-2 rounded-lg bg-slate-950/80 border border-primary/20 font-mono text-[9px] text-primary/80 uppercase tracking-tighter flex items-center justify-between md:col-span-2">
+                                    <span>tier1@fbhbot.com</span>
+                                    <span className="opacity-50">client123</span>
+                                </div>
                             </div>
                         </div>
                     </CardFooter>

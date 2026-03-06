@@ -16,7 +16,7 @@ import {
     Filter
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import api from '@/lib/api';
+import { api, instance } from '@/services/api';
 import TargetCard from '@/components/TargetCard';
 import StatsCard from '@/components/StatsCard';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -95,34 +95,22 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
 
     const fetchData = async () => {
         try {
-            // Updated to use the unified backend API endpoints
+            // Fetch live operational data from the unified backend
             const [targetRes, statsRes] = await Promise.all([
-                api.get('/mobsf/scans'), // Proxying MobSF scans as targets for now
-                api.get('/health'), // Placeholder for global stats until backend implementation is complete
+                api.getTargets(workspaceId),
+                api.getGlobalStats(),
             ]);
 
-            // Transform MobSF scans to our Target interface
-            const mobsfScans = targetRes.data || [];
-            const transformedTargets: Target[] = mobsfScans.map((scan: any) => ({
-                name: scan.FILE_NAME || 'Unknown',
-                package: scan.PACKAGE_NAME || 'com.unknown.app',
-                platform: scan.PLATFORM || 'android',
-                status: 'completed', // MobSF /scans returns completed scans
-                scan_progress: 100,
-                stats: {
-                    total_findings: 0, // Would need detail call for this
-                    findings_by_severity: {}
-                }
-            }));
+            // Assuming targetRes returns { targets: Target[] } or just Target[] based on the api.ts signature compatibility
+            const liveTargets = Array.isArray(targetRes) ? targetRes : (targetRes.targets || []);
+            setTargets(liveTargets);
 
-            setTargets(transformedTargets);
-
-            // Mock stats for now based on actual data
-            setStats({
-                total_targets: transformedTargets.length,
+            // Set live global statistics
+            setStats(statsRes || {
+                total_targets: liveTargets.length,
                 total_findings: 0,
                 critical_findings: 0,
-                total_scans: transformedTargets.length,
+                total_scans: liveTargets.length,
                 severity_distribution: {}
             });
         } catch (error) {
@@ -138,7 +126,7 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
         const interval = setInterval(fetchData, 30000);
 
         // SSE Subscription for Live Activity
-        const eventSource = new EventSource(`${api.defaults.baseURL}/fbhbot/stream`);
+        const eventSource = new EventSource(`${instance.defaults.baseURL}/fbhbot/stream`);
 
         eventSource.onmessage = (event) => {
             try {
@@ -204,16 +192,16 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
                         </div>
                     </div>
                     <div className="space-y-1">
-                        <h1 className="text-5xl font-black tracking-tighter text-white flex items-center gap-4">
+                        <h1 className="text-3xl md:text-5xl font-black tracking-tighter text-white flex flex-wrap items-center gap-2 md:gap-4">
                             MISSION <span className="text-slate-600 font-extralight tracking-[0.2em]">CONTROL</span>
                         </h1>
-                        <p className="text-xs text-slate-500 font-mono tracking-widest uppercase pl-1 max-w-2xl leading-relaxed">
+                        <p className="text-[10px] md:text-xs text-slate-500 font-mono tracking-widest uppercase pl-1 max-w-2xl leading-relaxed">
                             Autonomous offensive orchestration :: Fleet-wide vulnerability synthesis
                         </p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-3 md:gap-4">
                     <Button
                         variant="outline"
                         size="icon"
@@ -250,9 +238,9 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
                             <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
                                 <stat.icon size={80} className={stat.color} />
                             </div>
-                            <div className="relative z-10 space-y-4">
-                                <div className={cn("text-[10px] font-black uppercase tracking-[0.3em] opacity-70", stat.color)}>{stat.label}</div>
-                                <div className="text-4xl font-black text-white tracking-tighter tabular-nums drop-shadow-2xl">{stat.value}</div>
+                            <div className="relative z-10 space-y-2 md:space-y-4">
+                                <div className={cn("text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] opacity-70", stat.color)}>{stat.label}</div>
+                                <div className="text-3xl md:text-4xl font-black text-white tracking-tighter tabular-nums drop-shadow-2xl">{stat.value}</div>
                             </div>
                         </Card>
                     </motion.div>
@@ -263,10 +251,10 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
                 {/* Left Column: Intelligence Monitoring */}
                 <div className="lg:col-span-8 space-y-10">
                     <div className="flex items-center justify-between px-2">
-                        <h2 className="text-xl font-black text-white uppercase tracking-tighter flex items-center gap-4">
-                            <span className="w-10 h-[2px] bg-primary/30" />
-                            Active Fleet Monitoring
-                            <Badge variant="outline" className="text-[10px] font-mono border-primary/20 text-primary">LIVE_FEED</Badge>
+                        <h2 className="text-lg md:text-xl font-black text-white uppercase tracking-tighter flex items-center gap-2 md:gap-4 truncate">
+                            <span className="w-6 md:w-10 h-[2px] bg-primary/30 shrink-0" />
+                            <span className="truncate">Active Fleet Monitoring</span>
+                            <Badge variant="outline" className="hidden sm:inline-flex text-[10px] font-mono border-primary/20 text-primary">LIVE_FEED</Badge>
                         </h2>
                     </div>
 
