@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 
-const FBHBOT_URL = process.env.FBHBOT_URL || 'http://localhost:3000';
+const FBHBOT_URL = process.env.FBHBOT_URL || 'http://localhost:3001';
 
 export class FBHBotService {
     private client: AxiosInstance;
@@ -65,6 +65,15 @@ export class FBHBotService {
             text,
             missionId
         });
+        return response.data;
+    }
+
+    /**
+     * Send chat to FBHBot intelligence core
+     */
+    async sendChat(message: string): Promise<any> {
+        if (!this.token) await this.login();
+        const response = await this.client.post('/api/chat', { message });
         return response.data;
     }
 

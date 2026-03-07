@@ -64,9 +64,14 @@ const Login: React.FC = () => {
 
         try {
             const response = await api.post('/auth/login', data);
-            const { user, access_token, refresh_token } = response.data as { user: any, access_token: string, refresh_token: string };
+            // Handle both legacy (access_token) and new node server (token) responses
+            const { user, access_token, refresh_token, token, tier } = response.data as any;
 
-            setAuth(user, access_token, refresh_token);
+            const finalToken = access_token || token;
+            const finalRefresh = refresh_token || '';
+            const finalUser = user || { email: data.email, tier };
+
+            setAuth(finalUser, finalToken, finalRefresh);
 
             // Redirect to dashboard
             navigate('/');

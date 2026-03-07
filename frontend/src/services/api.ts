@@ -106,11 +106,13 @@ axiosInstance.interceptors.response.use((response: AxiosResponse) => {
 });
 
 const methods = {
-    login: async (username: string, password: string) => {
-        const response = await axiosInstance.post('/token/', { username, password });
-        const { access, refresh } = response.data;
-        localStorage.setItem('fbh_access_token', access);
-        localStorage.setItem('fbh_refresh_token', refresh);
+    login: async (email: string, password: string) => {
+        const response = await nodeApi.post('/auth/login', { email, password });
+        const { token, tier, refresh } = response.data;
+        localStorage.setItem('fbh_access_token', token);
+        if (refresh) {
+            localStorage.setItem('fbh_refresh_token', refresh);
+        }
         return response.data;
     },
 

@@ -2,7 +2,7 @@
 import { MobSFService } from '../api/mobsf-service.js';
 import { FBHBotClient } from '../infrastructure/external/fbhbot-client.js';
 import { HexStrikeManager } from './hexstrike-manager.js';
-import { AISwarm } from '../../../fbhbot/src/services/ai_swarm.js'; // Assuming shared codebase access or need to duplicate/import logic
+import { AISwarm } from '../../../core/fbhbot/dist/services/ai_swarm.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -10,7 +10,7 @@ export class ReportEngine {
     private mobsf: any; // Types are a bit loose across boundaries, keeping flexible
     private fbhbot: any;
     private hexstrike: HexStrikeManager;
-    private ai: AISwarm; // We might need to instantiate this or use a simplified AI client
+    private ai?: AISwarm; // We might need to instantiate this or use a simplified AI client
 
     constructor(hexstrike: HexStrikeManager) {
         this.hexstrike = hexstrike;

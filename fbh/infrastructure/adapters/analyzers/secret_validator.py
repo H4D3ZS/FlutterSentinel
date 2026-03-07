@@ -57,6 +57,7 @@ class SecretValidator:
             "sendgrid_key": self._validate_sendgrid,
             "openai_key": self._validate_openai,
             "gemini_api_key": self._validate_gemini,
+            "anthropic_api_key": self._validate_anthropic,
         }
         
         validator = validators.get(secret_type)
@@ -550,6 +551,47 @@ class SecretValidator:
             secret_value=api_key[:20] + "...",
             is_valid=False,
             details="Gemini API validation failed"
+        )
+    
+    def _validate_anthropic(self, api_key: str) -> ValidationResult:
+        """Validate Anthropic API key"""
+        console.print(f"[cyan]Testing Anthropic API key...[/cyan]")
+        
+        try:
+            response = self.session.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": api_key,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json"
+                },
+                json={
+                    "model": "claude-3-haiku-20240307",
+                    "max_tokens": 1,
+                    "messages": [{"role": "user", "content": "Hello"}]
+                },
+                timeout=self.timeout
+            )
+            
+            # Anthropic returns 400 for bad request (e.g. billing), 401 for invalid key
+            if response.status_code not in [401, 403]:
+                console.print(f"  [green]✓ Valid Anthropic key[/green]")
+                return ValidationResult(
+                    secret_type="anthropic_api_key",
+                    secret_value=api_key[:20] + "...",
+                    is_valid=True,
+                    access_level="write",
+                    details="Can access Anthropic Claude API"
+                )
+                
+        except Exception as e:
+            console.print(f"  [yellow]Error: {e}[/yellow]")
+        
+        return ValidationResult(
+            secret_type="anthropic_api_key",
+            secret_value=api_key[:20] + "...",
+            is_valid=False,
+            details="Anthropic key validation failed"
         )
     
     def validate_all(self, secrets: list) -> list[ValidationResult]:

@@ -132,6 +132,10 @@ export class VectorMemoryManager {
     }
   }
 
+  async storeForgeSession(data: any): Promise<void> {
+    log.info("Mock storeForgeSession");
+  }
+
   private seedPlaybooks() {
     const defaultPlaybooks = [
       {

@@ -31,6 +31,12 @@ export class SecretValidator {
                 return await this.validateSlack(value);
             case "github_token":
                 return await this.validateGitHub(value);
+            case "openai_key":
+                return await this.validateOpenAI(value);
+            case "gemini_api_key":
+                return await this.validateGemini(value);
+            case "anthropic_api_key":
+                return await this.validateAnthropic(value);
             default:
                 return {
                     type,
@@ -134,6 +140,59 @@ export class SecretValidator {
             return { type: "github_token", is_live: false, details: `Invalid Token: ${error.message}` };
         }
         return { type: "github_token", is_live: false, details: "Validation failed" };
+    }
+
+    private async validateOpenAI(key: string): Promise<ValidationResult> {
+        try {
+            const response = await axios.get("https://api.openai.com/v1/models", {
+                headers: { Authorization: `Bearer ${key}` },
+                timeout: this.timeout
+            });
+            if (response.status === 200) {
+                return { type: "openai_key", is_live: true, details: "OpenAI API: Live", access_level: "write" };
+            }
+        } catch (error: any) {
+            return { type: "openai_key", is_live: false, details: `Invalid Key: ${error.message}` };
+        }
+        return { type: "openai_key", is_live: false, details: "Validation failed" };
+    }
+
+    private async validateGemini(key: string): Promise<ValidationResult> {
+        try {
+            const response = await axios.get(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`, { timeout: this.timeout });
+            if (response.status === 200) {
+                return { type: "gemini_api_key", is_live: true, details: "Gemini API: Live", access_level: "write" };
+            }
+        } catch (error: any) {
+            return { type: "gemini_api_key", is_live: false, details: `Invalid Key: ${error.message}` };
+        }
+        return { type: "gemini_api_key", is_live: false, details: "Validation failed" };
+    }
+
+    private async validateAnthropic(key: string): Promise<ValidationResult> {
+        try {
+            const response = await axios.post("https://api.anthropic.com/v1/messages", {
+                model: "claude-3-haiku-20240307",
+                max_tokens: 1,
+                messages: [{ role: "user", content: "hi" }]
+            }, {
+                headers: {
+                    "x-api-key": key,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json"
+                },
+                timeout: this.timeout
+            });
+            if (response.status !== 401 && response.status !== 403) {
+                return { type: "anthropic_api_key", is_live: true, details: "Anthropic API: Live", access_level: "write" };
+            }
+        } catch (error: any) {
+            if (error.response && error.response.status !== 401 && error.response.status !== 403) {
+                return { type: "anthropic_api_key", is_live: true, details: `Anthropic API: Live (Error ${error.response.status})`, access_level: "write" };
+            }
+            return { type: "anthropic_api_key", is_live: false, details: `Invalid Key: ${error.message}` };
+        }
+        return { type: "anthropic_api_key", is_live: false, details: "Validation failed" };
     }
 }
 

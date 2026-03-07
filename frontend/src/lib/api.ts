@@ -93,9 +93,14 @@ api.interceptors.response.use((response) => {
 export const FBH_API = {
     login: async (username: string, password: string) => {
         const response = await api.post('/auth/login', { email: username, password });
-        const { access_token, refresh_token } = response.data as { access_token: string, refresh_token: string };
-        localStorage.setItem('fbh_access_token', access_token);
-        localStorage.setItem('fbh_refresh_token', refresh_token);
+        const { access_token, refresh_token, token } = response.data as any;
+        const finalToken = access_token || token;
+        if (finalToken) {
+            localStorage.setItem('fbh_access_token', finalToken);
+        }
+        if (refresh_token) {
+            localStorage.setItem('fbh_refresh_token', refresh_token);
+        }
         return response.data;
     },
 

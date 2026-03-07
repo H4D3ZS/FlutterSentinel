@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite --port 5173 --host",
     "dev:open": "vite --port 5173 --host --open",
-    "build": "tsc && vite build",
+    "build": "tsc && VITE_IS_BUILD=1 vite build",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
