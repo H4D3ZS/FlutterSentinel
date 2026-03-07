@@ -1,4 +1,4 @@
-import { Agent } from "@mariozechner/pi-agent-core";
+import { NativeAgent, NativeModelConfig } from "./llm-client.js";
 import { fbhTools } from "../tools/fbh.js";
 import { shodanSearch, googleDork } from "../tools/recon.js";
 import { VectorMemoryManager } from "../memory/vector-engine.js";
@@ -14,15 +14,17 @@ import { broadcastTacticalAlert, getSwarmIntelligence } from "../memory/swarm.js
 import { manageEvasion } from "../tools/bypass.js";
 import { detectDeception } from "../tools/deception.js";
 import { agentEvents } from "../services/events.js";
+import { ApiRadarScanner } from "../tools/apiradar.js";
 import path from "node:path";
+import * as fs from "node:fs/promises";
 
 const log = createSubsystemLogger("agent/core");
 
 export class FBHBotAgent {
-    private agent: Agent;
+    private agent: NativeAgent;
 
     constructor(private memory: VectorMemoryManager, private planner?: MissionPlanner) {
-        this.agent = new Agent({});
+        this.agent = new NativeAgent();
         this.agent.setSystemPrompt(FBHBOT_PERSONA);
     }
 
@@ -507,10 +509,22 @@ export class FBHBotAgent {
             },
             {
                 name: "fbh_secret_validate",
-                description: "Tactical Secret Validator: Verify discovered credentials (Google API keys, AWS, Stripe, etc.) against real APIs to prove impact.",
-                execute: async (args: { secret_type: string, secret_value: string }) => {
-                    const { validateSecret } = await import("../tools/validation.js");
-                    return await validateSecret(args);
+                description: "Tactical Secret Validator: Verify discovered credentials (openai_key, anthropic_api_key, gemini_api_key, groq_api_key, etc.) against real APIs to prove impact.",
+                execute: async (args: { type: string, value: string }) => {
+                    const { SecretValidator } = await import("../tools/secret_validator.js");
+                    const validator = new SecretValidator();
+                    return await validator.validate(args.type, args.value);
+                }
+            },
+            {
+                name: "fbh_apiradar_scan",
+                description: "Sovereign Intelligence Feed: Scan for the latest AI API key leaks across multiple providers.",
+                execute: async () => {
+                    const { ApiRadarScanner } = await import("../tools/apiradar.js");
+                    const scanner = new ApiRadarScanner(this.memory);
+                    return await scanner.performHunt((msg) => {
+                        agentEvents.emitEvent({ type: "output", message: msg });
+                    });
                 }
             },
             {
@@ -665,12 +679,116 @@ export class FBHBotAgent {
                     const apiKey = settings?.google_api_key || process.env.GOOGLE_API_KEY;
                     return await exploreIntelligence({ ...args }, this.memory);
                 }
+            },
+            {
+                name: "fbh_shell_execute",
+                description: "Sovereign Shell: Execute arbitrary shell commands for mission-critical operations. Use with extreme caution.",
+                execute: async (args: { command: string }) => {
+                    const { execSync } = await import("child_process");
+                    try {
+                        log.warn(`SSE executing shell command: ${args.command}`);
+                        const output = execSync(args.command, { encoding: 'utf-8', timeout: 30000 });
+                        return { status: "success", output };
+                    } catch (err: any) {
+                        return { status: "error", error: err.message, stderr: err.stderr?.toString() };
+                    }
+                }
+            },
+            {
+                name: "fbh_file_read",
+                description: "Tactical File Access: Read the contents of a local file.",
+                execute: async (args: { path: string }) => {
+                    const { readFileSync } = await import("fs");
+                    try {
+                        const content = readFileSync(args.path, 'utf-8');
+                        return { status: "success", content };
+                    } catch (err: any) {
+                        return { status: "error", error: err.message };
+                    }
+                }
+            },
+            {
+                name: "fbh_file_write",
+                description: "Tactical Payload Forge: Write content to a local file (e.g., saving exploits or scan results).",
+                execute: async (args: { path: string, content: string }) => {
+                    const { writeFileSync, mkdirSync } = await import("fs");
+                    const { dirname } = await import("path");
+                    try {
+                        mkdirSync(dirname(args.path), { recursive: true });
+                        writeFileSync(args.path, args.content);
+                        return { status: "success", message: `File written to ${args.path}` };
+                    } catch (err: any) {
+                        return { status: "error", error: err.message };
+                    }
+                }
+            },
+            {
+                name: "fbh_file_list",
+                description: "Tactical Environment Discovery: List the contents of a local directory.",
+                execute: async (args: { path: string }) => {
+                    const { readdirSync, statSync } = await import("fs");
+                    try {
+                        const entries = readdirSync(args.path);
+                        const details = entries.map(name => {
+                            const fullPath = path.join(args.path, name);
+                            const stats = statSync(fullPath);
+                            return {
+                                name,
+                                type: stats.isDirectory() ? "directory" : "file",
+                                size: stats.size,
+                                modified: stats.mtime
+                            };
+                        });
+                        return { status: "success", path: args.path, entries: details };
+                    } catch (err: any) {
+                        return { status: "error", error: err.message };
+                    }
+                }
+            },
+            {
+                name: "fbh_file_read",
+                description: "Tactical Environment Discovery: Read the contents of a local file.",
+                execute: async (args: { path: string }) => {
+                    const { readFileSync } = await import("fs");
+                    try {
+                        const content = readFileSync(args.path, 'utf-8');
+                        return { status: "success", content };
+                    } catch (err: any) {
+                        return { status: "error", error: err.message };
+                    }
+                }
+            },
+            {
+                name: "fbh_file_delete",
+                description: "Tactical Forensics: Delete a local file. REQUIRES MANUAL OPERATOR APPROVAL.",
+                execute: async (args: { path: string, reason: string }) => {
+                    const { unlinkSync, existsSync } = await import("fs");
+                    try {
+                        if (!existsSync(args.path)) {
+                            return { status: "error", error: "File not found." };
+                        }
+
+                        log.warn(`Agent requesting permission to delete: ${args.path}. Reason: ${args.reason}`);
+                        const permission = await agentEvents.waitForInput(missionId, `DANGER: Agent requested to DELETE file: ${args.path}\nReason: ${args.reason}\n\nType 'ALLOW' to proceed or anything else to deny.`);
+
+                        if (permission?.trim().toUpperCase() === 'ALLOW') {
+                            unlinkSync(args.path);
+                            agentEvents.emitEvent({ type: "action", message: `File DELETED: ${args.path}` });
+                            return { status: "success", message: `File ${args.path} has been deleted.` };
+                        } else {
+                            agentEvents.emitEvent({ type: "status", message: `DELETION DENIED by operator: ${args.path}` });
+                            return { status: "denied", message: "Deletion was denied by the operator." };
+                        }
+                    } catch (err: any) {
+                        return { status: "error", error: err.message };
+                    }
+                }
             }
         ];
     }
 
-    async runMission(goal: string, options?: { playbookId?: string, strategy?: 'stealth' | 'aggressive', settings?: Record<string, string> }) {
-        log.info(`Starting mission with goal: ${goal}`);
+    async runMission(goal: string, options?: { playbookId?: string, strategy?: 'stealth' | 'aggressive', settings?: Record<string, string>, model?: string }) {
+        log.info(`Starting mission with goal: ${goal}${options?.model ? ` using brain: ${options.model}` : ""}`);
 
         // 1. Apply Playbook (if any)
         let systemPrompt = FBHBOT_PERSONA;
@@ -699,7 +817,7 @@ export class FBHBotAgent {
             systemPrompt += `\n\n### HISTORICAL CONTEXT & SEMANTIC INTELLIGENCE:\n${historicalContext}`;
         }
 
-        // Extract missionId from goal if present (e.g., "MISSION_ID: ...")
+        // 4. Extract missionId from goal if present
         const missionIdMatch = goal.match(/MISSION_ID: ([^,]+)/);
         const missionId = missionIdMatch ? missionIdMatch[1] : "global";
 
@@ -711,28 +829,281 @@ export class FBHBotAgent {
 
         agentEvents.emitEvent({ type: "status", message: `Mission initiated for goal: ${goal}` });
 
-        if (!process.env.GOOGLE_API_KEY && !options?.settings?.google_api_key) {
-            const errorMsg = "CRITICAL: Mission stalled. Missing GOOGLE_API_KEY for autonomous reasoning engine.";
+        // 5. Tactical Key Resolution: .env -> Settings -> Tactical Vault
+        let googleKey = process.env.GOOGLE_API_KEY || options?.settings?.google_api_key;
+        let openaiKey = process.env.OPENAI_API_KEY || options?.settings?.openai_api_key;
+        let anthropicKey = process.env.ANTHROPIC_API_KEY || options?.settings?.anthropic_api_key;
+        let groqKey = process.env.GROQ_API_KEY || process.env.GROQ_KEY || options?.settings?.groq_key;
+        let cerebrasKey = process.env.CEREBRAS_API_KEY || process.env.CEREBRAS_KEY || options?.settings?.cerebras_key;
+        let xaiKey = process.env.XAI_API_KEY || process.env.XAI_KEY || options?.settings?.xai_key || options?.settings?.grok_key;
+        let openrouterKey = process.env.OPENROUTER_API_KEY || options?.settings?.openrouter_key;
+
+        let defaultProviderId: string | undefined;
+        let defaultModelId: string | undefined;
+
+        const resolveKeys = async () => {
+            if (!googleKey || googleKey.trim() === "") {
+                const vault = (await this.memory.getLiveKey("google_api_key")) || (await this.memory.getLiveKey("gemini_api_key"));
+                if (vault) googleKey = vault;
+            }
+            if (!openaiKey || openaiKey.trim() === "") {
+                const vault = await this.memory.getLiveKey("openai_key");
+                if (vault) openaiKey = vault;
+            }
+            if (!anthropicKey || anthropicKey.trim() === "") {
+                const vault = (await this.memory.getLiveKey("anthropic_api_key")) || (await this.memory.getLiveKey("claude_api_key"));
+                if (vault) anthropicKey = vault;
+            }
+
+            if (!groqKey || groqKey.trim() === "") {
+                const vault = await this.memory.getLiveKey("groq_key");
+                if (vault) groqKey = vault;
+            }
+            if (!cerebrasKey || cerebrasKey.trim() === "") {
+                const vault = await this.memory.getLiveKey("cerebras_key");
+                if (vault) cerebrasKey = vault;
+            }
+            if (!xaiKey || xaiKey.trim() === "") {
+                const vault = (await this.memory.getLiveKey("xai_key")) || (await this.memory.getLiveKey("grok_key"));
+                if (vault) xaiKey = vault;
+            }
+
+            // Intelligent defaults based on available keys
+            if (googleKey) {
+                defaultProviderId = "google"; defaultModelId = "gemini-1.5-flash-latest";
+            } else if (anthropicKey) {
+                defaultProviderId = "anthropic"; defaultModelId = "claude-3-5-sonnet-20240620";
+            } else if (openaiKey) {
+                defaultProviderId = "openai"; defaultModelId = "gpt-4o-mini";
+            } else if (groqKey) {
+                defaultProviderId = "groq"; defaultModelId = "llama3-70b-8192";
+            } else if (cerebrasKey) {
+                defaultProviderId = "cerebras"; defaultModelId = "llama3.1-8b";
+            } else if (xaiKey) {
+                defaultProviderId = "xai"; defaultModelId = "grok-2-latest";
+            } else {
+                // Secondary check for other compatible providers
+                const orVault = await this.memory.getLiveKey("openrouter_key");
+                if (orVault || openrouterKey) {
+                    openrouterKey = orVault || openrouterKey;
+                    defaultProviderId = "openrouter"; defaultModelId = "meta-llama/llama-3-8b-instruct:free";
+                }
+            }
+        };
+
+        await resolveKeys();
+
+        // Check if we need to enter Scavenger Mode based on the selected brain
+        const isApiradarGoal = goal.includes("/apiradar") || goal.trim().toLowerCase() === "scan";
+        const isListGoal = goal.trim().toLowerCase() === "list";
+
+        if (isListGoal) {
+            agentEvents.emitEvent({ type: "status", message: "Operator command acknowledged: Retrieving Sovereign intelligence vectors from Vault..." });
+            const allKeys = await this.memory.getAllLiveKeys();
+            if (Object.keys(allKeys).length === 0) {
+                return "The intelligence vault is currently empty. No live vectors have been scavenged.";
+            }
+
+            let listMsg = "### Sovereign Vault - Live Intelligence Vectors\n\n";
+            for (const [keyName, value] of Object.entries(allKeys)) {
+                // Mask the key partially for display
+                const masked = typeof value === 'string' && value.length > 10 ? `${value.substring(0, 8)}...${value.substring(value.length - 4)}` : value;
+                listMsg += `- **${keyName.replace("_key", "").replace("_api", "").toUpperCase()}**: \`${masked}\`\n`;
+            }
+
+            agentEvents.emitEvent({ type: "output", message: "Intelligence vectors retrieved." });
+            return listMsg;
+        }
+
+        let requiredProvider: 'google' | 'openai' | 'anthropic' | 'any' | 'xai' | 'groq' | 'cerebras' = 'any';
+        if (options?.model?.includes("gemini")) requiredProvider = 'google';
+        else if (options?.model?.includes("claude")) requiredProvider = 'anthropic';
+        else if (options?.model?.includes("gpt") || options?.model?.includes("OpenRouter")) requiredProvider = 'openai';
+        else if (options?.model?.includes("grok")) requiredProvider = 'xai';
+        else if (options?.model?.includes("groq")) requiredProvider = 'groq';
+        else if (options?.model?.includes("cerebras")) requiredProvider = 'cerebras';
+
+        const hasRequiredKey =
+            (requiredProvider === 'google' && googleKey && googleKey.trim() !== "") ||
+            (requiredProvider === 'anthropic' && anthropicKey && anthropicKey.trim() !== "") ||
+            (requiredProvider === 'openai' && openaiKey && openaiKey.trim() !== "") ||
+            (requiredProvider === 'groq' && groqKey && groqKey.trim() !== "") ||
+            (requiredProvider === 'cerebras' && cerebrasKey && cerebrasKey.trim() !== "") ||
+            (requiredProvider === 'xai' && xaiKey && xaiKey.trim() !== "") ||
+            (requiredProvider === 'any' && (defaultProviderId !== undefined));
+
+        if (!hasRequiredKey && !isApiradarGoal) {
+            const providerDesc = requiredProvider !== 'any' ? requiredProvider : "the selected AI provider";
+            const errorMsg = `CRITICAL: Mission stalled. Missing live API credentials for ${providerDesc}. Please provide manual credentials or run 'scan' to hunt for them.`;
             log.error(errorMsg);
             agentEvents.emitEvent({ type: "status", message: errorMsg });
-            agentEvents.emitEvent({ type: "output", message: "Deployment Aborted: Missing AI Credentials. Please configure GOOGLE_API_KEY in .env or Settings." });
-            return "Mission failed: Missing credentials.";
+            agentEvents.emitEvent({ type: "output", message: `Deployment Aborted: No intelligence vectors found for ${providerDesc}.` });
+            return `Mission failed: Missing credentials for ${providerDesc}.`;
+        }
+
+        if (isApiradarGoal) {
+            log.warn(`[MISSION: ${missionId}] Initializing Scanner Mode: Hunting for intelligence provider credentials...`);
+            agentEvents.emitEvent({ type: "status", message: `Neural Link Offline. Initializing Scanner Mode...` });
+
+            const scanner = new ApiRadarScanner(this.memory);
+            const huntResults = await scanner.performHunt((msg) => {
+                agentEvents.emitEvent({ type: "action", message: msg });
+            });
+
+            if (huntResults.some(r => r.isLive)) {
+                log.info(`[MISSION: ${missionId}] Scanner mission successful. Tactical Vault replenished.`);
+                agentEvents.emitEvent({ type: "status", message: "Intelligence vectors acquired. Evolving to Sovereign state..." });
+                await resolveKeys(); // Re-read the keys we just vaulted
+            }
+
+            const liveKeys = huntResults.filter(r => r.isLive);
+            const liveCount = liveKeys.length;
+
+            let outputMsg = `Scanner mission complete. Found ${huntResults.length} total keys (${liveCount} live).`;
+            let scannedTxtContent = `================= API RADAR SCAN: ${new Date().toISOString()} =================\n\n`;
+
+            if (huntResults.length > 0) {
+                scannedTxtContent += "ALL DISCOVERED KEYS:\n";
+                for (const k of huntResults) {
+                    scannedTxtContent += `[${k.provider}] ${k.type}: ${k.key} - LIVE: ${k.isLive}\n`;
+                }
+
+                try {
+                    const targetTxtPath = path.resolve(process.cwd(), "scanned.txt");
+                    await fs.appendFile(targetTxtPath, scannedTxtContent + "\n");
+                    agentEvents.emitEvent({ type: "status", message: `Wrote ${huntResults.length} keys to scanned.txt` });
+                } catch (err: any) {
+                    log.warn(`Failed to write to scanned.txt: ${err.message}`);
+                }
+            }
+
+            if (liveCount > 0) {
+                const keyDetails = liveKeys.map(k => `\n- [${k.provider}] ${k.type}: \`${k.key}\``).join("");
+                outputMsg += `\n\nLive Keys:${keyDetails}`;
+
+                // Sync to .env
+                try {
+                    const envPath = path.resolve(process.cwd(), "../../.env");
+                    let envContent = "";
+                    try {
+                        envContent = await fs.readFile(envPath, "utf-8");
+                    } catch (e) {
+                        // Ignore if not exists
+                    }
+
+                    let appendedCount = 0;
+                    for (const lk of liveKeys) {
+                        const envVarName = lk.type.toUpperCase();
+                        if (!envContent.includes(`${envVarName}=`)) {
+                            await fs.appendFile(envPath, `\n${envVarName}="${lk.key}"\n`);
+                            appendedCount++;
+                        }
+                    }
+
+                    if (appendedCount > 0) {
+                        agentEvents.emitEvent({ type: "status", message: `Synced ${appendedCount} new live credentials to .env` });
+                    }
+                } catch (err: any) {
+                    log.warn(`Failed to sync to .env file: ${err.message}`);
+                }
+            }
+
+            agentEvents.emitEvent({ type: "output", message: `Intelligence gathering complete. Found ${liveCount} live vectors. Sovereign brain is now operational.` });
+            return outputMsg;
         }
 
         try {
+            let providerId = defaultProviderId || "google";
+            let modelId = defaultModelId || "gemini-1.5-flash-latest";
+            let baseUrl = "";
+            let apiKey = "";
+
+            if (options?.model) {
+                if (options.model.includes("gemini")) {
+                    providerId = "google";
+                    modelId = options.model; // e.g., gemini-1.5-pro
+                    baseUrl = "https://generativelanguage.googleapis.com/v1beta/openai";
+                    apiKey = googleKey || "";
+                } else if (options.model.includes("claude-3-5-sonnet")) {
+                    providerId = "anthropic";
+                    modelId = "claude-3-5-sonnet-20241022";
+                    baseUrl = "https://api.anthropic.com/v1";
+                    apiKey = anthropicKey || "";
+                } else if (options.model.includes("claude-3-opus")) {
+                    providerId = "anthropic";
+                    modelId = "claude-3-opus-20240229";
+                    baseUrl = "https://api.anthropic.com/v1";
+                    apiKey = anthropicKey || "";
+                } else if (options.model.includes("gpt-4o") || options.model.includes("gpt-4-turbo")) {
+                    providerId = "openai";
+                    modelId = options.model;
+                    baseUrl = "https://api.openai.com/v1";
+                    apiKey = openaiKey || "";
+                } else if (options.model === "grok-2") {
+                    providerId = "xai";
+                    modelId = "grok-2-latest";
+                    baseUrl = "https://api.x.ai/v1";
+                    apiKey = xaiKey || "";
+                } else if (options.model.includes("llama-3-70b-groq")) {
+                    providerId = "groq";
+                    modelId = "llama3-70b-8192";
+                    baseUrl = "https://api.groq.com/openai/v1";
+                    apiKey = groqKey || "";
+                } else if (options.model.includes("mixtral-8x7b-groq")) {
+                    providerId = "groq";
+                    modelId = "mixtral-8x7b-32768";
+                    baseUrl = "https://api.groq.com/openai/v1";
+                    apiKey = groqKey || "";
+                } else if (options.model.includes("llama-3-70b-cerebras")) {
+                    providerId = "cerebras";
+                    modelId = "llama3.1-8b";
+                    baseUrl = "https://api.cerebras.ai/v1";
+                    apiKey = cerebrasKey || "";
+                }
+            } else {
+                // Map defaults
+                if (providerId === "google") { baseUrl = "https://generativelanguage.googleapis.com/v1beta/openai"; apiKey = googleKey || ""; }
+                if (providerId === "anthropic") { baseUrl = "https://api.anthropic.com/v1"; apiKey = anthropicKey || ""; }
+                if (providerId === "openai") { baseUrl = "https://api.openai.com/v1"; apiKey = openaiKey || ""; }
+                if (providerId === "xai") { baseUrl = "https://api.x.ai/v1"; apiKey = xaiKey || ""; }
+                if (providerId === "groq") { baseUrl = "https://api.groq.com/openai/v1"; apiKey = groqKey || ""; }
+                if (providerId === "cerebras") { baseUrl = "https://api.cerebras.ai/v1"; apiKey = cerebrasKey || ""; }
+                if (providerId === "openrouter") { baseUrl = "https://openrouter.ai/api/v1"; apiKey = openrouterKey || ""; }
+            }
+
+            log.info(`[MISSION: ${missionId}] Re-initializing engine: ${providerId} (${modelId})`);
+
+            // Inject Custom Native Model
+            this.agent = new NativeAgent();
+            this.agent.setModel({
+                id: modelId as string,
+                provider: providerId as any,
+                baseUrl,
+                apiKey
+            });
+
+            this.agent.setSystemPrompt(systemPrompt);
+            this.agent.setTools(this.getTools({
+                settings: options?.settings,
+                missionId
+            }) as any);
+
             await this.agent.prompt(goal);
             await this.agent.waitForIdle();
-        } catch (promptErr) {
-            log.error(`Agent prompt loop failure: ${promptErr}`);
-            return `Mission error: ${promptErr}`;
+        } catch (promptErr: any) {
+            const errorMsg = `CRITICAL: Agent reasoning process failed. Provider error: ${promptErr.message || promptErr}`;
+            log.error(errorMsg);
+            agentEvents.emitEvent({ type: "status", message: errorMsg });
+            agentEvents.emitEvent({ type: "output", message: `Deployment Failed: The autonomous engine encountered a fatal error from the AI provider. Check your API keys and quotas.` });
+            return `Mission failed: ${promptErr}`;
         }
 
         // Final response from agent state or events
-        const lastMessage = this.agent.state.messages.filter(m => m.role === "assistant").pop();
+        const lastMessage = this.agent.state.messages.filter(m => m.role === "assistant" && (!m.tool_calls || m.tool_calls.length === 0)).pop();
 
-        const responseText = !lastMessage ? "Mission completed with no final report." :
+        const responseText = !lastMessage ? "Mission completed with no final text report." :
             (typeof lastMessage.content === 'string' ? lastMessage.content :
-                Array.isArray(lastMessage.content) ? lastMessage.content.filter(c => 'text' in c).map(c => (c as any).text).join('\n') :
+                Array.isArray(lastMessage.content) ? lastMessage.content.filter(c => 'text' in (c as any)).map(c => (c as any).text).join('\n') :
                     "Mission completed with unparseable report.");
 
         agentEvents.emitEvent({ type: "output", message: responseText });

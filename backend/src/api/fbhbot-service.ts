@@ -71,9 +71,9 @@ export class FBHBotService {
     /**
      * Send chat to FBHBot intelligence core
      */
-    async sendChat(message: string): Promise<any> {
+    async sendChat(message: string, model?: string): Promise<any> {
         if (!this.token) await this.login();
-        const response = await this.client.post('/api/chat', { message });
+        const response = await this.client.post('/api/chat', { message, model });
         return response.data;
     }
 
@@ -87,11 +87,11 @@ export class FBHBotService {
     }
 
     /**
-     * Proxy SSE stream from FBHBot to our client
-     * This is handled directly in server.ts but helper for URL exists
+     * Get authenticated proxy SSE stream URL
      */
-    getStreamUrl(): string {
-        return `${FBHBOT_URL}/api/stream`;
+    async getAuthenticatedStreamUrl(): Promise<string> {
+        if (!this.token) await this.login();
+        return `${FBHBOT_URL}/api/stream?token=${this.token}`;
     }
 }
 

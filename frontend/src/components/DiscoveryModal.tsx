@@ -36,7 +36,7 @@ const DiscoveryModal: React.FC<DiscoveryModalProps> = ({ isOpen, onClose, onSucc
                 platform,
                 limit,
                 auto_add: autoAdd
-            });
+            }) as any;
 
             const taskId = initialResponse.task_id;
             if (!taskId) {
@@ -52,7 +52,7 @@ const DiscoveryModal: React.FC<DiscoveryModalProps> = ({ isOpen, onClose, onSucc
 
             while (!completed && attempts < maxAttempts) {
                 attempts++;
-                const statusRes = await FBH_API.getTaskStatus(taskId);
+                const statusRes = await FBH_API.getTaskStatus(taskId) as any;
                 const task = statusRes.task;
 
                 if (task.status === 'completed') {

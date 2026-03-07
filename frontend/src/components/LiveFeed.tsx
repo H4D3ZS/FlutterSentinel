@@ -19,7 +19,7 @@ export function LiveFeed() {
     useEffect(() => {
         const fetchAlerts = async () => {
             try {
-                const newAlerts = await api.getSwarmAlerts();
+                const newAlerts = await api.getSwarmAlerts() as any;
                 setAlerts(newAlerts);
             } catch (err) {
                 console.error('Failed to fetch alerts:', err);

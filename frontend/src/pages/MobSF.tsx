@@ -36,7 +36,7 @@ import { toast } from 'sonner';
 
 // Route through Node.js backend so auth middleware is enforced
 const nodeApi = axios.create({ baseURL: '/api' });
-nodeApi.interceptors.request.use((config) => {
+nodeApi.interceptors.request.use((config: any) => {
     const token = localStorage.getItem('fbh_access_token');
     if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
     return config;
@@ -51,7 +51,7 @@ const MobSF: React.FC = () => {
 
     const fetchScans = useCallback(async () => {
         try {
-            const response = await nodeApi.get('/mobsf/scans');
+            const response = await nodeApi.get('/mobsf/scans') as any;
             setScans(response.data?.results || response.data || []);
         } catch (error) {
             console.error('Failed to fetch MobSF scans:', error);
@@ -77,16 +77,16 @@ const MobSF: React.FC = () => {
         try {
             const response = await nodeApi.post('/mobsf/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
-                onUploadProgress: (progressEvent) => {
+                onUploadProgress: (progressEvent: any) => {
                     const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1));
                     setUploadProgress(percentCompleted);
                 },
-            });
+            } as any);
 
             // After upload, trigger scan
-            if (response.data?.hash) {
+            if ((response as any).data?.hash) {
                 await nodeApi.post('/mobsf/scan', {
-                    hash: response.data.hash,
+                    hash: (response as any).data.hash,
                     scan_type: file.name.endsWith('.ipa') ? 'ipa' : 'apk'
                 });
                 fetchScans();

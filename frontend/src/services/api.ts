@@ -1,4 +1,4 @@
-import axios, { InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+import axios from 'axios';
 
 const axiosInstance = axios.create({
     baseURL: '/fbh/api',
@@ -8,16 +8,31 @@ const axiosInstance = axios.create({
 });
 
 // Node.js backend instance (port 4000, proxied via Vite as /api)
-const nodeApi = axios.create({
+export const nodeApi = axios.create({
     baseURL: '/api',
     headers: { 'Content-Type': 'application/json' },
 });
 
 // Attach auth token to Node backend requests too
-nodeApi.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+nodeApi.interceptors.request.use((config: any) => {
     const token = localStorage.getItem('fbh_access_token');
     if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
     return config;
+});
+
+// Response interceptor for Node API to handle 401s specifically
+nodeApi.interceptors.response.use((response: any) => {
+    return response;
+}, async (error: any) => {
+    if (error.response?.status === 401) {
+        // Clear tokens and redirect to login if unauthorized
+        localStorage.removeItem('fbh_access_token');
+        localStorage.removeItem('fbh_refresh_token');
+        if (window.location.pathname !== '/login' && window.location.pathname !== '/fbh/login') {
+            window.location.href = '/login';
+        }
+    }
+    return Promise.reject(error);
 });
 
 export const instance = axiosInstance;
@@ -64,8 +79,8 @@ export interface GlobalStats {
     severity_distribution: Record<string, number>;
 }
 
-// Request interceptor to add the access token to every request
-axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+// Attach auth token to MobSF requests
+axiosInstance.interceptors.request.use((config: any) => {
     const token = localStorage.getItem('fbh_access_token');
     if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -76,7 +91,7 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 });
 
 // Response interceptor to handle token refresh or redirect to login
-axiosInstance.interceptors.response.use((response: AxiosResponse) => {
+axiosInstance.interceptors.response.use((response: any) => {
     return response;
 }, async (error: any) => {
     const originalRequest = error.config;
@@ -88,7 +103,7 @@ axiosInstance.interceptors.response.use((response: AxiosResponse) => {
                 throw new Error('No refresh token available');
             }
 
-            const res = await axios.post('/fbh/api/token/refresh/', { refresh: refreshToken });
+            const res = await axios.post('/fbh/api/token/refresh/', { refresh: refreshToken }) as any;
             const { access } = res.data;
             localStorage.setItem('fbh_access_token', access);
             if (axiosInstance.defaults.headers.common) {
@@ -99,7 +114,7 @@ axiosInstance.interceptors.response.use((response: AxiosResponse) => {
             // Refresh token expired or failed
             localStorage.removeItem('fbh_access_token');
             localStorage.removeItem('fbh_refresh_token');
-            window.location.href = '/fbh/login';
+            window.location.href = '/login';
         }
     }
     return Promise.reject(error);
@@ -107,7 +122,7 @@ axiosInstance.interceptors.response.use((response: AxiosResponse) => {
 
 const methods = {
     login: async (email: string, password: string) => {
-        const response = await nodeApi.post('/auth/login', { email, password });
+        const response = await nodeApi.post('/auth/login', { email, password }) as any;
         const { token, tier, refresh } = response.data;
         localStorage.setItem('fbh_access_token', token);
         if (refresh) {
@@ -302,7 +317,7 @@ const methods = {
         const response = await axiosInstance.get(`/reports/download/${targetName}/?format=${format}`, {
             responseType: 'blob'
         });
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const url = window.URL.createObjectURL(new Blob([response.data as any]));
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', `FBH_Report_${targetName}.${format}`);
@@ -461,7 +476,7 @@ const methods = {
         const response = await axiosInstance.get(`/targets/${name}/nuclei/export/`, {
             responseType: 'blob',
         });
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const url = window.URL.createObjectURL(new Blob([response.data as any]));
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', `${name}_nuclei_templates.zip`);
@@ -486,12 +501,12 @@ const methods = {
         formData.append('file', file);
         const response = await axiosInstance.post('/upload/', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
-            onUploadProgress: (progressEvent) => {
+            onUploadProgress: (progressEvent: any) => {
                 if (onProgress && progressEvent.total) {
                     onProgress(Math.round((progressEvent.loaded * 100) / progressEvent.total));
                 }
             }
-        });
+        } as any);
         return response.data;
     },
 };

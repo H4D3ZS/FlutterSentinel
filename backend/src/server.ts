@@ -1,10 +1,11 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import multer from 'multer';
-import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -16,9 +17,6 @@ import { vphoneService } from './api/vphone-service.js';
 import { initializeDatabase } from './db/database.js';
 import { db } from './db/database.js';
 import type { LoginRequest, RegisterRequest } from './types/auth.js';
-
-// Load environment variables
-dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,7 +38,7 @@ app.use(cookieParser());
 // Rate limiting
 const limiter = rateLimit({
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'), // 15 minutes
-    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'),
+    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '1000'),
     message: 'Too many requests from this IP, please try again later.',
 });
 app.use('/api/', limiter);
@@ -339,11 +337,11 @@ app.post('/api/fbhbot/input', authMiddleware, async (req: Request, res: Response
  */
 app.post('/api/chat', authMiddleware, async (req: Request, res: Response) => {
     try {
-        const { message } = req.body;
+        const { message, model } = req.body;
         if (!message) {
             return res.status(400).json({ error: 'Message is required' }) as any;
         }
-        const result = await fbhbotService.sendChat(message);
+        const result = await fbhbotService.sendChat(message, model);
         res.json(result);
     } catch (error: any) {
         console.error('FBHBot chat error:', error);
@@ -355,29 +353,34 @@ app.post('/api/chat', authMiddleware, async (req: Request, res: Response) => {
  * GET /api/fbhbot/stream
  * Proxy SSE stream from FBHBot
  */
-app.get('/api/fbhbot/stream', authMiddleware, (req: Request, res: Response) => {
-    const streamUrl = fbhbotService.getStreamUrl();
+app.get('/api/fbhbot/stream', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const streamUrl = await fbhbotService.getAuthenticatedStreamUrl();
 
-    res.writeHead(200, {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-    });
+        res.writeHead(200, {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+        });
 
-    const proxyReq = http.request(streamUrl, (proxyRes) => {
-        proxyRes.pipe(res);
-    });
+        const proxyReq = http.request(streamUrl, (proxyRes) => {
+            proxyRes.pipe(res);
+        });
 
-    proxyReq.on('error', (err) => {
-        console.error('SSE Proxy Error:', err);
-        res.end();
-    });
+        proxyReq.on('error', (err) => {
+            console.error('SSE Proxy Error:', err);
+            res.end();
+        });
 
-    req.on('close', () => {
-        proxyReq.destroy();
-    });
+        req.on('close', () => {
+            proxyReq.destroy();
+        });
 
-    proxyReq.end();
+        proxyReq.end();
+    } catch (error) {
+        console.error('Failed to establish SSE proxy:', error);
+        res.status(500).end();
+    }
 });
 
 // ============================================================================
@@ -598,6 +601,18 @@ app.post('/api/settings', authMiddleware, async (req: Request, res: Response) =>
              ON CONFLICT (user_id, key) DO UPDATE SET value = $3, updated_at = $5`,
             [user.id, key, String(value), is_global, now]
         );
+
+        // Sync to FBHBot if applicable
+        try {
+            const aiKeys = ['google_api_key', 'openai_api_key', 'anthropic_api_key', 'shodan_api_key', 'h1_token', 'bc_token'];
+            if (aiKeys.includes(key)) {
+                console.log(`Syncing ${key} to FBHBot...`);
+                await fbhbotService.sendChat(`/settings set ${key} ${value}`);
+            }
+        } catch (syncErr) {
+            console.error('FBHBot settings sync failed:', syncErr);
+        }
+
         res.json({ success: true });
     } catch (error: any) {
         res.status(500).json({ error: 'Failed to save setting' });

@@ -29,7 +29,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 
-import api from '@/lib/api';
+import { nodeApi } from '@/services/api';
 import { useAuthStore } from '@/stores/useAuthStore';
 import TerminalBackground from '@/components/TerminalBackground';
 
@@ -63,7 +63,7 @@ const Login: React.FC = () => {
         setError(null);
 
         try {
-            const response = await api.post('/auth/login', data);
+            const response = await nodeApi.post('/auth/login', data);
             // Handle both legacy (access_token) and new node server (token) responses
             const { user, access_token, refresh_token, token, tier } = response.data as any;
 

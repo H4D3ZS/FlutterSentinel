@@ -58,15 +58,15 @@ export function MobileUpload() {
 
             // Update to scanning status
             setFiles(prev => prev.map(f =>
-                f.id === uploadId ? { ...f, status: 'scanning', hash: result.hash, progress: 100 } : f
+                f.id === uploadId ? { ...f, status: 'scanning', hash: (result as any).hash, progress: 100 } : f
             ));
 
             // Start scan
-            await api.startScan(result.hash, fileType);
+            await api.startScan((result as any).hash, fileType);
 
             // Fetch report to get package name for autonomous mission
             try {
-                const report = await api.getScanResults(result.hash);
+                const report = await api.getScanResults((result as any).hash) as any;
                 const target = report.package_name || report.bundle_id; // Android or iOS
 
                 if (target) {

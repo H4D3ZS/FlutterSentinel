@@ -113,8 +113,14 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
                 total_scans: liveTargets.length,
                 severity_distribution: {}
             });
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to fetch dashboard data:', error);
+            // If we get a 401, the interceptor will handle redirect, 
+            // but we should set refreshing to false here
+            if (error.response?.status === 401) {
+                setRefreshing(false);
+                return; // Stop further execution
+            }
         } finally {
             setLoading(false);
             setRefreshing(false);
@@ -123,7 +129,11 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
 
     useEffect(() => {
         fetchData();
-        const interval = setInterval(fetchData, 30000);
+        const interval = setInterval(() => {
+            if (localStorage.getItem('fbh_access_token')) {
+                fetchData();
+            }
+        }, 30000);
 
         // SSE Subscription for Live Activity
         const eventSource = new EventSource(`${instance.defaults.baseURL}/fbhbot/stream`);
@@ -146,6 +156,11 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
             } catch (e) {
                 console.error('Failed to parse dashboard SSE:', e);
             }
+        };
+
+        eventSource.onerror = (err: any) => {
+            console.warn('Dashboard SSE Connection Lost. Attempting cleanup...');
+            eventSource.close();
         };
 
         return () => {

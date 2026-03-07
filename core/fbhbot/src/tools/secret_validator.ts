@@ -39,6 +39,14 @@ export class SecretValidator {
                 return await this.validateAnthropic(value);
             case "aws_access_key":
                 return await this.validateAWS(value);
+            case "groq_key":
+                return await this.validateGroq(value);
+            case "openrouter_key":
+                return await this.validateOpenRouter(value);
+            case "xai_key":
+                return await this.validateXAI(value);
+            case "cerebras_key":
+                return await this.validateCerebras(value);
             default:
                 return {
                     type,
@@ -48,16 +56,92 @@ export class SecretValidator {
         }
     }
 
+    private async validateGroq(key: string): Promise<ValidationResult> {
+        try {
+            const response = await axios.get("https://api.groq.com/openai/v1/models", {
+                headers: { Authorization: `Bearer ${key}` },
+                timeout: this.timeout
+            });
+            if (response.status === 200) {
+                return { type: "groq_key", is_live: true, details: "Groq API: Live", access_level: "write" };
+            }
+        } catch (error: any) {
+            return { type: "groq_key", is_live: false, details: `Invalid: ${error.message}` };
+        }
+        return { type: "groq_key", is_live: false, details: "Validation failed" };
+    }
+
+    private async validateOpenRouter(key: string): Promise<ValidationResult> {
+        try {
+            const response = await axios.get("https://openrouter.ai/api/v1/auth/key", {
+                headers: { Authorization: `Bearer ${key}` },
+                timeout: this.timeout
+            });
+            if (response.status === 200) {
+                return { type: "openrouter_key", is_live: true, details: "OpenRouter API: Live", access_level: "write" };
+            }
+        } catch (error: any) {
+            return { type: "openrouter_key", is_live: false, details: `Invalid: ${error.message}` };
+        }
+        return { type: "openrouter_key", is_live: false, details: "Validation failed" };
+    }
+
+    private async validateXAI(key: string): Promise<ValidationResult> {
+        try {
+            const response = await axios.get("https://api.x.ai/v1/models", {
+                headers: { Authorization: `Bearer ${key}` },
+                timeout: this.timeout
+            });
+            if (response.status === 200) {
+                return { type: "xai_key", is_live: true, details: "xAI API: Live", access_level: "write" };
+            }
+        } catch (error: any) {
+            return { type: "xai_key", is_live: false, details: `Invalid: ${error.message}` };
+        }
+        return { type: "xai_key", is_live: false, details: "Validation failed" };
+    }
+
+    private async validateCerebras(key: string): Promise<ValidationResult> {
+        try {
+            const response = await axios.get("https://api.cerebras.ai/v1/models", {
+                headers: { Authorization: `Bearer ${key}` },
+                timeout: this.timeout
+            });
+            if (response.status === 200) {
+                return { type: "cerebras_key", is_live: true, details: "Cerebras API: Live", access_level: "write" };
+            }
+        } catch (error: any) {
+            return { type: "cerebras_key", is_live: false, details: `Invalid: ${error.message}` };
+        }
+        return { type: "cerebras_key", is_live: false, details: "Validation failed" };
+    }
+
     private async validateGoogle(key: string): Promise<ValidationResult> {
         try {
-            // Test Geocoding API
-            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=test&key=${key}`, { timeout: this.timeout });
-            const data = response.data as any;
-            if (data.status === "OK" || data.status === "ZERO_RESULTS") {
+            // Test Geocoding API first
+            const mapsResponse = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=test&key=${key}`, { timeout: this.timeout });
+            const mapsData = mapsResponse.data as any;
+            if (mapsData.status === "OK" || mapsData.status === "ZERO_RESULTS") {
                 return { type: "google_api_key", is_live: true, details: "Google Maps API: Live", access_level: "read" };
             }
-            return { type: "google_api_key", is_live: false, details: `Denied: ${data.status}` };
+
+            // If Maps is denied but specifically due to "API not enabled", the key might still be live for other services (like Gemini)
+            if (mapsData.status === "REQUEST_DENIED") {
+                // Try Gemini as a fallback
+                const geminiResponse = await axios.get(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`, { timeout: this.timeout });
+                if (geminiResponse.status === 200) {
+                    return { type: "google_api_key", is_live: true, details: "Google API [Gemini]: Live", access_level: "write" };
+                }
+            }
+            return { type: "google_api_key", is_live: false, details: `Denied: ${mapsData.status || "Unknown"}` };
         } catch (error: any) {
+            // Even if the request fails, check if Gemini works as a last resort
+            try {
+                const geminiFallback = await axios.get(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`, { timeout: this.timeout });
+                if (geminiFallback.status === 200) {
+                    return { type: "google_api_key", is_live: true, details: "Google API [Gemini]: Live (Maps unreachable)", access_level: "write" };
+                }
+            } catch (e) { }
             return { type: "google_api_key", is_live: false, details: `Error: ${error.message}` };
         }
     }

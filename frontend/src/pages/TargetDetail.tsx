@@ -60,7 +60,7 @@ import { toast } from 'sonner';
 
 // Route through Node.js backend — all authenticated via authMiddleware
 const nodeApi = axios.create({ baseURL: '/api' });
-nodeApi.interceptors.request.use((config) => {
+nodeApi.interceptors.request.use((config: any) => {
     const token = localStorage.getItem('fbh_access_token');
     if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
     return config;
@@ -150,7 +150,7 @@ const TargetDetail: React.FC = () => {
                 target: target.name || target.package,
                 query: target.name || target.package,
                 mode
-            });
+            }) as any;
             if (mode === 'cluster') setClusters(response.data);
             else setRelationshipGraph(response.data);
         } catch (error) {
@@ -176,7 +176,7 @@ const TargetDetail: React.FC = () => {
         setLoading(true);
         try {
             // MobSF report via Node.js proxy (enforces authMiddleware)
-            const response = await nodeApi.post('/mobsf/report', { hash: id });
+            const response = await nodeApi.post('/mobsf/report', { hash: id }) as any;
             const data = response.data;
 
             // Transform MobSF data if needed (MobSF report structure is nested)

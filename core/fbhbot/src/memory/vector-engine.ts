@@ -106,6 +106,15 @@ export class VectorMemoryManager {
           metadata TEXT,
           timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         );
+
+      CREATE TABLE IF NOT EXISTS tactical_vault(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        key_type TEXT NOT NULL,
+        key_value TEXT NOT NULL UNIQUE,
+        is_live INTEGER DEFAULT 1,
+        last_validated DATETIME DEFAULT CURRENT_TIMESTAMP,
+        metadata TEXT
+      );
 `);
 
     this.seedPlaybooks();
@@ -442,5 +451,47 @@ LIMIT ?
     const stmt = this.db.prepare("UPDATE pivots SET status = ? WHERE id = ?");
     stmt.run(status, id);
     log.info(`Updated pivot session ${id} status to ${status}`);
+  }
+
+  // --- Tactical Vault Methods ---
+
+  async vaultKey(type: string, key: string, metadata?: any) {
+    log.info(`Vaulting live key for ${type}`);
+    const stmt = this.db.prepare(`
+      INSERT OR REPLACE INTO tactical_vault (key_type, key_value, is_live, last_validated, metadata)
+      VALUES (?, ?, 1, CURRENT_TIMESTAMP, ?)
+    `);
+    stmt.run(type, key, JSON.stringify(metadata || {}));
+  }
+
+  async getLiveKey(type: string): Promise<string | null> {
+    const stmt = this.db.prepare(`
+      SELECT key_value FROM tactical_vault 
+      WHERE key_type = ? AND is_live = 1 
+      ORDER BY last_validated DESC LIMIT 1
+    `);
+    const row = stmt.get(type) as { key_value: string } | undefined;
+    return row ? row.key_value : null;
+  }
+
+  async getAllLiveKeys(): Promise<Record<string, string>> {
+    const stmt = this.db.prepare(`
+      SELECT key_type, key_value FROM tactical_vault 
+      WHERE is_live = 1 
+    `);
+    const rows = stmt.all() as { key_type: string, key_value: string }[];
+    const keys: Record<string, string> = {};
+    for (const row of rows) {
+      if (!keys[row.key_type]) {
+        keys[row.key_type] = row.key_value;
+      }
+    }
+    return keys;
+  }
+
+  async invalidateKey(key: string) {
+    log.warn(`Invalidating key in tactical vault.`);
+    const stmt = this.db.prepare("UPDATE tactical_vault SET is_live = 0 WHERE key_value = ?");
+    stmt.run(key);
   }
 }

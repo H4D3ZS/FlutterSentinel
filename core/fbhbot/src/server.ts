@@ -55,7 +55,7 @@ export function startServer(port: number, memory = defaultMemory, agent = defaul
             }
 
             // SSE Endpoint (Real-time logs)
-            if (req.method === "GET" && req.url === "/api/stream") {
+            if (req.method === "GET" && req.url?.startsWith("/api/stream")) {
                 res.writeHead(200, {
                     "Content-Type": "text/event-stream",
                     "Cache-Control": "no-cache",
@@ -147,91 +147,27 @@ export function startServer(port: number, memory = defaultMemory, agent = defaul
                 req.on("data", chunk => body += chunk);
                 req.on("end", async () => {
                     try {
-                        const { message } = JSON.parse(body);
-
-                        const cmd = message.trim().toLowerCase();
-                        if (cmd === "/apiradar" || cmd === "/apiradar scan") {
-                            const { ApiRadarScanner } = await import("./tools/apiradar.js");
-                            const scanner = new ApiRadarScanner();
-
-                            try {
-                                if (cmd === "/apiradar scan") {
-                                    let content = "🤖 **APIRadar Autonomous Scan Initiated**\n\nFetching and testing raw intelligence...\n\n";
-                                    const huntResults = await scanner.performHunt((msg) => {
-                                        // We don't have a direct stream for chat response yet, so we accumulate or send as one
-                                        // But for now, we'll let the user know we're working.
-                                        // In a real SSE setup, we'd emit events.
-                                    });
-
-                                    if (huntResults.length === 0) {
-                                        content += "No live API keys were discovered in the latest detected leaks.";
-                                    } else {
-                                        content += `✅ **SCAN COMPLETE:** Discovered ${huntResults.length} live leak(s).\n\n`;
-                                        for (const res of huntResults) {
-                                            content += `### 🚨 CRITICAL: ${res.type.replace(/_/g, ' ').toUpperCase()}\n`;
-                                            content += `- **Key:** \`${res.key}\`\n`;
-                                            content += `- **Details:** ${res.details}\n`;
-                                            content += `- **Source:** [${res.source}](${res.repoUrl})\n\n`;
-                                        }
-                                    }
-                                    res.writeHead(200, headers);
-                                    res.end(JSON.stringify({ content }));
-                                } else {
-                                    const leaks = await scanner.fetchRecentLeaks();
-                                    let content = "📡 **Live APIRadar Feed**\n\n";
-                                    if (leaks.length === 0) {
-                                        content += "No recent leaks detected in the neural buffer.";
-                                    } else {
-                                        leaks.slice(0, 5).forEach((leak: any) => {
-                                            content += `- **Provider:** ${leak.provider}\n`;
-                                            content += `  **Key:** \`${leak.redactedKey}\`\n`;
-                                            content += `  **Source:** [${leak.filePath}](${leak.repoUrl})\n`;
-                                            content += `  **Detected:** ${new Date(leak.leakDetectedAt).toLocaleString()}\n\n`;
-                                        });
-                                        content += "\n*Use `/apiradar scan` to perform autonomous key validation.*";
-                                    }
-                                    res.writeHead(200, headers);
-                                    res.end(JSON.stringify({ content }));
-                                }
-                            } catch (e: any) {
-                                log.error(`APIRadar error: ${e.message}`);
-                                res.writeHead(200, headers);
-                                res.end(JSON.stringify({ content: "Error: Failed to connect to APIRadar neural link." }));
-                            }
+                        const { message, model } = JSON.parse(body);
+                        if (!message) {
+                            res.writeHead(400, headers);
+                            res.end(JSON.stringify({ error: "Message is required" }));
                             return;
                         }
+                        const userSettings = await memory.getSettings(user.id);
 
-                        // Check for potential API keys
-                        const maybeKey = message.trim();
-                        if (maybeKey.startsWith("sk-ant-") || maybeKey.startsWith("sk-proj-") || maybeKey.startsWith("sk-") || maybeKey.startsWith("AIza")) {
-                            const { SecretValidator } = await import("./tools/secret_validator.js");
-                            const validator = new SecretValidator();
-
-                            let keyType = 'unknown';
-                            if (maybeKey.startsWith("sk-ant-")) keyType = 'anthropic_api_key';
-                            else if (maybeKey.startsWith("sk-proj-") || maybeKey.startsWith("sk-")) keyType = 'openai_key';
-                            else if (maybeKey.startsWith("AIza")) keyType = 'gemini_api_key';
-
-                            if (keyType !== 'unknown') {
-                                const result = await validator.validate(keyType, maybeKey);
-                                let content = `🔍 **API Key Diagnostic Protocol**\n\n`;
-                                content += `**Type Identified:** ${keyType.toUpperCase().replace(/_/g, ' ')}\n`;
-                                content += `**Status:** ${result.is_live ? '⚡ ACTIVE / VALID' : '❌ INVALID / REVOKED'}\n\n`;
-
-                                if (result.details) {
-                                    content += `**Diagnostic Output:**\n\`\`\`json\n${JSON.stringify({ details: result.details, access_level: result.access_level || 'unknown' }, null, 2)}\n\`\`\``;
-                                }
+                        // Unified Intelligent Chat: All requests are handled by the autonomous agent
+                        agent.runMission(message, { settings: userSettings, model })
+                            .then(async (response) => {
+                                // Responses are already handled by the agent's output event via SSE
+                                // We send the final content back as the final response
                                 res.writeHead(200, headers);
-                                res.end(JSON.stringify({ content }));
-                                return;
-                            }
-                        }
-
-                        // Default response
-                        res.writeHead(200, headers);
-                        res.end(JSON.stringify({
-                            content: `Message received: "${message}". Protocol standing by. Provide an API Key or use \`/apiradar\` for telemetry.`
-                        }));
+                                res.end(JSON.stringify({ content: response }));
+                            })
+                            .catch(err => {
+                                log.error(`Chat mission failure: ${err}`);
+                                res.writeHead(200, headers);
+                                res.end(JSON.stringify({ content: "Operational Error: Autonomous reasoning engine failed to synthesize a response." }));
+                            });
 
                     } catch (e) {
                         res.writeHead(400, headers);

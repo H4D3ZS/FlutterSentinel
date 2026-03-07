@@ -27,6 +27,9 @@ wheels/
 .installed.cfg
 *.egg
 
+#Vscodium-Rust
+vscodium-rust/
+
 # Virtual Environments
 venv/
 ENV/

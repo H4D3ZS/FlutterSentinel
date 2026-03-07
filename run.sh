@@ -39,8 +39,8 @@ if [ ! -d "node_modules/.bin/concurrently" ] && [ ! -f "node_modules/.bin/concur
 fi
 
 # ── 3. Clear stale ports ────────────────────────────────────
-echo -e "${BLUE}[*] Clearing ports 3000 4000 5173 5174 8000...${NC}"
-lsof -ti:3000,4000,5173,5174,8000 | xargs kill -9 2>/dev/null || true
+echo -e "${BLUE}[*] Clearing ports 3001 4000 5173 5174 8000...${NC}"
+lsof -ti:3001,4000,5173,5174,8000 | xargs kill -9 2>/dev/null || true
 sleep 1
 
 # ── 4. Load DATABASE_URL from backend/.env (only this var, not PORT etc.) ──
@@ -58,7 +58,7 @@ echo -e ""
 echo -e "${GREEN}Services starting:${NC}"
 echo -e "  ${BLUE}Frontend:${NC}    http://localhost:5173  ← Main UI"
 echo -e "  ${BLUE}Backend:${NC}     http://localhost:4000"
-echo -e "  ${BLUE}FBHBot:${NC}      http://localhost:3000"
+echo -e "  ${BLUE}FBHBot:${NC}      http://localhost:3001"
 echo -e "  ${YELLOW}MobSF:${NC}       internal background service"
 echo -e ""
 echo -e "${YELLOW}Press Ctrl+C to stop all services${NC}"

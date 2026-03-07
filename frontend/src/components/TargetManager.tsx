@@ -42,7 +42,7 @@ export function TargetManager() {
     const loadTargets = async () => {
         setLoading(true);
         try {
-            const result = await api.getTargets();
+            const result = await api.getTargets() as any;
             setTargets(result.targets || []);
         } catch (error) {
             console.error('Failed to load targets:', error);
@@ -57,13 +57,13 @@ export function TargetManager() {
         setScanMessage({ text: `Searching App Store for ${target.name}...`, type: 'info' });
         try {
             // 1. Search for the app
-            const apps = await api.ipaSearch(target.name);
-            if (!apps || apps.length === 0) {
+            const apps = await api.ipaSearch(target.name) as any;
+            if (!apps || (apps as any).length === 0) {
                 throw new Error('App not found in App Store');
             }
 
             // 2. Take the first result or matching bundleId
-            const app = apps.find((a: any) => a.bundleId === target.bundleId) || apps[0];
+            const app = (apps as any).find((a: any) => a.bundleId === target.bundleId) || (apps as any)[0];
 
             setScanMessage({ text: `Found ${app.name}. Preparing download...`, type: 'info' });
             setDownloadingId(target.id);
@@ -89,7 +89,7 @@ export function TargetManager() {
         setScanningId(target.id);
         setScanMessage({ text: `Initializing tactical scan for ${target.name}...`, type: 'info' });
         try {
-            const result = await api.scanTarget(target.id);
+            const result = await api.scanTarget(target.id) as any;
             setScanMessage({ text: `Scan successful: ${result.message}`, type: 'success' });
             setTimeout(() => setScanMessage(null), 5000);
             loadTargets();
@@ -107,7 +107,7 @@ export function TargetManager() {
         setSovereignScanningId(target.id);
         setScanMessage({ text: `Activating Singularity Engine for ${target.name}. Performing root discovery, AOT probing, and 0-day intel matching...`, type: 'info' });
         try {
-            const result = await api.sovereignScan(target.id);
+            const result = await api.sovereignScan(target.id) as any;
             setScanMessage({ text: `Sovereign Scan Complete: ${result.message}. Intel stored in Global Brain.`, type: 'success' });
             setTimeout(() => setScanMessage(null), 6000);
             loadTargets();

@@ -48,8 +48,8 @@ export function AddTargetModal({ open, onClose, onTargetAdded }: AddTargetModalP
 
             // Search by first keyword from URL
             api.ipaSearch(firstKeyword)
-                .then((results: AppSearchResult[]) => {
-                    if (results && results.length > 0) {
+                .then((results: any) => {
+                    if (results && (results as any).length > 0) {
                         // Try to find exact match by ID first
                         const exactMatch = results.find((app: AppSearchResult) => app.id.toString() === appId);
                         if (exactMatch) {
@@ -84,7 +84,7 @@ export function AddTargetModal({ open, onClose, onTargetAdded }: AddTargetModalP
         const timer = setTimeout(async () => {
             setSearching(true);
             try {
-                const results = await api.ipaSearch(searchQuery);
+                const results = await api.ipaSearch(searchQuery) as any;
                 setSearchResults(results || []);
             } catch (err) {
                 console.error('Search failed:', err);

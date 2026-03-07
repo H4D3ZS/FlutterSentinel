@@ -21,7 +21,7 @@ export function History() {
 
     useEffect(() => {
         api.getMissions()
-            .then(setMissions)
+            .then((res: any) => setMissions(res))
             .finally(() => setLoading(false));
     }, []);
 
