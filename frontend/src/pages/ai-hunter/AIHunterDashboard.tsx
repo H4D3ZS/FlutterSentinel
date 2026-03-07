@@ -455,9 +455,9 @@ function AIHunterDashboard() {
   };
 
   const quickActions = [
+    { label: "Intelligence Hunt", icon: Search, prompt: "/apiradar scan" },
     { label: "Debug Code", icon: Bug, prompt: "Debug this code and explain the issues:" },
     { label: "Refactor", icon: FileCode, prompt: "Refactor this code to be more efficient and clean:" },
-    { label: "Explain", icon: Search, prompt: "Explain how this code works step by step:" },
     { label: "Optimize", icon: Zap, prompt: "Optimize this code for better performance:" },
   ];
 

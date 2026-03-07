@@ -151,75 +151,48 @@ export function startServer(port: number, memory = defaultMemory, agent = defaul
 
                         const cmd = message.trim().toLowerCase();
                         if (cmd === "/apiradar" || cmd === "/apiradar scan") {
-                            // APIRadar integration
+                            const { ApiRadarScanner } = await import("./tools/apiradar.js");
+                            const scanner = new ApiRadarScanner();
+
                             try {
-                                const fetchResponse = await fetch("https://apiradar.live/api/leaks", {
-                                    headers: { "Accept": "application/json" }
-                                });
-                                const data = await fetchResponse.json();
-                                const leaks = data.leaks || [];
+                                if (cmd === "/apiradar scan") {
+                                    let content = "🤖 **APIRadar Autonomous Scan Initiated**\n\nFetching and testing raw intelligence...\n\n";
+                                    const huntResults = await scanner.performHunt((msg) => {
+                                        // We don't have a direct stream for chat response yet, so we accumulate or send as one
+                                        // But for now, we'll let the user know we're working.
+                                        // In a real SSE setup, we'd emit events.
+                                    });
 
-                                let content = "📡 **Live APIRadar Feed**\n\n";
-                                if (leaks.length === 0) {
-                                    content += "No recent leaks detected.";
-                                } else if (cmd === "/apiradar scan") {
-                                    content = "🤖 **APIRadar Autonomous Scan Initiated**\n\nFetching and testing raw intelligence...\n\n";
-                                    const { SecretValidator } = await import("./tools/secret_validator.js");
-                                    const validator = new SecretValidator();
-
-                                    let foundKeys = 0;
-                                    for (const leak of leaks) {
-                                        const repoPath = leak.repoUrl.replace("https://github.com/", "");
-                                        const rawUrlMain = `https://raw.githubusercontent.com/${repoPath}/main/${leak.filePath}`;
-                                        const rawUrlMaster = `https://raw.githubusercontent.com/${repoPath}/master/${leak.filePath}`;
-
-                                        let rawContent: string | null = null;
-                                        try {
-                                            const resMain = await fetch(rawUrlMain);
-                                            if (resMain.ok) rawContent = await resMain.text();
-                                            else {
-                                                const resMaster = await fetch(rawUrlMaster);
-                                                if (resMaster.ok) rawContent = await resMaster.text();
-                                            }
-                                        } catch (e) {
-                                            log.warn(`Failed to fetch raw file for ${repoPath}: ${e}`);
-                                        }
-
-                                        if (rawContent) {
-                                            const matches = rawContent.match(/(?:sk-ant-[a-zA-Z0-9\-_]{20,}|sk-[a-zA-Z0-9]{40,}|sk-proj-[a-zA-Z0-9\-_]{20,}|AIzaSy[a-zA-Z0-9\-_]{33})/g) || [];
-                                            for (const key of matches) {
-                                                foundKeys++;
-                                                let keyType = 'unknown';
-                                                if (key.startsWith("sk-ant-")) keyType = 'anthropic_api_key';
-                                                else if (key.startsWith("sk-proj-") || key.startsWith("sk-")) keyType = 'openai_key';
-                                                else if (key.startsWith("AIza")) keyType = 'gemini_api_key';
-
-                                                content += `- Testing ${keyType} from [${repoPath}](${leak.repoUrl})...\n`;
-                                                try {
-                                                    const result = await validator.validate(keyType, key);
-                                                    if (result.is_live) {
-                                                        content += `  ✅ **CRITICAL:** KEY IS ALIVE - \`${key}\`\n\n`;
-                                                    } else {
-                                                        content += `  ❌ REVOKED\n\n`;
-                                                    }
-                                                } catch (err: any) {
-                                                    content += `  ⚠️ VALIDATION FAILED\n\n`;
-                                                }
-                                            }
+                                    if (huntResults.length === 0) {
+                                        content += "No live API keys were discovered in the latest detected leaks.";
+                                    } else {
+                                        content += `✅ **SCAN COMPLETE:** Discovered ${huntResults.length} live leak(s).\n\n`;
+                                        for (const res of huntResults) {
+                                            content += `### 🚨 CRITICAL: ${res.type.replace(/_/g, ' ').toUpperCase()}\n`;
+                                            content += `- **Key:** \`${res.key}\`\n`;
+                                            content += `- **Details:** ${res.details}\n`;
+                                            content += `- **Source:** [${res.source}](${res.repoUrl})\n\n`;
                                         }
                                     }
-                                    if (foundKeys === 0) content += "No valid API key patterns could be extracted from the latest leaks' raw source files.";
+                                    res.writeHead(200, headers);
+                                    res.end(JSON.stringify({ content }));
                                 } else {
-                                    leaks.slice(0, 5).forEach((leak: any) => {
-                                        content += `- **Provider:** ${leak.provider}\n`;
-                                        content += `  **Key:** \`${leak.redactedKey}\`\n`;
-                                        content += `  **Source:** [${leak.filePath}](${leak.repoUrl})\n`;
-                                        content += `  **Detected:** ${new Date(leak.leakDetectedAt).toLocaleString()}\n\n`;
-                                    });
+                                    const leaks = await scanner.fetchRecentLeaks();
+                                    let content = "📡 **Live APIRadar Feed**\n\n";
+                                    if (leaks.length === 0) {
+                                        content += "No recent leaks detected in the neural buffer.";
+                                    } else {
+                                        leaks.slice(0, 5).forEach((leak: any) => {
+                                            content += `- **Provider:** ${leak.provider}\n`;
+                                            content += `  **Key:** \`${leak.redactedKey}\`\n`;
+                                            content += `  **Source:** [${leak.filePath}](${leak.repoUrl})\n`;
+                                            content += `  **Detected:** ${new Date(leak.leakDetectedAt).toLocaleString()}\n\n`;
+                                        });
+                                        content += "\n*Use `/apiradar scan` to perform autonomous key validation.*";
+                                    }
+                                    res.writeHead(200, headers);
+                                    res.end(JSON.stringify({ content }));
                                 }
-
-                                res.writeHead(200, headers);
-                                res.end(JSON.stringify({ content }));
                             } catch (e: any) {
                                 log.error(`APIRadar error: ${e.message}`);
                                 res.writeHead(200, headers);

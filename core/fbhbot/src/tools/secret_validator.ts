@@ -37,6 +37,8 @@ export class SecretValidator {
                 return await this.validateGemini(value);
             case "anthropic_api_key":
                 return await this.validateAnthropic(value);
+            case "aws_access_key":
+                return await this.validateAWS(value);
             default:
                 return {
                     type,
@@ -193,6 +195,22 @@ export class SecretValidator {
             return { type: "anthropic_api_key", is_live: false, details: `Invalid Key: ${error.message}` };
         }
         return { type: "anthropic_api_key", is_live: false, details: "Validation failed" };
+    }
+
+    private async validateAWS(key: string): Promise<ValidationResult> {
+        try {
+            // Test STS GetCallerIdentity (requires signature but we can check for specifically 403 vs 401 or just test with a simple request)
+            // Note: Proper AWS validation usually requires Secret Key, but many hunting tools check if the Access Key exists.
+            // For now, we'll mark as 'test' if it looks well-formed, or try a public AWS request.
+            const response = await axios.get(`https://sts.amazonaws.com/?Action=GetCallerIdentity&Version=2011-06-15&AWSAccessKeyId=${key}`, { timeout: this.timeout });
+            // This will likely fail with 403 SignatureDoesNotMatch if it's a real key, or 401/403 InvalidClientTokenId if not.
+            return { type: "aws_access_key", is_live: true, details: "AWS Access Key: Well-formed/Exists", access_level: "test" };
+        } catch (error: any) {
+            if (error.response && error.response.data && error.response.data.includes("SignatureDoesNotMatch")) {
+                return { type: "aws_access_key", is_live: true, details: "AWS Access Key: Active (Signature Required)", access_level: "test" };
+            }
+            return { type: "aws_access_key", is_live: false, details: `AWS Key Invalid: ${error.message}` };
+        }
     }
 }
 
