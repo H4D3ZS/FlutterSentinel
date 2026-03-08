@@ -25,8 +25,11 @@ const TART_BIN = process.env.TART_BIN || path.join(process.env.HOME || '~', '.bu
 const VM_NAME = process.env.VPHONE_VM_NAME || 'vphone';
 const FRIDA_PORT = process.env.VPHONE_FRIDA_PORT || '27042';
 const SSH_PORT = process.env.VPHONE_SSH_PORT || '22222';
+const NATIVE_VPHONE_BIN = process.env.VPHONE_NATIVE_BIN ||
+    path.join(process.cwd(), 'native/vphone/build/vphone-native');
+const PREPARED_DIR = process.env.VPHONE_PREPARED_DIR || '/tmp/vphone-native-runtime';
 const QEMU_SCRIPT = process.env.VPHONE_QEMU_SCRIPT ||
-    path.join(process.env.HOME || '~', 'Desktop/FlutterSentinel/scripts/vphone_qemu.sh');
+    path.join(process.env.HOME || '~', 'Desktop/SecuritySentinel/scripts/vphone_qemu.sh');
 
 // In QEMU mode all services bind to localhost (port-forwarded by QEMU usermode net)
 // In tart mode they bind to the NCM IP 192.168.64.2
@@ -121,13 +124,17 @@ class VPhoneService {
             return this._mkStatus('not_configured', false, false,
                 'qemu-system-aarch64 not found.\n  macOS: brew install qemu\n  Linux: sudo apt install qemu-system-arm');
         }
-        const bootDir = process.env.VPHONE_BOOT_DIR || '/tmp/vphone_qemu';
-        const artifactsReady = ['kernel', 'devicetree', 'ramdisk'].every(f =>
-            fs.existsSync(path.join(bootDir, f))
+        const nativeReady = fs.existsSync(NATIVE_VPHONE_BIN);
+        const artifactsReady = ['kernel.bin', 'devicetree.dtb', 'initrd.bin'].every(f =>
+            fs.existsSync(path.join(PREPARED_DIR, 'raw', f))
         );
+        if (!nativeReady) {
+            return this._mkStatus('not_configured', false, true,
+                `Native VPhone runtime not built: ${NATIVE_VPHONE_BIN}. Run: cmake -S native/vphone -B native/vphone/build && cmake --build native/vphone/build`);
+        }
         if (!artifactsReady) {
             return this._mkStatus('not_configured', false, true,
-                `Boot artifacts missing in ${bootDir}. Run: python3 scripts/prepare_qemu_boot.py`);
+                `Native boot artifacts missing in ${PREPARED_DIR}. Run: ${NATIVE_VPHONE_BIN} prepare --out ${PREPARED_DIR}`);
         }
         const running = await this._qemuRunning();
         return this._probe(running, true);
@@ -177,10 +184,14 @@ class VPhoneService {
             return { success: true, message: `tart VM "${VM_NAME}" starting…` };
         }
         // qemu mode
-        exec(`nohup bash "${QEMU_SCRIPT}" > /tmp/vphone_qemu.log 2>&1 &`);
+        if (fs.existsSync(NATIVE_VPHONE_BIN)) {
+            exec(`nohup sh -c '"${NATIVE_VPHONE_BIN}" prepare --out "${PREPARED_DIR}" && "${NATIVE_VPHONE_BIN}" launch --prepared "${PREPARED_DIR}"' > /tmp/vphone_qemu.log 2>&1 &`);
+        } else {
+            exec(`nohup bash "${QEMU_SCRIPT}" > /tmp/vphone_qemu.log 2>&1 &`);
+        }
         return {
             success: true,
-            message: `QEMU VM starting (accel: ${ACCEL}). ` +
+            message: `${fs.existsSync(NATIVE_VPHONE_BIN) ? 'Native C++ QEMU runtime' : 'Legacy QEMU script'} starting (accel: ${ACCEL}). ` +
                 `Port forwards: SSH→${SSH_PORT}, VNC→5901, Frida→${FRIDA_PORT}`,
         };
     }

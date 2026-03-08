@@ -25,9 +25,9 @@ MAC_HTTP_PORT    = 8888
 SERVE_DIR        = "/tmp/mitm_serve"
 VPHONE_SSH       = "sshpass -p alpine ssh -o StrictHostKeyChecking=no -p 22222 root@192.168.64.2"
 
-PLIST_SRC        = "/Users/hades/Desktop/FlutterSentinel/RustA12-bypass/server/public/Maker/iPhone12-5/com.apple.MobileGestalt.plist"
-BL_TEMPLATE      = "/Users/hades/Desktop/FlutterSentinel/RustA12-bypass/server/public/BLDatabaseManager.png"
-DL_TEMPLATE      = "/Users/hades/Desktop/FlutterSentinel/RustA12-bypass/server/public/downloads.28.png"
+PLIST_SRC        = "/Users/hades/Desktop/SecuritySentinel/RustA12-bypass/server/public/Maker/iPhone12-5/com.apple.MobileGestalt.plist"
+BL_TEMPLATE      = "/Users/hades/Desktop/SecuritySentinel/RustA12-bypass/server/public/BLDatabaseManager.png"
+DL_TEMPLATE      = "/Users/hades/Desktop/SecuritySentinel/RustA12-bypass/server/public/downloads.28.png"
 
 OUT_DIR          = "/tmp/rusta12_payload"
 os.makedirs(OUT_DIR, exist_ok=True)

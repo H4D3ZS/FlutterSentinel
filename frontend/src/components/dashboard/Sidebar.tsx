@@ -15,7 +15,8 @@ import {
     Terminal,
     Bug,
     Book,
-    Smartphone
+    Smartphone,
+    User
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { motion } from 'framer-motion';
@@ -131,18 +132,19 @@ const Sidebar: React.FC<SidebarProps> = ({ className, isCollapsed, toggleCollaps
                     {!isCollapsed && (
                         <p className="px-3 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Core</p>
                     )}
-                    <SidebarNavItem to="/" icon={LayoutDashboard} isCollapsed={isCollapsed}>Overview</SidebarNavItem>
+                    <SidebarNavItem to="/" icon={LayoutDashboard} isCollapsed={isCollapsed} closeMobile={closeMobile}>Overview</SidebarNavItem>
+                    <SidebarNavItem to="/profile" icon={User} isCollapsed={isCollapsed} closeMobile={closeMobile}>My Profile</SidebarNavItem>
                     {['tier3', 'vip', 'admin'].includes(user?.role || '') && (
-                        <SidebarNavItem to="/mobsf" icon={ShieldAlert} isCollapsed={isCollapsed} badge="API">MobSF Analysis</SidebarNavItem>
+                        <SidebarNavItem to="/mobsf" icon={ShieldAlert} isCollapsed={isCollapsed} badge="API" closeMobile={closeMobile}>MobSF Analysis</SidebarNavItem>
                     )}
                     {['vip', 'admin'].includes(user?.role || '') && (
-                        <SidebarNavItem to="/vphone" icon={Smartphone} isCollapsed={isCollapsed} badge="VM">VPhone</SidebarNavItem>
+                        <SidebarNavItem to="/vphone" icon={Smartphone} isCollapsed={isCollapsed} badge="VM" closeMobile={closeMobile}>VPhone</SidebarNavItem>
                     )}
                     {['tier2', 'tier3', 'vip', 'admin'].includes(user?.role || '') && (
-                        <SidebarNavItem to="/trends" icon={BarChart3} isCollapsed={isCollapsed}>Trends & Intel</SidebarNavItem>
+                        <SidebarNavItem to="/trends" icon={BarChart3} isCollapsed={isCollapsed} closeMobile={closeMobile}>Trends & Intel</SidebarNavItem>
                     )}
                     {user?.role === 'admin' && (
-                        <SidebarNavItem to="/admin-tickets" icon={ShieldCheck} isCollapsed={isCollapsed} badge="ADMIN">Admin Panel</SidebarNavItem>
+                        <SidebarNavItem to="/admin-tickets" icon={ShieldCheck} isCollapsed={isCollapsed} badge="ADMIN" closeMobile={closeMobile}>Admin Panel</SidebarNavItem>
                     )}
                 </nav>
 
@@ -151,16 +153,13 @@ const Sidebar: React.FC<SidebarProps> = ({ className, isCollapsed, toggleCollaps
                         <p className="px-3 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Autonomous</p>
                     )}
                     {['vip', 'admin'].includes(user?.role || '') && (
-                        <SidebarNavItem to="/agents" icon={Cpu} isCollapsed={isCollapsed} badge="AI">Mission Control</SidebarNavItem>
+                        <SidebarNavItem to="/agents" icon={Cpu} isCollapsed={isCollapsed} badge="AI" closeMobile={closeMobile}>Mission Control</SidebarNavItem>
                     )}
                     {['tier3', 'vip', 'admin'].includes(user?.role || '') && (
-                        <SidebarNavItem to="/ai-hunter" icon={Search} isCollapsed={isCollapsed}>AI Hunter</SidebarNavItem>
-                    )}
-                    {['tier2', 'tier3', 'vip', 'admin'].includes(user?.role || '') && (
-                        <SidebarNavItem to="/fbh-bot" icon={Bug} isCollapsed={isCollapsed}>FBH Bot</SidebarNavItem>
+                        <SidebarNavItem to="/ai-hunter" icon={Search} isCollapsed={isCollapsed} closeMobile={closeMobile}>AI Hunter</SidebarNavItem>
                     )}
                     {['vip', 'admin'].includes(user?.role || '') && (
-                        <SidebarNavItem to="/ir" icon={Terminal} isCollapsed={isCollapsed}>Swarm Defense</SidebarNavItem>
+                        <SidebarNavItem to="/ir" icon={Terminal} isCollapsed={isCollapsed} closeMobile={closeMobile}>Swarm Defense</SidebarNavItem>
                     )}
                 </nav>
 
@@ -188,7 +187,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className, isCollapsed, toggleCollaps
                     </div>
                 )}
 
-                <SidebarNavItem to="/settings" icon={Settings} isCollapsed={isCollapsed}>System Config</SidebarNavItem>
+                <SidebarNavItem to="/settings" icon={Settings} isCollapsed={isCollapsed} closeMobile={closeMobile}>System Config</SidebarNavItem>
 
                 <a
                     href="http://localhost:8000"

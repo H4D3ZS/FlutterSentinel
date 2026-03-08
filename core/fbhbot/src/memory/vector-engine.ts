@@ -106,6 +106,23 @@ export class VectorMemoryManager {
           metadata TEXT,
           timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         );
+
+      CREATE TABLE IF NOT EXISTS tactical_vault(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        key_type TEXT NOT NULL,
+        key_value TEXT NOT NULL UNIQUE,
+        is_live INTEGER DEFAULT 1,
+        last_validated DATETIME DEFAULT CURRENT_TIMESTAMP,
+        metadata TEXT
+      );
+
+      CREATE TABLE IF NOT EXISTS chat_sessions(
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        title TEXT NOT NULL,
+        messages TEXT NOT NULL,
+        timestamp BIGINT NOT NULL
+      );
 `);
 
     this.seedPlaybooks();
@@ -130,6 +147,39 @@ export class VectorMemoryManager {
     for (const [key, value] of Object.entries(settings)) {
       stmt.run(userId, key, value);
     }
+  }
+
+  async storeForgeSession(data: any): Promise<void> {
+    log.info("Mock storeForgeSession");
+  }
+
+  // --- Chat History Methods ---
+  async getChatSessions(userId: string) {
+    const stmt = this.db.prepare("SELECT id, title, messages, timestamp FROM chat_sessions WHERE user_id = ? ORDER BY timestamp DESC");
+    const rows = stmt.all(userId) as any[];
+    return rows.map(row => ({
+      id: row.id,
+      title: row.title,
+      messages: JSON.parse(row.messages),
+      timestamp: row.timestamp
+    }));
+  }
+
+  async saveChatSession(userId: string, session: { id: string; title: string; messages: any[], timestamp: number }) {
+    const stmt = this.db.prepare(
+      "INSERT OR REPLACE INTO chat_sessions (id, user_id, title, messages, timestamp) VALUES (?, ?, ?, ?, ?)"
+    );
+    stmt.run(session.id, userId, session.title, JSON.stringify(session.messages), session.timestamp);
+  }
+
+  async deleteChatSession(userId: string, sessionId: string) {
+    const stmt = this.db.prepare("DELETE FROM chat_sessions WHERE id = ? AND user_id = ?");
+    stmt.run(sessionId, userId);
+  }
+
+  async clearChatSessions(userId: string) {
+    const stmt = this.db.prepare("DELETE FROM chat_sessions WHERE user_id = ?");
+    stmt.run(userId);
   }
 
   private seedPlaybooks() {
@@ -438,5 +488,47 @@ LIMIT ?
     const stmt = this.db.prepare("UPDATE pivots SET status = ? WHERE id = ?");
     stmt.run(status, id);
     log.info(`Updated pivot session ${id} status to ${status}`);
+  }
+
+  // --- Tactical Vault Methods ---
+
+  async vaultKey(type: string, key: string, metadata?: any) {
+    log.info(`Vaulting live key for ${type}`);
+    const stmt = this.db.prepare(`
+      INSERT OR REPLACE INTO tactical_vault (key_type, key_value, is_live, last_validated, metadata)
+      VALUES (?, ?, 1, CURRENT_TIMESTAMP, ?)
+    `);
+    stmt.run(type, key, JSON.stringify(metadata || {}));
+  }
+
+  async getLiveKey(type: string): Promise<string | null> {
+    const stmt = this.db.prepare(`
+      SELECT key_value FROM tactical_vault 
+      WHERE key_type = ? AND is_live = 1 
+      ORDER BY last_validated DESC LIMIT 1
+    `);
+    const row = stmt.get(type) as { key_value: string } | undefined;
+    return row ? row.key_value : null;
+  }
+
+  async getAllLiveKeys(): Promise<Record<string, string>> {
+    const stmt = this.db.prepare(`
+      SELECT key_type, key_value FROM tactical_vault 
+      WHERE is_live = 1 
+    `);
+    const rows = stmt.all() as { key_type: string, key_value: string }[];
+    const keys: Record<string, string> = {};
+    for (const row of rows) {
+      if (!keys[row.key_type]) {
+        keys[row.key_type] = row.key_value;
+      }
+    }
+    return keys;
+  }
+
+  async invalidateKey(key: string) {
+    log.warn(`Invalidating key in tactical vault.`);
+    const stmt = this.db.prepare("UPDATE tactical_vault SET is_live = 0 WHERE key_value = ?");
+    stmt.run(key);
   }
 }

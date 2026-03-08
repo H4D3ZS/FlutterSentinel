@@ -35,7 +35,7 @@ import { toast } from 'sonner';
 
 // Route through Node.js backend auth
 const nodeApi = axios.create({ baseURL: '/api' });
-nodeApi.interceptors.request.use((config) => {
+nodeApi.interceptors.request.use((config: any) => {
     const token = localStorage.getItem('fbh_access_token');
     if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
     return config;
@@ -70,7 +70,7 @@ const VPhone: React.FC = () => {
 
     const fetchStatus = useCallback(async () => {
         try {
-            const res = await nodeApi.get('/vphone/status');
+            const res = await nodeApi.get('/vphone/status') as any;
             setStatus(res.data);
         } catch (err) {
             console.error('VPhone status fetch failed:', err);
@@ -88,7 +88,7 @@ const VPhone: React.FC = () => {
     const handleStart = async () => {
         setActionLoading('start');
         try {
-            const res = await nodeApi.post('/vphone/start');
+            const res = await nodeApi.post('/vphone/start') as any;
             toast.success(res.data.success ? 'VM Starting' : 'Start Command Sent', {
                 description: res.data.message
             });
@@ -103,7 +103,7 @@ const VPhone: React.FC = () => {
     const handleStop = async () => {
         setActionLoading('stop');
         try {
-            const res = await nodeApi.post('/vphone/stop');
+            const res = await nodeApi.post('/vphone/stop') as any;
             toast.success('VM Stopped', { description: res.data.message });
         } catch (err) {
             toast.error('Failed to stop VM');
@@ -117,7 +117,7 @@ const VPhone: React.FC = () => {
         if (!ipaPath.trim()) return;
         setActionLoading('install');
         try {
-            const res = await nodeApi.post('/vphone/install', { ipa_path: ipaPath });
+            const res = await nodeApi.post('/vphone/install', { ipa_path: ipaPath }) as any;
             if (res.data.success) {
                 toast.success('IPA Installed', { description: `Bundle ID: ${res.data.bundle_id || 'unknown'}` });
             } else {
@@ -135,7 +135,7 @@ const VPhone: React.FC = () => {
         setActionLoading('scan');
         setScanLog([]);
         try {
-            const res = await nodeApi.post('/vphone/scan/dynamic', { bundle_id: bundleId });
+            const res = await nodeApi.post('/vphone/scan/dynamic', { bundle_id: bundleId }) as any;
             if (res.data.status === 'started') {
                 toast.success('Frida Session Started', {
                     description: `Session: ${res.data.session_id}`

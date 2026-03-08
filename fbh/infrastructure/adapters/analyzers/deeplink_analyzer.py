@@ -1,5 +1,5 @@
 """
-Deep Link Security Analyzer for FlutterSentinel
+Deep Link Security Analyzer for SecuritySentinel
 Comprehensive deep link vulnerability detection
 
 This analyzer identifies:

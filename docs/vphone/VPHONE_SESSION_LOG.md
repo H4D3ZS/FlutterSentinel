@@ -131,7 +131,7 @@ TrollVNC ([OwnGoalStudio/TrollVNC](https://github.com/OwnGoalStudio/TrollVNC)) w
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos)"
 
 # 2. Build
-cd ~/Desktop/FlutterSentinel/TrollVNC
+cd ~/Desktop/SecuritySentinel/TrollVNC
 export THEOS=~/theos
 make package THEOS_PACKAGE_SCHEME=rootless
 # Output: packages/com.82flex.trollvnc_3.1-2_iphoneos-arm64.deb
@@ -142,7 +142,7 @@ make package THEOS_PACKAGE_SCHEME=rootless
 Standard `scp` doesn't work on the VPhone (missing `scp`, `sftp-server`, and `cat` from default PATH). Used Procursus `cat` with full path:
 
 ```bash
-cat ~/Desktop/FlutterSentinel/TrollVNC/packages/com.82flex.trollvnc_3.1-2_iphoneos-arm64.deb | \
+cat ~/Desktop/SecuritySentinel/TrollVNC/packages/com.82flex.trollvnc_3.1-2_iphoneos-arm64.deb | \
   ssh -p 22222 root@192.168.64.2 '/var/jb/bin/cat > /tmp/trollvnc.deb'
 ```
 
@@ -363,7 +363,7 @@ cat localfile | ssh -p 22222 root@192.168.64.2 '/var/jb/bin/cat > /remote/path'
 
 ### Build TrollVNC from Source
 ```bash
-cd ~/Desktop/FlutterSentinel/TrollVNC
+cd ~/Desktop/SecuritySentinel/TrollVNC
 export THEOS=~/theos
 make clean
 make package THEOS_PACKAGE_SCHEME=rootless

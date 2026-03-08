@@ -1,9 +1,14 @@
+# ============================================================
+# SecuritySentinel — .gitignore
+# ============================================================
+
 # Node.js
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 package-lock.json
+.pnpm-lock.yaml
 
 # Python
 __pycache__/
@@ -11,18 +16,10 @@ __pycache__/
 *$py.class
 *.so
 .Python
-build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -44,48 +41,106 @@ env/
 .DS_Store
 Thumbs.db
 
-# Logs
+# ============================================================
+# Security Sensitive — API Keys & Leaked Secrets
+# ============================================================
+scanned.txt
+*.leaked
+*.keys
+.env
+.env.*
+!.env.example
+secrets/
+ai_hunter.md
+ai_hunter_*.md
+poc_*.md
+poc_*.txt
+*apikeys*
+*api_keys*
+*live_keys*
+
+# ============================================================
+# Logs (may contain secrets or PII)
+# ============================================================
 logs/
 *.log
+*.log.*
 
-# Database
+# ============================================================
+# Database files
+# ============================================================
 *.db
 *.sqlite
 *.sqlite3
-
-# MobSF
-MOBSF/downloads/
-MOBSF/uploads/
-MOBSF/DynamicAnalyzer/
-MOBSF/StaticAnalyzer/tools/
-
-# FBH
-targets/*/workspace/
-data/
 database/*.db
+database/*.db-shm
+database/*.db-wal
 
-# Build outputs
+# ============================================================
+# Build Outputs
+# ============================================================
+dist/
+build/
+out/
 *.apk
 *.ipa
 *.aab
 
-
-
-# VPhone firmware (23GB+ extracted IPSW/PCC)
+# ============================================================
+# VPhone / Native VM Artifacts (store on external drive)
+# ============================================================
+native/vphone/out/
+native/vphone/build/
+native/vphone/vzbridge/.build/
+26.3/
+*.ipsw
+*.im4p
+*.img4
+*.shsh
+*.shsh2
+*.dmg
+*.dylib
+Disk.img
+AVPBooter*.bin
+AVPSEPBooter*.bin
+nvram.bin
+nvram.bin.*
+SEPStorage
+machineIdentifier.bin
+*.im4m
 super-tart-vphone/
 super-tart/
 libirecovery/
-pccvre_patched
-*.ipsw
-*.im4p
-*.shsh
-*.dmg
-*.dylib
+pccvre_patched/
 TrollVNC/
 
-# OpenClaw
-openclaw/
+# ============================================================
+# MobSF
+# ============================================================
+MOBSF/downloads/
+MOBSF/uploads/
+MOBSF/DynamicAnalyzer/
+MOBSF/StaticAnalyzer/tools/
+core/mobsf/mobsf/secret
+
+# ============================================================
+# Vscodium / Rust
+# ============================================================
+vscodium-rust/
+
+# ============================================================
+# Targets & Bug Bounty (OPSEC)
+# ============================================================
+targets/*/workspace/
+targets/meesho/
+targets/viator/
+target/
+data/
+
+# ============================================================
 # Temporary files
+# ============================================================
 tmp/
 temp/
 .cache/
+requirements.txt

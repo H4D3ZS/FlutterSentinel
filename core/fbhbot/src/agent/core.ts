@@ -1,4 +1,4 @@
-import { Agent } from "@mariozechner/pi-agent-core";
+import { NativeAgent, NativeHistoryMessage, NativeModelConfig } from "./llm-client.js";
 import { fbhTools } from "../tools/fbh.js";
 import { shodanSearch, googleDork } from "../tools/recon.js";
 import { VectorMemoryManager } from "../memory/vector-engine.js";
@@ -14,16 +14,188 @@ import { broadcastTacticalAlert, getSwarmIntelligence } from "../memory/swarm.js
 import { manageEvasion } from "../tools/bypass.js";
 import { detectDeception } from "../tools/deception.js";
 import { agentEvents } from "../services/events.js";
+import { ApiRadarScanner } from "../tools/apiradar.js";
 import path from "node:path";
+import * as fs from "node:fs/promises";
 
 const log = createSubsystemLogger("agent/core");
 
 export class FBHBotAgent {
-    private agent: Agent;
+    private agent: NativeAgent;
 
     constructor(private memory: VectorMemoryManager, private planner?: MissionPlanner) {
-        this.agent = new Agent({});
+        this.agent = new NativeAgent();
         this.agent.setSystemPrompt(FBHBOT_PERSONA);
+    }
+
+    private stringParam(description: string) {
+        return { type: "string", description };
+    }
+
+    private historyToNativeMessages(history?: NativeHistoryMessage[]) {
+        if (!history || history.length === 0) return [];
+
+        return history
+            .filter((message) => message && (message.role === "user" || message.role === "assistant") && typeof message.content === "string" && message.content.trim() !== "")
+            .map((message) => ({ role: message.role, content: message.content }));
+    }
+
+    private getRequiredProvider(model?: string): 'google' | 'openai' | 'anthropic' | 'any' | 'xai' | 'groq' | 'cerebras' | 'openrouter' {
+        if (!model) return 'any';
+
+        const normalized = model.toLowerCase();
+        if (normalized.includes("gemini")) return 'google';
+        if (normalized.includes("claude")) return 'anthropic';
+        if (normalized.includes("gpt") || normalized.includes("openai")) return 'openai';
+        if (normalized.includes("grok") || normalized.includes("xai")) return 'xai';
+        if (normalized.includes("groq") || normalized.includes("mixtral") || normalized.includes("llama3-70b-8192")) return 'groq';
+        if (normalized.includes("cerebras") || normalized.includes("llama3.1-8b")) return 'cerebras';
+        if (normalized.includes("openrouter")) return 'openrouter';
+        return 'any';
+    }
+
+    private resolveSelectedModel(model: string | undefined, defaults: { providerId?: string; modelId?: string }, keys: { googleKey?: string; openaiKey?: string; anthropicKey?: string; groqKey?: string; cerebrasKey?: string; xaiKey?: string; openrouterKey?: string }): { providerId: NativeModelConfig["provider"]; modelId: string; baseUrl: string; apiKey: string } {
+        if (!model) {
+            const providerId = (defaults.providerId || "google") as NativeModelConfig["provider"];
+            return {
+                providerId,
+                modelId: defaults.modelId || "gemini-1.5-flash-latest",
+                baseUrl: providerId === "anthropic"
+                    ? "https://api.anthropic.com/v1"
+                    : providerId === "openai"
+                        ? "https://api.openai.com/v1"
+                        : providerId === "xai"
+                            ? "https://api.x.ai/v1"
+                            : providerId === "groq"
+                                ? "https://api.groq.com/openai/v1"
+                                : providerId === "cerebras"
+                                    ? "https://api.cerebras.ai/v1"
+                                    : providerId === "openrouter"
+                                        ? "https://openrouter.ai/api/v1"
+                                        : "https://generativelanguage.googleapis.com/v1beta/openai",
+                apiKey: providerId === "anthropic"
+                    ? (keys.anthropicKey || "")
+                    : providerId === "openai"
+                        ? (keys.openaiKey || "")
+                        : providerId === "xai"
+                            ? (keys.xaiKey || "")
+                            : providerId === "groq"
+                                ? (keys.groqKey || "")
+                                : providerId === "cerebras"
+                                    ? (keys.cerebrasKey || "")
+                                    : providerId === "openrouter"
+                                        ? (keys.openrouterKey || "")
+                                        : (keys.googleKey || "")
+            };
+        }
+
+        const normalized = model.toLowerCase();
+
+        const candidates: Array<{
+            match: boolean;
+            providerId: NativeModelConfig["provider"];
+            modelId: string;
+            baseUrl: string;
+            apiKey: string;
+        }> = [
+                {
+                    match: normalized.includes("gemini"),
+                    providerId: "google",
+                    modelId: model,
+                    baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai",
+                    apiKey: keys.googleKey || ""
+                },
+                {
+                    match: normalized.includes("claude-3-5-sonnet"),
+                    providerId: "anthropic",
+                    modelId: normalized.includes("2024") ? model : "claude-3-5-sonnet-20241022",
+                    baseUrl: "https://api.anthropic.com/v1",
+                    apiKey: keys.anthropicKey || ""
+                },
+                {
+                    match: normalized.includes("claude-3-opus"),
+                    providerId: "anthropic",
+                    modelId: "claude-3-opus-20240229",
+                    baseUrl: "https://api.anthropic.com/v1",
+                    apiKey: keys.anthropicKey || ""
+                },
+                {
+                    match: normalized.includes("gpt-4o") || normalized.includes("gpt-4-turbo") || normalized.includes("gpt-4.1"),
+                    providerId: "openai",
+                    modelId: model,
+                    baseUrl: "https://api.openai.com/v1",
+                    apiKey: keys.openaiKey || ""
+                },
+                {
+                    match: normalized.includes("grok") || normalized.includes("xai"),
+                    providerId: "xai",
+                    modelId: model === "grok-2" ? "grok-2-latest" : model,
+                    baseUrl: "https://api.x.ai/v1",
+                    apiKey: keys.xaiKey || ""
+                },
+                {
+                    match: normalized.includes("llama-3-70b-groq") || normalized.includes("llama3-70b-8192") || normalized.includes("groq"),
+                    providerId: "groq",
+                    modelId: normalized.includes("mixtral") ? "mixtral-8x7b-32768" : "llama3-70b-8192",
+                    baseUrl: "https://api.groq.com/openai/v1",
+                    apiKey: keys.groqKey || ""
+                },
+                {
+                    match: normalized.includes("mixtral-8x7b-groq") || normalized.includes("mixtral-8x7b-32768"),
+                    providerId: "groq",
+                    modelId: "mixtral-8x7b-32768",
+                    baseUrl: "https://api.groq.com/openai/v1",
+                    apiKey: keys.groqKey || ""
+                },
+                {
+                    match: normalized.includes("llama-3-70b-cerebras") || normalized.includes("llama3.1-8b") || normalized.includes("cerebras"),
+                    providerId: "cerebras",
+                    modelId: "llama3.1-8b",
+                    baseUrl: "https://api.cerebras.ai/v1",
+                    apiKey: keys.cerebrasKey || ""
+                },
+                {
+                    match: normalized.includes("openrouter"),
+                    providerId: "openrouter",
+                    modelId: defaults.modelId || "meta-llama/llama-3-8b-instruct:free",
+                    baseUrl: "https://openrouter.ai/api/v1",
+                    apiKey: keys.openrouterKey || ""
+                }
+            ];
+
+        const resolved = candidates.find((candidate) => candidate.match);
+        if (resolved) return resolved;
+
+        return {
+            providerId: (defaults.providerId || "google") as NativeModelConfig["provider"],
+            modelId: defaults.modelId || model,
+            baseUrl: defaults.providerId === "anthropic"
+                ? "https://api.anthropic.com/v1"
+                : defaults.providerId === "openai"
+                    ? "https://api.openai.com/v1"
+                    : defaults.providerId === "xai"
+                        ? "https://api.x.ai/v1"
+                        : defaults.providerId === "groq"
+                            ? "https://api.groq.com/openai/v1"
+                            : defaults.providerId === "cerebras"
+                                ? "https://api.cerebras.ai/v1"
+                                : defaults.providerId === "openrouter"
+                                    ? "https://openrouter.ai/api/v1"
+                                    : "https://generativelanguage.googleapis.com/v1beta/openai",
+            apiKey: defaults.providerId === "anthropic"
+                ? (keys.anthropicKey || "")
+                : defaults.providerId === "openai"
+                    ? (keys.openaiKey || "")
+                    : defaults.providerId === "xai"
+                        ? (keys.xaiKey || "")
+                        : defaults.providerId === "groq"
+                            ? (keys.groqKey || "")
+                            : defaults.providerId === "cerebras"
+                                ? (keys.cerebrasKey || "")
+                                : defaults.providerId === "openrouter"
+                                    ? (keys.openrouterKey || "")
+                                    : (keys.googleKey || "")
+        };
     }
 
     private getTools(options?: { settings?: Record<string, string>, missionId?: string }) {
@@ -34,6 +206,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_human_checkpoint",
                 description: "Pause execution and wait for tactical guidance or missing information from a human operator.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        prompt: this.stringParam("Clear question for the operator describing the missing information or decision.")
+                    },
+                    required: ["prompt"]
+                },
                 execute: async (args: { prompt: string }) => {
                     log.info(`Agent waiting for human input: ${args.prompt}`);
                     return await agentEvents.waitForInput(missionId, args.prompt);
@@ -42,6 +221,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_master_scan",
                 description: "The Singularity Engine: Executes a full end-to-end autonomous bounty hunt pipeline (Acquisition -> Discovery -> Analysis -> Chain -> Report).",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        target: this.stringParam("Primary target hostname, URL, domain, or identifier to assess.")
+                    },
+                    required: ["target"]
+                },
                 execute: async (args: { target: string }) => {
                     return await fbhTools.masterScan(args.target);
                 }
@@ -49,6 +235,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_scan",
                 description: "Perform deep security analysis on a target.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        target: this.stringParam("Target URL, hostname, package, or asset identifier.")
+                    },
+                    required: ["target"]
+                },
                 execute: async (args: { target: string }) => {
                     log.info(`Agent calling fbh_scan on ${args.target}`);
                     agentEvents.emitEvent({ type: "action", message: `Executing fbh_scan on ${args.target}` });
@@ -58,6 +251,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_exploit",
                 description: "Generate and execute exploits to prove impact.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        target: this.stringParam("Target host, endpoint, or vulnerable asset for proof-of-impact testing.")
+                    },
+                    required: ["target"]
+                },
                 execute: async (args: { target: string }) => {
                     log.info(`Agent calling fbh_exploit on ${args.target}`);
                     agentEvents.emitEvent({ type: "action", message: `Executing fbh_exploit on ${args.target}` });
@@ -122,6 +322,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_research_vulnerability",
                 description: "Research a specific vulnerability or technology to extract exploitation patterns.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        query: this.stringParam("Vulnerability name, CVE, product, technology, or exploit research question.")
+                    },
+                    required: ["query"]
+                },
                 execute: async (args: { query: string }) => {
                     const { researchVulnerability } = await import("../tools/research.js");
                     return await researchVulnerability(args.query);
@@ -170,6 +377,13 @@ export class FBHBotAgent {
             {
                 name: "web_fetch",
                 description: "Fetch and extract technical intelligence from a URL.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        url: this.stringParam("Fully qualified URL to fetch and analyze.")
+                    },
+                    required: ["url"]
+                },
                 execute: async (args: { url: string }) => {
                     const { webFetch } = await import("../tools/web.js");
                     return await webFetch(args.url);
@@ -357,6 +571,13 @@ export class FBHBotAgent {
             {
                 name: "shodan_search",
                 description: "Search Shodan for infrastructure reconnaissance.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        query: this.stringParam("Shodan search query for hosts, services, versions, or internet-exposed assets.")
+                    },
+                    required: ["query"]
+                },
                 execute: async (args: { query: string }) => {
                     log.info(`Agent calling shodan_search: ${args.query}`);
                     agentEvents.emitEvent({ type: "action", message: `Shodan Query: ${args.query}` });
@@ -367,6 +588,13 @@ export class FBHBotAgent {
             {
                 name: "google_dork",
                 description: "Search Google for sensitive leaks.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        query: this.stringParam("Google dork query targeting exposed documents, secrets, or sensitive endpoints.")
+                    },
+                    required: ["query"]
+                },
                 execute: async (args: { query: string }) => {
                     log.info(`Agent calling google_dork: ${args.query}`);
                     agentEvents.emitEvent({ type: "action", message: `Google Dork: ${args.query}` });
@@ -378,6 +606,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_shadow_recon",
                 description: "Search Certificate Transparency logs for hidden subdomains of a target.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        domain: this.stringParam("Base domain to enumerate through certificate transparency logs.")
+                    },
+                    required: ["domain"]
+                },
                 execute: async (args: { domain: string }) => {
                     log.info(`Agent calling fbh_shadow_recon: ${args.domain}`);
                     agentEvents.emitEvent({ type: "action", message: `Shadow Recon (CT Logs): ${args.domain}` });
@@ -387,6 +622,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_wayback_scan",
                 description: "Discover legacy endpoints, APIs, and subdomains via the Wayback Machine.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        domain: this.stringParam("Domain to inspect for archived URLs, APIs, and subdomains.")
+                    },
+                    required: ["domain"]
+                },
                 execute: async (args: { domain: string }) => {
                     log.info(`Agent calling fbh_wayback_scan: ${args.domain}`);
                     agentEvents.emitEvent({ type: "action", message: `Wayback Scan: ${args.domain}` });
@@ -396,6 +638,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_github_intel",
                 description: "Search for developer leaks and sensitive data on GitHub related to a domain.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        domain: this.stringParam("Domain, organization, or namespace to investigate for GitHub exposure.")
+                    },
+                    required: ["domain"]
+                },
                 execute: async (args: { domain: string }) => {
                     log.info(`Agent calling fbh_github_intel: ${args.domain}`);
                     agentEvents.emitEvent({ type: "action", message: `GitHub Intelligence Search: ${args.domain}` });
@@ -507,10 +756,47 @@ export class FBHBotAgent {
             },
             {
                 name: "fbh_secret_validate",
-                description: "Tactical Secret Validator: Verify discovered credentials (Google API keys, AWS, Stripe, etc.) against real APIs to prove impact.",
-                execute: async (args: { secret_type: string, secret_value: string }) => {
-                    const { validateSecret } = await import("../tools/validation.js");
-                    return await validateSecret(args);
+                description: "Tactical Secret Validator: Verify discovered credentials (openai_key, anthropic_api_key, gemini_api_key, groq_api_key, etc.) against real APIs to prove impact.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        type: this.stringParam("Credential type identifier, such as openai_key, anthropic_api_key, gemini_api_key, or groq_api_key."),
+                        value: this.stringParam("Credential value to validate.")
+                    },
+                    required: ["type", "value"]
+                },
+                execute: async (args: { type: string, value: string }) => {
+                    const { SecretValidator } = await import("../tools/secret_validator.js");
+                    const validator = new SecretValidator();
+                    return await validator.validate(args.type, args.value);
+                }
+            },
+            {
+                name: "fbh_generate_poc",
+                description: "Automated Evidence Generator: Abuse a leaked API key 5-10 times to prove financial/data impact and format a strict Bug Bounty report.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        provider: this.stringParam("The provider of the leaked key (e.g., openai, anthropic, google, cerebras, groq)."),
+                        key: this.stringParam("The leaked API key to abuse.")
+                    },
+                    required: ["provider", "key"]
+                },
+                execute: async (args: { provider: string, key: string }) => {
+                    const { PoCGenerator } = await import("../tools/poc_generator.js");
+                    const generator = new PoCGenerator();
+                    return await generator.executePoC(args.provider, args.key, 5); // Default to 5 hits to prove impact
+                }
+            },
+            {
+                name: "fbh_apiradar_scan",
+                description: "Sovereign Intelligence Feed: Scan for the latest AI API key leaks across multiple providers.",
+                execute: async () => {
+                    const { ApiRadarScanner } = await import("../tools/apiradar.js");
+                    const scanner = new ApiRadarScanner(this.memory);
+                    return await scanner.performHunt((msg) => {
+                        agentEvents.emitEvent({ type: "output", message: msg });
+                    });
                 }
             },
             {
@@ -531,6 +817,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_web_recon",
                 description: "Universal Web Surface Discovery: Find subdomains, cloud buckets, and endpoints for a given domain.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        domain: this.stringParam("Target domain for subdomain, endpoint, and storage discovery.")
+                    },
+                    required: ["domain"]
+                },
                 execute: async (args: { domain: string }) => {
                     return await fbhTools.webRecon(args);
                 }
@@ -538,6 +831,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_web_scan",
                 description: "Tactical Web Scanner: Automated vulnerability discovery for web targets (XSS, SQLi, SSRF, Header Audit).",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        target_url: this.stringParam("Target URL to scan for web vulnerabilities.")
+                    },
+                    required: ["target_url"]
+                },
                 execute: async (args: { target_url: string }) => {
                     return await fbhTools.webScan(args);
                 }
@@ -545,6 +845,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_web_active_scan",
                 description: "Proactive Vulnerability Scanner: Template-based active probing for high-impact flaws (Nuclei integration).",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        target_url: this.stringParam("Target URL to actively probe with templates.")
+                    },
+                    required: ["target_url"]
+                },
                 execute: async (args: { target_url: string }) => {
                     return await fbhTools.webActiveScan(args);
                 }
@@ -552,6 +859,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_infra_audit",
                 description: "Infrastructure Intelligence: Deep service fingerprinting, port scanning, and banner grabbing.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        host: this.stringParam("Hostname or IP address to fingerprint and audit.")
+                    },
+                    required: ["host"]
+                },
                 execute: async (args: { host: string }) => {
                     return await fbhTools.infraAudit(args);
                 }
@@ -559,6 +873,18 @@ export class FBHBotAgent {
             {
                 name: "fbh_sigint_recon",
                 description: "Global Signal Intelligence: LLM-driven internet-scale discovery for shadow assets and deployments.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        target_url: this.stringParam("Target domain or URL to investigate."),
+                        mode: {
+                            type: "string",
+                            enum: ["application", "organization"],
+                            description: "Discovery mode based on a single application or a broader organization footprint."
+                        }
+                    },
+                    required: ["target_url"]
+                },
                 execute: async (args: { target_url: string, mode?: "application" | "organization" }) => {
                     return await fbhTools.sigintRecon(args);
                 }
@@ -665,12 +991,116 @@ export class FBHBotAgent {
                     const apiKey = settings?.google_api_key || process.env.GOOGLE_API_KEY;
                     return await exploreIntelligence({ ...args }, this.memory);
                 }
+            },
+            {
+                name: "fbh_shell_execute",
+                description: "Sovereign Shell: Execute arbitrary shell commands for mission-critical operations. Use with extreme caution.",
+                execute: async (args: { command: string }) => {
+                    const { execSync } = await import("child_process");
+                    try {
+                        log.warn(`SSE executing shell command: ${args.command}`);
+                        const output = execSync(args.command, { encoding: 'utf-8', timeout: 30000 });
+                        return { status: "success", output };
+                    } catch (err: any) {
+                        return { status: "error", error: err.message, stderr: err.stderr?.toString() };
+                    }
+                }
+            },
+            {
+                name: "fbh_file_read",
+                description: "Tactical File Access: Read the contents of a local file.",
+                execute: async (args: { path: string }) => {
+                    const { readFileSync } = await import("fs");
+                    try {
+                        const content = readFileSync(args.path, 'utf-8');
+                        return { status: "success", content };
+                    } catch (err: any) {
+                        return { status: "error", error: err.message };
+                    }
+                }
+            },
+            {
+                name: "fbh_file_write",
+                description: "Tactical Payload Forge: Write content to a local file (e.g., saving exploits or scan results).",
+                execute: async (args: { path: string, content: string }) => {
+                    const { writeFileSync, mkdirSync } = await import("fs");
+                    const { dirname } = await import("path");
+                    try {
+                        mkdirSync(dirname(args.path), { recursive: true });
+                        writeFileSync(args.path, args.content);
+                        return { status: "success", message: `File written to ${args.path}` };
+                    } catch (err: any) {
+                        return { status: "error", error: err.message };
+                    }
+                }
+            },
+            {
+                name: "fbh_file_list",
+                description: "Tactical Environment Discovery: List the contents of a local directory.",
+                execute: async (args: { path: string }) => {
+                    const { readdirSync, statSync } = await import("fs");
+                    try {
+                        const entries = readdirSync(args.path);
+                        const details = entries.map(name => {
+                            const fullPath = path.join(args.path, name);
+                            const stats = statSync(fullPath);
+                            return {
+                                name,
+                                type: stats.isDirectory() ? "directory" : "file",
+                                size: stats.size,
+                                modified: stats.mtime
+                            };
+                        });
+                        return { status: "success", path: args.path, entries: details };
+                    } catch (err: any) {
+                        return { status: "error", error: err.message };
+                    }
+                }
+            },
+            {
+                name: "fbh_file_read",
+                description: "Tactical Environment Discovery: Read the contents of a local file.",
+                execute: async (args: { path: string }) => {
+                    const { readFileSync } = await import("fs");
+                    try {
+                        const content = readFileSync(args.path, 'utf-8');
+                        return { status: "success", content };
+                    } catch (err: any) {
+                        return { status: "error", error: err.message };
+                    }
+                }
+            },
+            {
+                name: "fbh_file_delete",
+                description: "Tactical Forensics: Delete a local file. REQUIRES MANUAL OPERATOR APPROVAL.",
+                execute: async (args: { path: string, reason: string }) => {
+                    const { unlinkSync, existsSync } = await import("fs");
+                    try {
+                        if (!existsSync(args.path)) {
+                            return { status: "error", error: "File not found." };
+                        }
+
+                        log.warn(`Agent requesting permission to delete: ${args.path}. Reason: ${args.reason}`);
+                        const permission = await agentEvents.waitForInput(missionId, `DANGER: Agent requested to DELETE file: ${args.path}\nReason: ${args.reason}\n\nType 'ALLOW' to proceed or anything else to deny.`);
+
+                        if (permission?.trim().toUpperCase() === 'ALLOW') {
+                            unlinkSync(args.path);
+                            agentEvents.emitEvent({ type: "action", message: `File DELETED: ${args.path}` });
+                            return { status: "success", message: `File ${args.path} has been deleted.` };
+                        } else {
+                            agentEvents.emitEvent({ type: "status", message: `DELETION DENIED by operator: ${args.path}` });
+                            return { status: "denied", message: "Deletion was denied by the operator." };
+                        }
+                    } catch (err: any) {
+                        return { status: "error", error: err.message };
+                    }
+                }
             }
         ];
     }
 
-    async runMission(goal: string, options?: { playbookId?: string, strategy?: 'stealth' | 'aggressive', settings?: Record<string, string> }) {
-        log.info(`Starting mission with goal: ${goal}`);
+    async runMission(goal: string, options?: { playbookId?: string, strategy?: 'stealth' | 'aggressive', settings?: Record<string, string>, model?: string, history?: NativeHistoryMessage[] }) {
+        log.info(`Starting mission with goal: ${goal}${options?.model ? ` using brain: ${options.model}` : ""}`);
 
         // 1. Apply Playbook (if any)
         let systemPrompt = FBHBOT_PERSONA;
@@ -699,11 +1129,12 @@ export class FBHBotAgent {
             systemPrompt += `\n\n### HISTORICAL CONTEXT & SEMANTIC INTELLIGENCE:\n${historicalContext}`;
         }
 
-        // Extract missionId from goal if present (e.g., "MISSION_ID: ...")
+        // 4. Extract missionId from goal if present
         const missionIdMatch = goal.match(/MISSION_ID: ([^,]+)/);
         const missionId = missionIdMatch ? missionIdMatch[1] : "global";
 
         this.agent.setSystemPrompt(systemPrompt);
+        this.agent.setConversationHistory(this.historyToNativeMessages(options?.history));
         this.agent.setTools(this.getTools({
             settings: options?.settings,
             missionId
@@ -711,28 +1142,253 @@ export class FBHBotAgent {
 
         agentEvents.emitEvent({ type: "status", message: `Mission initiated for goal: ${goal}` });
 
-        if (!process.env.GOOGLE_API_KEY && !options?.settings?.google_api_key) {
-            const errorMsg = "CRITICAL: Mission stalled. Missing GOOGLE_API_KEY for autonomous reasoning engine.";
+        // 5. Tactical Key Resolution: .env -> Settings -> Tactical Vault
+        let googleKey = process.env.GOOGLE_API_KEY || options?.settings?.google_api_key;
+        let openaiKey = process.env.OPENAI_API_KEY || options?.settings?.openai_api_key;
+        let anthropicKey = process.env.ANTHROPIC_API_KEY || options?.settings?.anthropic_api_key;
+        let groqKey = process.env.GROQ_API_KEY || process.env.GROQ_KEY || options?.settings?.groq_key;
+        let cerebrasKey = process.env.CEREBRAS_API_KEY || process.env.CEREBRAS_KEY || options?.settings?.cerebras_key;
+        let xaiKey = process.env.XAI_API_KEY || process.env.XAI_KEY || options?.settings?.xai_key || options?.settings?.grok_key;
+        let openrouterKey = process.env.OPENROUTER_API_KEY || options?.settings?.openrouter_key;
+
+        let defaultProviderId: string | undefined;
+        let defaultModelId: string | undefined;
+
+        const resolveKeys = async () => {
+            if (!googleKey || googleKey.trim() === "") {
+                const vault = (await this.memory.getLiveKey("google_api_key")) || (await this.memory.getLiveKey("gemini_api_key"));
+                if (vault) googleKey = vault;
+            }
+            if (!openaiKey || openaiKey.trim() === "") {
+                const vault = await this.memory.getLiveKey("openai_key");
+                if (vault) openaiKey = vault;
+            }
+            if (!anthropicKey || anthropicKey.trim() === "") {
+                const vault = (await this.memory.getLiveKey("anthropic_api_key")) || (await this.memory.getLiveKey("claude_api_key"));
+                if (vault) anthropicKey = vault;
+            }
+
+            if (!groqKey || groqKey.trim() === "") {
+                const vault = await this.memory.getLiveKey("groq_key");
+                if (vault) groqKey = vault;
+            }
+            if (!cerebrasKey || cerebrasKey.trim() === "") {
+                const vault = await this.memory.getLiveKey("cerebras_key");
+                if (vault) cerebrasKey = vault;
+            }
+            if (!xaiKey || xaiKey.trim() === "") {
+                const vault = (await this.memory.getLiveKey("xai_key")) || (await this.memory.getLiveKey("grok_key"));
+                if (vault) xaiKey = vault;
+            }
+
+            // Intelligent defaults based on available keys
+            if (googleKey) {
+                defaultProviderId = "google"; defaultModelId = "gemini-1.5-flash-latest";
+            } else if (anthropicKey) {
+                defaultProviderId = "anthropic"; defaultModelId = "claude-3-5-sonnet-20240620";
+            } else if (openaiKey) {
+                defaultProviderId = "openai"; defaultModelId = "gpt-4o-mini";
+            } else if (groqKey) {
+                defaultProviderId = "groq"; defaultModelId = "llama3-70b-8192";
+            } else if (cerebrasKey) {
+                defaultProviderId = "cerebras"; defaultModelId = "llama3.1-8b";
+            } else if (xaiKey) {
+                defaultProviderId = "xai"; defaultModelId = "grok-2-latest";
+            } else {
+                // Secondary check for other compatible providers
+                const orVault = await this.memory.getLiveKey("openrouter_key");
+                if (orVault || openrouterKey) {
+                    openrouterKey = orVault || openrouterKey;
+                    defaultProviderId = "openrouter"; defaultModelId = "meta-llama/llama-3-8b-instruct:free";
+                }
+            }
+        };
+
+        await resolveKeys();
+
+        // Check if we need to enter Scavenger Mode based on the selected brain
+        const isApiradarGoal = goal.includes("/apiradar") || goal.trim().toLowerCase() === "scan";
+        const isListGoal = goal.trim().toLowerCase() === "list";
+
+        if (isListGoal) {
+            agentEvents.emitEvent({ type: "status", message: "Operator command acknowledged: Retrieving Sovereign intelligence vectors from Vault..." });
+            const allKeys = await this.memory.getAllLiveKeys();
+            if (Object.keys(allKeys).length === 0) {
+                return "The intelligence vault is currently empty. No live vectors have been scavenged.";
+            }
+
+            let listMsg = "### Sovereign Vault - Live Intelligence Vectors\n\n";
+            for (const [keyName, value] of Object.entries(allKeys)) {
+                // Mask the key partially for display
+                const masked = typeof value === 'string' && value.length > 10 ? `${value.substring(0, 8)}...${value.substring(value.length - 4)}` : value;
+                listMsg += `- **${keyName.replace("_key", "").replace("_api", "").toUpperCase()}**: \`${masked}\`\n`;
+            }
+
+            agentEvents.emitEvent({ type: "output", message: "Intelligence vectors retrieved." });
+            return listMsg;
+        }
+
+        const requiredProvider = this.getRequiredProvider(options?.model);
+
+        const hasRequiredKey =
+            (requiredProvider === 'google' && googleKey && googleKey.trim() !== "") ||
+            (requiredProvider === 'anthropic' && anthropicKey && anthropicKey.trim() !== "") ||
+            (requiredProvider === 'openai' && openaiKey && openaiKey.trim() !== "") ||
+            (requiredProvider === 'groq' && groqKey && groqKey.trim() !== "") ||
+            (requiredProvider === 'cerebras' && cerebrasKey && cerebrasKey.trim() !== "") ||
+            (requiredProvider === 'xai' && xaiKey && xaiKey.trim() !== "") ||
+            (requiredProvider === 'openrouter' && openrouterKey && openrouterKey.trim() !== "") ||
+            (requiredProvider === 'any' && (defaultProviderId !== undefined));
+
+        if (!hasRequiredKey && !isApiradarGoal) {
+            const providerDesc = requiredProvider !== 'any' ? requiredProvider : "the selected AI provider";
+            const errorMsg = `CRITICAL: Mission stalled. Missing live API credentials for ${providerDesc}. Please provide manual credentials or run 'scan' to hunt for them.`;
             log.error(errorMsg);
             agentEvents.emitEvent({ type: "status", message: errorMsg });
-            agentEvents.emitEvent({ type: "output", message: "Deployment Aborted: Missing AI Credentials. Please configure GOOGLE_API_KEY in .env or Settings." });
-            return "Mission failed: Missing credentials.";
+            agentEvents.emitEvent({ type: "output", message: `Deployment Aborted: No intelligence vectors found for ${providerDesc}.` });
+            return `Mission failed: Missing credentials for ${providerDesc}.`;
+        }
+
+        if (isApiradarGoal) {
+            log.warn(`[MISSION: ${missionId}] Initializing Scanner Mode: Hunting for intelligence provider credentials...`);
+            agentEvents.emitEvent({ type: "status", message: `Neural Link Offline. Initializing Scanner Mode...` });
+
+            const scanner = new ApiRadarScanner(this.memory);
+            const huntResults = await scanner.performHunt((msg) => {
+                agentEvents.emitEvent({ type: "action", message: msg });
+            });
+
+            if (huntResults.some(r => r.isLive)) {
+                log.info(`[MISSION: ${missionId}] Scanner mission successful. Tactical Vault replenished.`);
+                agentEvents.emitEvent({ type: "status", message: "Intelligence vectors acquired. Evolving to Sovereign state..." });
+                await resolveKeys(); // Re-read the keys we just vaulted
+            }
+
+            const liveKeys = huntResults.filter(r => r.isLive);
+            const liveCount = liveKeys.length;
+
+            let outputMsg = `Scanner mission complete. Found ${huntResults.length} total keys (${liveCount} live).`;
+            let scannedTxtContent = `================= API RADAR SCAN: ${new Date().toISOString()} =================\n\n`;
+
+            if (huntResults.length > 0) {
+                scannedTxtContent += "ALL DISCOVERED KEYS:\n";
+                for (const k of huntResults) {
+                    scannedTxtContent += `[${k.provider}] ${k.type}: ${k.key} - LIVE: ${k.isLive}\n`;
+                }
+
+                try {
+                    const targetTxtPath = path.resolve(process.cwd(), "scanned.txt");
+                    await fs.appendFile(targetTxtPath, scannedTxtContent + "\n");
+                    agentEvents.emitEvent({ type: "status", message: `Wrote ${huntResults.length} keys to scanned.txt` });
+                } catch (err: any) {
+                    log.warn(`Failed to write to scanned.txt: ${err.message}`);
+                }
+            }
+
+            if (liveCount > 0) {
+                const keyDetails = liveKeys.map(k => `\n- [${k.provider}] ${k.type}: \`${k.key}\``).join("");
+                outputMsg += `\n\nLive Keys:${keyDetails}`;
+
+                // Sync to .env
+                try {
+                    const envPath = path.resolve(process.cwd(), "../../.env");
+                    let envContent = "";
+                    try {
+                        envContent = await fs.readFile(envPath, "utf-8");
+                    } catch (e) {
+                        // Ignore if not exists
+                    }
+
+                    let appendedCount = 0;
+                    for (const lk of liveKeys) {
+                        const envVarName = lk.type.toUpperCase();
+                        if (!envContent.includes(`${envVarName}=`)) {
+                            await fs.appendFile(envPath, `\n${envVarName}="${lk.key}"\n`);
+                            appendedCount++;
+                        }
+                    }
+
+                    if (appendedCount > 0) {
+                        agentEvents.emitEvent({ type: "status", message: `Synced ${appendedCount} new live credentials to .env` });
+                    }
+                } catch (err: any) {
+                    log.warn(`Failed to sync to .env file: ${err.message}`);
+                }
+            }
+
+            agentEvents.emitEvent({ type: "output", message: `Intelligence gathering complete. Found ${liveCount} live vectors. Sovereign brain is now operational.` });
+            return outputMsg;
         }
 
         try {
+            let providerId = defaultProviderId || "google";
+            let modelId = defaultModelId || "gemini-1.5-flash-latest";
+            let baseUrl = "";
+            let apiKey = "";
+
+            if (options?.model) {
+                const resolvedModel = this.resolveSelectedModel(options.model, {
+                    providerId: defaultProviderId,
+                    modelId: defaultModelId
+                }, {
+                    googleKey,
+                    openaiKey,
+                    anthropicKey,
+                    groqKey,
+                    cerebrasKey,
+                    xaiKey,
+                    openrouterKey
+                });
+
+                providerId = resolvedModel.providerId;
+                modelId = resolvedModel.modelId;
+                baseUrl = resolvedModel.baseUrl;
+                apiKey = resolvedModel.apiKey;
+            } else {
+                // Map defaults
+                if (providerId === "google") { baseUrl = "https://generativelanguage.googleapis.com/v1beta/openai"; apiKey = googleKey || ""; }
+                if (providerId === "anthropic") { baseUrl = "https://api.anthropic.com/v1"; apiKey = anthropicKey || ""; }
+                if (providerId === "openai") { baseUrl = "https://api.openai.com/v1"; apiKey = openaiKey || ""; }
+                if (providerId === "xai") { baseUrl = "https://api.x.ai/v1"; apiKey = xaiKey || ""; }
+                if (providerId === "groq") { baseUrl = "https://api.groq.com/openai/v1"; apiKey = groqKey || ""; }
+                if (providerId === "cerebras") { baseUrl = "https://api.cerebras.ai/v1"; apiKey = cerebrasKey || ""; }
+                if (providerId === "openrouter") { baseUrl = "https://openrouter.ai/api/v1"; apiKey = openrouterKey || ""; }
+            }
+
+            log.info(`[MISSION: ${missionId}] Re-initializing engine: ${providerId} (${modelId})`);
+
+            // Inject Custom Native Model
+            this.agent = new NativeAgent();
+            this.agent.setModel({
+                id: modelId as string,
+                provider: providerId as any,
+                baseUrl,
+                apiKey
+            });
+
+            this.agent.setSystemPrompt(systemPrompt);
+            this.agent.setConversationHistory(this.historyToNativeMessages(options?.history));
+            this.agent.setTools(this.getTools({
+                settings: options?.settings,
+                missionId
+            }) as any);
+
             await this.agent.prompt(goal);
             await this.agent.waitForIdle();
-        } catch (promptErr) {
-            log.error(`Agent prompt loop failure: ${promptErr}`);
-            return `Mission error: ${promptErr}`;
+        } catch (promptErr: any) {
+            const errorMsg = `CRITICAL: Agent reasoning process failed. Provider error: ${promptErr.message || promptErr}`;
+            log.error(errorMsg);
+            agentEvents.emitEvent({ type: "status", message: errorMsg });
+            agentEvents.emitEvent({ type: "output", message: `Deployment Failed: The autonomous engine encountered a fatal error from the AI provider. Check your API keys and quotas.` });
+            return `Mission failed: ${promptErr}`;
         }
 
         // Final response from agent state or events
-        const lastMessage = this.agent.state.messages.filter(m => m.role === "assistant").pop();
+        const lastMessage = this.agent.state.messages.filter(m => m.role === "assistant" && (!m.tool_calls || m.tool_calls.length === 0)).pop();
 
-        const responseText = !lastMessage ? "Mission completed with no final report." :
+        const responseText = !lastMessage ? "Mission completed with no final text report." :
             (typeof lastMessage.content === 'string' ? lastMessage.content :
-                Array.isArray(lastMessage.content) ? lastMessage.content.filter(c => 'text' in c).map(c => (c as any).text).join('\n') :
+                Array.isArray(lastMessage.content) ? lastMessage.content.filter(c => 'text' in (c as any)).map(c => (c as any).text).join('\n') :
                     "Mission completed with unparseable report.");
 
         agentEvents.emitEvent({ type: "output", message: responseText });

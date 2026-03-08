@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-FlutterSentinel Automated Bug Bounty Hunter
+SecuritySentinel Automated Bug Bounty Hunter
 Single command to download, test, exploit, and report
 
 Usage:
@@ -79,7 +79,7 @@ class BountyHunter:
             Complete results dictionary
         """
         console.print("\n[bold cyan]═══════════════════════════════════════════════[/bold cyan]")
-        console.print("[bold cyan]  FlutterSentinel Automated Bug Bounty Hunter[/bold cyan]")
+        console.print("[bold cyan]  SecuritySentinel Automated Bug Bounty Hunter[/bold cyan]")
         console.print("[bold cyan]═══════════════════════════════════════════════[/bold cyan]\n")
         
         console.print(f"[bold]Target:[/bold] {self.target}")
@@ -300,7 +300,7 @@ class BountyHunter:
 def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(
-        description="FlutterSentinel Automated Bug Bounty Hunter",
+        description="SecuritySentinel Automated Bug Bounty Hunter",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

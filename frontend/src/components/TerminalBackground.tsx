@@ -58,7 +58,7 @@ const TerminalBackground: React.FC = () => {
     return (
         <canvas
             ref={canvasRef}
-            className="absolute inset-0 pointer-events-none opacity-20"
+            className="fixed inset-0 w-full h-full pointer-events-none opacity-30 z-0 bg-slate-950"
         />
     );
 };

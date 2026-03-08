@@ -44,7 +44,7 @@ const RepeaterModal: React.FC<RepeaterModalProps> = ({ isOpen, onClose, initialD
                 url,
                 headers: parsedHeaders,
                 body
-            });
+            }) as any;
             setResponse(res.response);
         } catch (error: any) {
             setResponse({ error: error.message || 'Connection failed' });

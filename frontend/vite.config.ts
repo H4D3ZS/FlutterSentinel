@@ -2,9 +2,9 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-export default defineConfig(({ command }) => ({
+export default defineConfig(() => ({
     plugins: [react()],
-    base: command === 'serve' ? '/' : '/static/fbh/dist/',
+    base: process.env.VITE_IS_BUILD ? '/static/fbh/dist/' : '/',
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),

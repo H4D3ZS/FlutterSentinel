@@ -1,4 +1,4 @@
-# FlutterSentinel Infrastructure Implementation Plan
+# SecuritySentinel Infrastructure Implementation Plan
 
 > **Goal**: Build a production-grade iOS + Android pentesting platform powered by VPhone (replacing Corellium) with automated vulnerability discovery, dynamic analysis, and bug bounty weaponization.
 >
@@ -23,7 +23,7 @@
 ### What Works
 - ✅ VPhone VM — iOS 26.1 jailbroken, SSH + TollVNC + touch
 - ✅ MobSF — static analysis running at localhost:8000
-- ✅ FlutterSentinel frontend — dashboard at localhost:5173
+- ✅ SecuritySentinel frontend — dashboard at localhost:5173
 - ✅ FBHBot — autonomous agent at localhost:3000
 - ✅ Frida scripting (p12 extractor written → `scripts/p12_key_extractor.js`)
 - ✅ TikTok p12 target: `SessionCheck.bundle/private_key.p12`
@@ -42,7 +42,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│  FlutterSentinel Platform                                           │
+│  SecuritySentinel Platform                                           │
 │                                                                     │
 │  ┌──────────────────────────────────────────────────────────────┐   │
 │  │  Core Pipeline (fbh/)                                        │   │

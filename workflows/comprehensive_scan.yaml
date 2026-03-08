@@ -1,0 +1,9 @@
+name: comprehensive_scan
+description: Full depth security analysis for bug bounty targets
+modules:
+  - name: macho
+  - name: jwt_static
+  - name: flutter_engine
+  - name: deep_scan
+  - name: webview
+  - name: deeplink

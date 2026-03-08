@@ -1,5 +1,5 @@
 """
-WebView Vulnerability Analyzer for FlutterSentinel
+WebView Vulnerability Analyzer for SecuritySentinel
 Detects deep link → WebView injection vulnerabilities
 
 This analyzer identifies:

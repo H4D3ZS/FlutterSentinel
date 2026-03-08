@@ -55,7 +55,7 @@ export function startServer(port: number, memory = defaultMemory, agent = defaul
             }
 
             // SSE Endpoint (Real-time logs)
-            if (req.method === "GET" && req.url === "/api/stream") {
+            if (req.method === "GET" && req.url?.startsWith("/api/stream")) {
                 res.writeHead(200, {
                     "Content-Type": "text/event-stream",
                     "Cache-Control": "no-cache",
@@ -139,6 +139,84 @@ export function startServer(port: number, memory = defaultMemory, agent = defaul
                 res.writeHead(200, headers);
                 res.end(JSON.stringify({ alerts }));
                 return;
+            }
+
+            // AI Hunter Chat / Threat Intelligence
+            if (req.method === "POST" && req.url === "/api/chat") {
+                let body = "";
+                req.on("data", chunk => body += chunk);
+                req.on("end", async () => {
+                    try {
+                        const { message, model, history } = JSON.parse(body);
+                        if (!message) {
+                            res.writeHead(400, headers);
+                            res.end(JSON.stringify({ error: "Message is required" }));
+                            return;
+                        }
+                        const userSettings = await memory.getSettings(user.id);
+
+                        // Unified Intelligent Chat: All requests are handled by the autonomous agent
+                        agent.runMission(message, { settings: userSettings, model, history })
+                            .then(async (response) => {
+                                // Responses are already handled by the agent's output event via SSE
+                                // We send the final content back as the final response
+                                res.writeHead(200, headers);
+                                res.end(JSON.stringify({ content: response }));
+                            })
+                            .catch(err => {
+                                log.error(`Chat mission failure: ${err}`);
+                                res.writeHead(200, headers);
+                                res.end(JSON.stringify({ content: "Operational Error: Autonomous reasoning engine failed to synthesize a response." }));
+                            });
+
+                    } catch (e) {
+                        res.writeHead(400, headers);
+                        res.end(JSON.stringify({ error: "Invalid JSON" }));
+                    }
+                });
+                return;
+            }
+
+            // Chat History Management
+            if (req.method === "GET" && req.url === "/api/chat/history") {
+                const sessions = await memory.getChatSessions(user.id);
+                res.writeHead(200, headers);
+                res.end(JSON.stringify({ sessions }));
+                return;
+            }
+
+            if (req.method === "POST" && req.url === "/api/chat/history") {
+                let body = "";
+                req.on("data", chunk => body += chunk);
+                req.on("end", async () => {
+                    try {
+                        const { session } = JSON.parse(body);
+                        await memory.saveChatSession(user.id, session);
+                        res.writeHead(200, headers);
+                        res.end(JSON.stringify({ status: "ok" }));
+                    } catch (e) {
+                        res.writeHead(400, headers);
+                        res.end(JSON.stringify({ error: "Invalid JSON" }));
+                    }
+                });
+                return;
+            }
+
+            if (req.method === "DELETE" && req.url === "/api/chat/history") {
+                await memory.clearChatSessions(user.id);
+                res.writeHead(200, headers);
+                res.end(JSON.stringify({ status: "ok" }));
+                return;
+            }
+
+            if (req.method === "DELETE" && req.url?.startsWith("/api/chat/history/")) {
+                const sessionId = req.url.split("/").pop();
+                if (sessionId) {
+                    await memory.deleteChatSession(user.id, sessionId);
+                    res.writeHead(200, headers);
+                    res.end(JSON.stringify({ status: "ok" }));
+                    return;
+                }
             }
 
             // Sovereign Intelligence Explorer

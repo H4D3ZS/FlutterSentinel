@@ -58,16 +58,20 @@ const Settings: React.FC = () => {
 
     const fetchSettings = async () => {
         try {
-            const res = await nodeApi.get('/settings');
+            const res = await nodeApi.get('/settings') as any;
             const live = res.data?.settings || {};
             // Merge live settings with defaults so UI always shows something
             setSettings({
-                'H1_USER': '',
-                'H1_TOKEN': '',
-                'BC_TOKEN': '',
-                'AI_API_KEY': '',
-                'SLACK_WEBHOOK': '',
-                'DISCORD_WEBHOOK': '',
+                'google_api_key': '',
+                'google_cx': '',
+                'openai_api_key': '',
+                'anthropic_api_key': '',
+                'shodan_api_key': '',
+                'h1_user': '',
+                'h1_token': '',
+                'bc_token': '',
+                'slack_webhook': '',
+                'discord_webhook': '',
                 'MOBSF_SERVER': 'http://localhost:8000',
                 'MOBSF_API_KEY': '',
                 'FBHBOT_URL': 'http://localhost:3000',
@@ -130,10 +134,13 @@ const Settings: React.FC = () => {
             desc: 'Configure external platform credentials and AI keys.',
             icon: Key,
             fields: [
-                { key: 'H1_USER', label: 'HackerOne Username', type: 'text', placeholder: 'your_h1_user' },
-                { key: 'H1_TOKEN', label: 'HackerOne API Token', type: 'password', placeholder: '••••••••••••••••' },
-                { key: 'BC_TOKEN', label: 'Bugcrowd API Token', type: 'password', placeholder: '••••••••••••••••' },
-                { key: 'AI_API_KEY', label: 'AI Core API Key', type: 'password', placeholder: '••••••••••••••••' },
+                { key: 'h1_user', label: 'HackerOne Username', type: 'text', placeholder: 'your_h1_user' },
+                { key: 'h1_token', label: 'HackerOne API Token', type: 'password', placeholder: '••••••••••••••••' },
+                { key: 'bc_token', label: 'Bugcrowd API Token', type: 'password', placeholder: '••••••••••••••••' },
+                { key: 'google_api_key', label: 'Google Gemini API Key', type: 'password', placeholder: 'AIzaSy...' },
+                { key: 'openai_api_key', label: 'OpenAI API Key', type: 'password', placeholder: 'sk-proj-...' },
+                { key: 'anthropic_api_key', label: 'Anthropic API Key', type: 'password', placeholder: 'sk-ant-...' },
+                { key: 'shodan_api_key', label: 'Shodan API Key', type: 'password', placeholder: '••••••••••••••••' },
             ]
         },
         {
@@ -142,8 +149,8 @@ const Settings: React.FC = () => {
             desc: 'Set up real-time alerting for critical findings.',
             icon: Bell,
             fields: [
-                { key: 'SLACK_WEBHOOK', label: 'Slack Webhook URL', type: 'text', placeholder: 'https://hooks.slack.com/services/...' },
-                { key: 'DISCORD_WEBHOOK', label: 'Discord Webhook URL', type: 'text', placeholder: 'https://discord.com/api/webhooks/...' },
+                { key: 'slack_webhook', label: 'Slack Webhook URL', type: 'text', placeholder: 'https://hooks.slack.com/services/...' },
+                { key: 'discord_webhook', label: 'Discord Webhook URL', type: 'text', placeholder: 'https://discord.com/api/webhooks/...' },
             ]
         },
         {

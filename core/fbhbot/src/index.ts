@@ -12,6 +12,15 @@ import fs from "node:fs";
 
 const log = createSubsystemLogger("main");
 
+// Phase 34: Global Crash Protection
+process.on('unhandledRejection', (reason, promise) => {
+    log.error(`CRITICAL: Unhandled Rejection at: ${promise} reason: ${reason}`);
+});
+
+process.on('uncaughtException', (err) => {
+    log.error(`CRITICAL: Uncaught Exception: ${err}`);
+});
+
 // Initialize Global Brain
 const stateDir = process.env.FBHBOT_STATE_DIR || "./state";
 if (!fs.existsSync(stateDir)) fs.mkdirSync(stateDir, { recursive: true });
@@ -118,7 +127,7 @@ export async function startServer(port: number) {
 }
 
 // Phase 33: Automatic Server Start in Dev Mode
-if (process.argv[1]?.endsWith('src/index.ts') || process.argv[1]?.endsWith('src/index.js')) {
-    const port = Number(process.env.PORT) || 3000;
+if (process.argv[1]?.endsWith('src/index.ts') || process.argv[1]?.endsWith('src/index.js') || process.argv[1]?.endsWith('dist/index.js')) {
+    const port = Number(process.env.PORT) || 3001;
     startServer(port).catch(err => log.error(`Failed to start server: ${err}`));
 }

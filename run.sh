@@ -1,71 +1,67 @@
 #!/bin/bash
 
-# Flutter Bounty Hunter Unified Launcher
-# This script handles the environment setup and launches the improved MobSF-integrated platform.
+# ============================================================
+# SecuritySentinel — Unified Launcher
+# Starts: Backend (4000) · Frontend (5173) · FBHBot (3000) · MobSF (8000)
+# ============================================================
 
-# Color definitions
+set -e
+
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
 RED='\033[0;31m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-echo -e "${BLUE}[*] Flutter Bounty Hunter Launcher${NC}"
-
-# Get the directory of this script
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$DIR"
 
-# 1. Check for fbh package installation
-echo -e "${BLUE}[*] Verifying FBH package installation...${NC}"
+echo -e "${BLUE}"
+cat << "EOF"
+╔══════════════════════════════════════════════════════════╗
+║          SecuritySentinel — Unified War Room              ║
+╚══════════════════════════════════════════════════════════╝
+EOF
+echo -e "${NC}"
+
+# ── 1. Verify FBH Python package ────────────────────────────
+echo -e "${BLUE}[*] Verifying FBH package...${NC}"
 if ! python3 -c "import fbh" 2>/dev/null; then
-    echo -e "${RED}[!] FBH package not found in current environment.${NC}"
-    echo -e "${BLUE}[*] Installing fbh in editable mode...${NC}"
-    pip3 install -e . --break-system-packages
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}[!] Failed to install FBH package.${NC}"
-        exit 1
+    echo -e "${YELLOW}[!] Installing FBH package...${NC}"
+    pip3 install -e . --break-system-packages --quiet
+fi
+echo -e "${GREEN}[+] FBH package ready.${NC}"
+
+# ── 2. Install root node_modules if needed ──────────────────
+if [ ! -d "node_modules/.bin/concurrently" ] && [ ! -f "node_modules/.bin/concurrently" ]; then
+    echo -e "${YELLOW}[*] Installing root Node dependencies...${NC}"
+    npm install --silent
+fi
+
+# ── 3. Clear stale ports ────────────────────────────────────
+echo -e "${BLUE}[*] Clearing ports 3001 4000 5173 5174 8000...${NC}"
+lsof -ti:3001,4000,5173,5174,8000 | xargs kill -9 2>/dev/null || true
+sleep 1
+
+# ── 4. Load DATABASE_URL from backend/.env (only this var, not PORT etc.) ──
+if [ -f "$DIR/backend/.env" ]; then
+    _DB=$(grep -E '^DATABASE_URL=' "$DIR/backend/.env" | tail -1 | cut -d'=' -f2-)
+    if [ -n "$_DB" ]; then
+        DATABASE_URL="$_DB"
     fi
-    echo -e "${GREEN}[+] FBH installed successfully.${NC}"
-else
-    echo -e "${GREEN}[+] FBH package detected.${NC}"
 fi
+DATABASE_URL="${DATABASE_URL:-postgresql://hades@localhost:5432/postgres}"
+export DATABASE_URL
 
-# 2. Check MOBSF directory
-if [ ! -d "core/mobsf" ]; then
-    echo -e "${RED}[!] core/mobsf directory not found!${NC}"
-    exit 1
-fi
+# ── 5. Start all services ───────────────────────────────────
+echo -e ""
+echo -e "${GREEN}Services starting:${NC}"
+echo -e "  ${BLUE}Frontend:${NC}    http://localhost:5173  ← Main UI"
+echo -e "  ${BLUE}Backend:${NC}     http://localhost:4000"
+echo -e "  ${BLUE}FBHBot:${NC}      http://localhost:3001"
+echo -e "  ${YELLOW}MobSF:${NC}       internal background service"
+echo -e ""
+echo -e "${YELLOW}Press Ctrl+C to stop all services${NC}"
+echo -e ""
 
-# 3. Launch MobSF logic
-echo -e "${BLUE}[*] Launching FBH Platform...${NC}"
-cd core/mobsf
-
-# Check if running via poetry or standard
-if [ -f "poetry.lock" ]; then
-    echo -e "${BLUE}[*] Detected Poetry environment in MOBSF${NC}"
-    # Ensure poetry env has access to parent fbh package (via python path or install)
-    # Since 'pip install -e .' installed it to the global/user python, poetry might not see it 
-    # unless we tell poetry to use system site packages or we install it inside poetry.
-    
-    # Try to install the parent ../ directory into poetry venv
-    echo -e "${BLUE}[*] Linking FBH to Poetry environment...${NC}"
-    python3 -m poetry run pip install -e ..
-    
-    # Run the existing run.sh logic but adapted here to ensure we control execution
-    # Using the arguments passed to this script
-    IP="${1%%:*}"
-    PORT="${1##*:}"
-    
-    if [ -z "$1" ]; then
-        IP='127.0.0.1'
-        PORT='8000'
-    fi
-    
-    echo -e "${GREEN}[+] Starting Server at http://${IP}:${PORT}/fbh/${NC}"
-    # Using exec to replace current process
-    exec python3 -m poetry run gunicorn -b ${IP}:${PORT} mobsf.MobSF.wsgi:application --workers=1 --threads=10 --timeout=3600 \
-        --log-level=info --log-file=- --access-logfile=- --error-logfile=- --capture-output
-else
-    # Fallback to standard execution if poetry missing (legacy/docker cases)
-    ./run.sh "$@"
-fi
+DATABASE_URL="$DATABASE_URL" npm run dev:all

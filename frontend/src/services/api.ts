@@ -1,4 +1,4 @@
-import axios, { InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+import axios from 'axios';
 
 const axiosInstance = axios.create({
     baseURL: '/fbh/api',
@@ -8,16 +8,28 @@ const axiosInstance = axios.create({
 });
 
 // Node.js backend instance (port 4000, proxied via Vite as /api)
-const nodeApi = axios.create({
+export const nodeApi = axios.create({
     baseURL: '/api',
     headers: { 'Content-Type': 'application/json' },
 });
 
 // Attach auth token to Node backend requests too
-nodeApi.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+nodeApi.interceptors.request.use((config: any) => {
     const token = localStorage.getItem('fbh_access_token');
     if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
     return config;
+});
+
+// Response interceptor for Node API to handle 401s specifically
+nodeApi.interceptors.response.use((response: any) => {
+    return response;
+}, async (error: any) => {
+    if (error.response?.status === 401) {
+        // Use the store to logout - this will trigger a redirect via state change in ProtectedRoute
+        const { logout } = (await import('@/stores/useAuthStore')).useAuthStore.getState();
+        logout();
+    }
+    return Promise.reject(error);
 });
 
 export const instance = axiosInstance;
@@ -64,8 +76,8 @@ export interface GlobalStats {
     severity_distribution: Record<string, number>;
 }
 
-// Request interceptor to add the access token to every request
-axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+// Attach auth token to MobSF requests
+axiosInstance.interceptors.request.use((config: any) => {
     const token = localStorage.getItem('fbh_access_token');
     if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -76,41 +88,24 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 });
 
 // Response interceptor to handle token refresh or redirect to login
-axiosInstance.interceptors.response.use((response: AxiosResponse) => {
+axiosInstance.interceptors.response.use((response: any) => {
     return response;
 }, async (error: any) => {
-    const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true;
-        try {
-            const refreshToken = localStorage.getItem('fbh_refresh_token');
-            if (!refreshToken) {
-                throw new Error('No refresh token available');
-            }
-
-            const res = await axios.post('/fbh/api/token/refresh/', { refresh: refreshToken });
-            const { access } = res.data;
-            localStorage.setItem('fbh_access_token', access);
-            if (axiosInstance.defaults.headers.common) {
-                axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${access}`;
-            }
-            return axiosInstance(originalRequest);
-        } catch (err) {
-            // Refresh token expired or failed
-            localStorage.removeItem('fbh_access_token');
-            localStorage.removeItem('fbh_refresh_token');
-            window.location.href = '/fbh/login';
-        }
+    if (error.response?.status === 401) {
+        const { logout } = (await import('@/stores/useAuthStore')).useAuthStore.getState();
+        logout();
     }
     return Promise.reject(error);
 });
 
 const methods = {
-    login: async (username: string, password: string) => {
-        const response = await axiosInstance.post('/token/', { username, password });
-        const { access, refresh } = response.data;
-        localStorage.setItem('fbh_access_token', access);
-        localStorage.setItem('fbh_refresh_token', refresh);
+    login: async (email: string, password: string) => {
+        const response = await nodeApi.post('/auth/login', { email, password }) as any;
+        const { token, tier, refresh } = response.data;
+        localStorage.setItem('fbh_access_token', token);
+        if (refresh) {
+            localStorage.setItem('fbh_refresh_token', refresh);
+        }
         return response.data;
     },
 
@@ -176,7 +171,7 @@ const methods = {
     },
 
     getMobSFScans: async () => {
-        const response = await axiosInstance.get('/mobsf/scans/');
+        const response = await nodeApi.get('/mobsf/scans');
         return response.data;
     },
 
@@ -245,17 +240,17 @@ const methods = {
 
     // Missions & Playbooks
     getPlaybooks: async () => {
-        const response = await axiosInstance.get('/playbooks/');
+        const response = await nodeApi.get('/playbooks');
         return response.data;
     },
 
     getMissions: async () => {
-        const response = await axiosInstance.get('/missions/');
+        const response = await nodeApi.get('/missions');
         return response.data;
     },
 
     triggerMission: async (target: string, playbookName: string, playbookId?: string, strategy?: string) => {
-        const response = await axiosInstance.post('/missions/trigger/', {
+        const response = await nodeApi.post('/mission', {
             target,
             playbook_name: playbookName,
             playbook_id: playbookId,
@@ -265,7 +260,28 @@ const methods = {
     },
 
     createSchedule: async (target: string, frequency: string) => {
-        const response = await axiosInstance.post('/missions/schedule/', { target, frequency });
+        const response = await nodeApi.post('/missions/schedule', { target, frequency });
+        return response.data;
+    },
+
+    // Chat History
+    getChatHistory: async () => {
+        const response = await nodeApi.get('/chat/history');
+        return response.data;
+    },
+
+    saveChatSession: async (session: any) => {
+        const response = await nodeApi.post('/chat/history', { session });
+        return response.data;
+    },
+
+    deleteChatSession: async (id: string) => {
+        const response = await nodeApi.delete(`/chat/history/${id}`);
+        return response.data;
+    },
+
+    clearChatHistory: async () => {
+        const response = await nodeApi.delete('/chat/history');
         return response.data;
     },
 
@@ -300,7 +316,7 @@ const methods = {
         const response = await axiosInstance.get(`/reports/download/${targetName}/?format=${format}`, {
             responseType: 'blob'
         });
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const url = window.URL.createObjectURL(new Blob([response.data as any]));
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', `FBH_Report_${targetName}.${format}`);
@@ -310,7 +326,7 @@ const methods = {
     },
 
     getSwarmAlerts: async () => {
-        const response = await axiosInstance.get('/alerts/swarm/');
+        const response = await nodeApi.get('/alerts/swarm');
         return response.data;
     },
 
@@ -426,17 +442,17 @@ const methods = {
 
     // Settings (existing methods)
     getSettings: async () => {
-        const response = await axiosInstance.get<{ settings: Record<string, string> }>('/settings/');
+        const response = await nodeApi.get<{ settings: Record<string, string> }>('/settings');
         return response.data;
     },
 
     updateSettings: async (settings: Record<string, string>) => {
-        const response = await axiosInstance.post('/settings/save/', settings);
+        const response = await nodeApi.post('/settings/save', settings);
         return response.data;
     },
 
     saveSettings: (data: Record<string, string>) => {
-        return axiosInstance.post('/settings/save/', data);
+        return nodeApi.post('/settings/save', data);
     },
 
     // Other existing methods
@@ -459,7 +475,7 @@ const methods = {
         const response = await axiosInstance.get(`/targets/${name}/nuclei/export/`, {
             responseType: 'blob',
         });
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const url = window.URL.createObjectURL(new Blob([response.data as any]));
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', `${name}_nuclei_templates.zip`);
@@ -484,12 +500,12 @@ const methods = {
         formData.append('file', file);
         const response = await axiosInstance.post('/upload/', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
-            onUploadProgress: (progressEvent) => {
+            onUploadProgress: (progressEvent: any) => {
                 if (onProgress && progressEvent.total) {
                     onProgress(Math.round((progressEvent.loaded * 100) / progressEvent.total));
                 }
             }
-        });
+        } as any);
         return response.data;
     },
 };

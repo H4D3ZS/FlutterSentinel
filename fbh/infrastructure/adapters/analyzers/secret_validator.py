@@ -27,12 +27,18 @@ class SecretValidator:
     Validates discovered secrets to prove impact for bug bounty reports
     """
     
-    def __init__(self, timeout: int = 10):
+    def __init__(self, timeout: int = 10, bundle_id: str = None):
         self.timeout = timeout
+        self.bundle_id = bundle_id
         self.session = requests.Session()
         self.session.headers.update({
             "User-Agent": "FlutterBountyHunter/1.0 (Security Research)"
         })
+        if self.bundle_id:
+            self.session.headers.update({
+                "X-Ios-Bundle-Identifier": self.bundle_id,
+                "X-Android-Package": self.bundle_id
+            })
     
     def validate(self, secret_type: str, secret_value: str) -> ValidationResult:
         """Route to appropriate validator based on secret type"""
@@ -50,6 +56,8 @@ class SecretValidator:
             "twilio_key": self._validate_twilio,
             "sendgrid_key": self._validate_sendgrid,
             "openai_key": self._validate_openai,
+            "gemini_api_key": self._validate_gemini,
+            "anthropic_api_key": self._validate_anthropic,
         }
         
         validator = validators.get(secret_type)
@@ -71,6 +79,8 @@ class SecretValidator:
             ("Geocoding", f"https://maps.googleapis.com/maps/api/geocode/json?address=test&key={api_key}"),
             ("Places", f"https://maps.googleapis.com/maps/api/place/textsearch/json?query=test&key={api_key}"),
             ("Directions", f"https://maps.googleapis.com/maps/api/directions/json?origin=NYC&destination=LA&key={api_key}"),
+            ("Identity Toolkit", f"https://www.googleapis.com/identitytoolkit/v3/relyingparty/getProjectConfig?key={api_key}"),
+            ("Gemini", f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"),
         ]
         
         working_apis = []
@@ -80,10 +90,22 @@ class SecretValidator:
                 response = self.session.get(url, timeout=self.timeout)
                 data = response.json()
                 
-                if data.get("status") in ["OK", "ZERO_RESULTS"]:
+                is_working = False
+                if isinstance(data, dict):
+                    if data.get("status") in ["OK", "ZERO_RESULTS"]:
+                        is_working = True
+                    elif api_name == "Identity Toolkit" and "error" not in data:
+                        is_working = True
+                    elif api_name == "Gemini" and "models" in data:
+                        is_working = True
+                
+                if is_working:
                     working_apis.append(api_name)
                     console.print(f"  [green]✓ {api_name} API: Working[/green]")
-                elif data.get("status") == "REQUEST_DENIED":
+                elif isinstance(data, dict) and "error" in data:
+                    error_msg = data["error"].get("message", "Denied")
+                    console.print(f"  [red]✗ {api_name} API: {error_msg[:50]}[/red]")
+                else:
                     console.print(f"  [red]✗ {api_name} API: Denied[/red]")
                     
             except Exception as e:
@@ -211,7 +233,10 @@ class SecretValidator:
         console.print(f"[cyan]Testing Firebase database...[/cyan]")
         
         # Normalize URL
-        if not database_url.endswith(".json"):
+        if not database_url.startswith("http"):
+            database_url = f"https://{database_url}"
+            
+        if ".firebaseio.com" in database_url and not database_url.endswith(".json"):
             database_url = database_url.rstrip("/") + "/.json"
         
         try:
@@ -503,6 +528,72 @@ class SecretValidator:
             details="Key validation failed"
         )
     
+    def _validate_gemini(self, api_key: str) -> ValidationResult:
+        """Validate Gemini (Google AI) API key"""
+        console.print(f"[cyan]Testing Gemini API key...[/cyan]")
+        url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
+        try:
+            response = self.session.get(url, timeout=self.timeout)
+            if response.status_code == 200:
+                console.print(f"  [green]✓ Valid Gemini key[/green]")
+                return ValidationResult(
+                    secret_type="gemini_api_key",
+                    secret_value=api_key[:20] + "...",
+                    is_valid=True,
+                    access_level="write",
+                    details="Can access Google Generative AI models"
+                )
+        except Exception as e:
+            console.print(f"  [yellow]Error: {e}[/yellow]")
+            
+        return ValidationResult(
+            secret_type="gemini_api_key",
+            secret_value=api_key[:20] + "...",
+            is_valid=False,
+            details="Gemini API validation failed"
+        )
+    
+    def _validate_anthropic(self, api_key: str) -> ValidationResult:
+        """Validate Anthropic API key"""
+        console.print(f"[cyan]Testing Anthropic API key...[/cyan]")
+        
+        try:
+            response = self.session.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": api_key,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json"
+                },
+                json={
+                    "model": "claude-3-haiku-20240307",
+                    "max_tokens": 1,
+                    "messages": [{"role": "user", "content": "Hello"}]
+                },
+                timeout=self.timeout
+            )
+            
+            # Anthropic returns 400 for bad request (e.g. billing), 401 for invalid key
+            if response.status_code not in [401, 403]:
+                console.print(f"  [green]✓ Valid Anthropic key[/green]")
+                return ValidationResult(
+                    secret_type="anthropic_api_key",
+                    secret_value=api_key[:20] + "...",
+                    is_valid=True,
+                    access_level="write",
+                    details="Can access Anthropic Claude API"
+                )
+                
+        except Exception as e:
+            console.print(f"  [yellow]Error: {e}[/yellow]")
+        
+        return ValidationResult(
+            secret_type="anthropic_api_key",
+            secret_value=api_key[:20] + "...",
+            is_valid=False,
+            details="Anthropic key validation failed"
+        )
+    
     def validate_all(self, secrets: list) -> list[ValidationResult]:
         """Validate all discovered secrets"""
         results = []
@@ -518,6 +609,23 @@ class SecretValidator:
         valid_count = sum(1 for r in results if r.is_valid)
         console.print(f"\n[bold]Validation Summary: {valid_count}/{len(results)} valid[/bold]")
         
+        return results
+
+    def validate_batch(self, secrets: list) -> list:
+        """Compatibility method for DeepScanner"""
+        results = []
+        for secret_val in secrets:
+            if not secret_val: continue
+            # Heuristic to determine type if not provided
+            secret_type = "google_api_key" if secret_val.startswith("AIza") else "unknown"
+            res = self.validate(secret_type, secret_val)
+            if res.is_valid:
+                results.append({
+                    'service': res.secret_type,
+                    'key': res.secret_value,
+                    'validation_response': res.details,
+                    'location': "Deep Scan Discovery"
+                })
         return results
 
 

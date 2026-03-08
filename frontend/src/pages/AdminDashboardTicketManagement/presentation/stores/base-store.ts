@@ -488,7 +488,7 @@ export const useBaseStore = create<BaseStore>((set, get) => {
                 const token = localStorage.getItem('fbh_access_token');
                 const response = await axios.get('/api/admin/users', {
                     headers: token ? { Authorization: `Bearer ${token}` } : {},
-                });
+                }) as any;
 
                 const liveUsers: Array<{
                     id: string;

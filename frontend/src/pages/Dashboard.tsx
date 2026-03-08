@@ -113,8 +113,14 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
                 total_scans: liveTargets.length,
                 severity_distribution: {}
             });
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to fetch dashboard data:', error);
+            // If we get a 401, the interceptor will handle redirect, 
+            // but we should set refreshing to false here
+            if (error.response?.status === 401) {
+                setRefreshing(false);
+                return; // Stop further execution
+            }
         } finally {
             setLoading(false);
             setRefreshing(false);
@@ -123,7 +129,11 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
 
     useEffect(() => {
         fetchData();
-        const interval = setInterval(fetchData, 30000);
+        const interval = setInterval(() => {
+            if (localStorage.getItem('fbh_access_token')) {
+                fetchData();
+            }
+        }, 30000);
 
         // SSE Subscription for Live Activity
         const eventSource = new EventSource(`${instance.defaults.baseURL}/fbhbot/stream`);
@@ -146,6 +156,11 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
             } catch (e) {
                 console.error('Failed to parse dashboard SSE:', e);
             }
+        };
+
+        eventSource.onerror = (err: any) => {
+            console.warn('Dashboard SSE Connection Lost. Attempting cleanup...');
+            eventSource.close();
         };
 
         return () => {
@@ -291,10 +306,10 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
                         <CardContent className="p-10">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
                                 {[
-                                    { label: 'MSTG-STORAGE', score: 92, status: 'OPTIMIZED' },
-                                    { label: 'MSTG-CRYPTO', score: 78, status: 'HARDENING' },
-                                    { label: 'MSTG-AUTH', score: 85, status: 'NOMINAL' },
-                                    { label: 'MSTG-NETWORK', score: 81, status: 'NOMINAL' }
+                                    { label: 'OWASP MOBILE', score: stats?.compliance?.mobile || 0, status: stats?.compliance?.mobile ? (stats.compliance.mobile > 80 ? 'NOMINAL' : 'WARNING') : 'NOT EVALUATED' },
+                                    { label: 'OWASP WEB', score: stats?.compliance?.web || 0, status: stats?.compliance?.web ? (stats.compliance.web > 80 ? 'NOMINAL' : 'WARNING') : 'NOT EVALUATED' },
+                                    { label: 'OWASP LLM', score: stats?.compliance?.llm || 0, status: stats?.compliance?.llm ? (stats.compliance.llm > 80 ? 'NOMINAL' : 'WARNING') : 'NOT EVALUATED' },
+                                    { label: 'MASVS CLOUD', score: stats?.compliance?.mobile || 0, status: stats?.compliance?.mobile ? (stats.compliance.mobile > 80 ? 'NOMINAL' : 'WARNING') : 'NOT EVALUATED' }
                                 ].map((cat, idx) => (
                                     <div key={cat.label} className="space-y-4">
                                         <div className="flex justify-between items-end px-1">
@@ -306,11 +321,11 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
                                                 initial={{ width: 0 }}
                                                 animate={{ width: `${cat.score}%` }}
                                                 transition={{ duration: 1, delay: idx * 0.1 }}
-                                                className={cn("h-full", cat.score > 90 ? 'bg-green-500' : 'bg-primary')}
+                                                className={cn("h-full", cat.score > 90 ? 'bg-green-500' : (cat.score > 70 ? 'bg-primary' : 'bg-orange-500'))}
                                             />
                                         </div>
                                         <div className="flex items-center gap-2 text-[9px] font-mono text-slate-600 uppercase font-black">
-                                            <div className={cn("w-1.5 h-1.5 rounded-full", cat.score > 90 ? 'bg-green-500' : 'bg-primary')} />
+                                            <div className={cn("w-1.5 h-1.5 rounded-full", cat.score > 90 ? 'bg-green-500' : (cat.score > 70 ? 'bg-primary' : 'bg-orange-500'))} />
                                             {cat.status}
                                         </div>
                                     </div>

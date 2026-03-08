@@ -81,7 +81,7 @@ export function ScanResults({ onForgeStart }: { onForgeStart?: () => void }) {
             console.log('[ScanResults] Raw API response:', result);
 
             // Handle both MobSF direct response formats
-            const rawScans = result.content || result.scans || (Array.isArray(result) ? result : []);
+            const rawScans = (result as any).content || (result as any).scans || (Array.isArray(result) ? result : []);
             console.log('[ScanResults] Extracted rawScans:', rawScans);
 
             // Normalize scan objects for the UI
@@ -119,24 +119,24 @@ export function ScanResults({ onForgeStart }: { onForgeStart?: () => void }) {
 
             // Handle permissions for both Android and iOS
             let permissions: string[] = [];
-            if (result.permissions) {
-                if (Array.isArray(result.permissions.dangerous)) {
-                    permissions = result.permissions.dangerous;
-                } else if (typeof result.permissions === 'object' && !Array.isArray(result.permissions)) {
+            if ((result as any).permissions) {
+                if (Array.isArray((result as any).permissions.dangerous)) {
+                    permissions = (result as any).permissions.dangerous;
+                } else if (typeof (result as any).permissions === 'object' && !Array.isArray((result as any).permissions)) {
                     // iOS permissions are keys in an object
-                    permissions = Object.keys(result.permissions);
+                    permissions = Object.keys((result as any).permissions);
                 }
             }
 
             setScanDetail({
-                app_name: result.app_name || 'Unknown',
-                package_name: result.package_name || result.bundle_id || '',
-                version: result.version || result.app_version || '',
-                security_score: result.security_score || 0,
+                app_name: (result as any).app_name || 'Unknown',
+                package_name: (result as any).package_name || (result as any).bundle_id || '',
+                version: (result as any).version || (result as any).app_version || '',
+                security_score: (result as any).security_score || 0,
                 findings: parseFindings(result),
                 permissions: permissions,
-                hardcoded_secrets: result.secrets || [],
-                urls: result.urls || [],
+                hardcoded_secrets: (result as any).secrets || [],
+                urls: (result as any).urls || [],
             });
         } catch (error) {
             console.error('Failed to load scan detail:', error);
@@ -358,11 +358,11 @@ export function ScanResults({ onForgeStart }: { onForgeStart?: () => void }) {
             console.log('✅ FBHBot analysis complete:', results);
 
             // Update state with results
-            if (results.secrets) setSecretValidation(results.secrets);
-            if (results.flutter) setFlutterFindings(results.flutter);
-            if (results.intents) setIntentFindings(results.intents);
-            if (results.webview) setWebviewFindings(results.webview);
-            if (results.exploits) setExploitChains(results.exploits);
+            if ((results as any).secrets) setSecretValidation((results as any).secrets);
+            if ((results as any).flutter) setFlutterFindings((results as any).flutter);
+            if ((results as any).intents) setIntentFindings((results as any).intents);
+            if ((results as any).webview) setWebviewFindings((results as any).webview);
+            if ((results as any).exploits) setExploitChains((results as any).exploits);
 
         } catch (error) {
             console.error("❌ FBHBot analysis failed:", error);

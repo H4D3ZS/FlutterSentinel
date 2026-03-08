@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 
-const FBHBOT_URL = process.env.FBHBOT_URL || 'http://localhost:3000';
+const FBHBOT_URL = process.env.FBHBOT_URL || 'http://localhost:3001';
 
 export class FBHBotService {
     private client: AxiosInstance;
@@ -69,6 +69,15 @@ export class FBHBotService {
     }
 
     /**
+     * Send chat to FBHBot intelligence core
+     */
+    async sendChat(message: string, model?: string, history?: Array<{ role: 'user' | 'assistant'; content: string }>): Promise<any> {
+        if (!this.token) await this.login();
+        const response = await this.client.post('/api/chat', { message, model, history });
+        return response.data;
+    }
+
+    /**
      * Get missions
      */
     async getMissions(): Promise<any> {
@@ -78,11 +87,36 @@ export class FBHBotService {
     }
 
     /**
-     * Proxy SSE stream from FBHBot to our client
-     * This is handled directly in server.ts but helper for URL exists
+     * Get authenticated proxy SSE stream URL
      */
-    getStreamUrl(): string {
-        return `${FBHBOT_URL}/api/stream`;
+    async getAuthenticatedStreamUrl(): Promise<string> {
+        if (!this.token) await this.login();
+        return `${FBHBOT_URL}/api/stream?token=${this.token}`;
+    }
+
+    // --- Chat History Management ---
+    async getChatHistory(): Promise<any> {
+        if (!this.token) await this.login();
+        const response = await this.client.get('/api/chat/history');
+        return response.data;
+    }
+
+    async saveChatSession(session: any): Promise<any> {
+        if (!this.token) await this.login();
+        const response = await this.client.post('/api/chat/history', { session });
+        return response.data;
+    }
+
+    async deleteChatSession(id: string): Promise<any> {
+        if (!this.token) await this.login();
+        const response = await this.client.delete(`/api/chat/history/${id}`);
+        return response.data;
+    }
+
+    async deleteChatHistory(): Promise<any> {
+        if (!this.token) await this.login();
+        const response = await this.client.delete('/api/chat/history');
+        return response.data;
     }
 }
 

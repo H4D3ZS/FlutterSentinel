@@ -35,6 +35,7 @@ export async function initializeDatabase() {
                 email TEXT UNIQUE NOT NULL,
                 password_hash TEXT NOT NULL,
                 name TEXT,
+                avatar_url TEXT,
                 role TEXT DEFAULT 'user',
                 created_at BIGINT NOT NULL,
                 updated_at BIGINT NOT NULL,
@@ -80,6 +81,23 @@ export async function initializeDatabase() {
             CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id ON refresh_tokens(user_id);
             CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
             CREATE INDEX IF NOT EXISTS idx_api_keys_user_id ON api_keys(user_id);
+        `);
+
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS targets (
+                id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+                user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
+                name TEXT NOT NULL,
+                package TEXT NOT NULL,
+                platform TEXT NOT NULL,
+                status TEXT DEFAULT 'idle',
+                scan_progress INTEGER DEFAULT 0,
+                created_at BIGINT NOT NULL,
+                updated_at BIGINT NOT NULL,
+                stats JSONB DEFAULT '{"total_findings": 0, "findings_by_severity": {"critical": 0, "high": 0, "medium": 0, "low": 0, "info": 0}}'::jsonb,
+                compliance JSONB DEFAULT '{"framework": "MASVS v4.0", "overall_score": 0, "categories": []}'::jsonb,
+                UNIQUE(user_id, package)
+            )
         `);
 
         await db.query(`

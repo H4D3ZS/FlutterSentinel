@@ -99,6 +99,5 @@ class DeepLinkMatcher(Scanner):
             'description': desc,
             'location': loc,
             'poc': f"Target: {loc}\nSnippet: {snippet}",
-            'remediation': "Ensure android:exported=\"false\" for internal components, or
-                or enforce custom permissions with protectionLevel=\"signature\"."
+            'remediation': "Ensure android:exported=\"false\" for internal components, or enforce custom permissions with protectionLevel=\"signature\"."
         }

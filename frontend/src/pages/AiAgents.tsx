@@ -35,7 +35,7 @@ import { toast } from 'sonner';
 
 // Use the Node.js backend API (port 4000, proxied via Vite as /api)
 const nodeApi = axios.create({ baseURL: '/api' });
-nodeApi.interceptors.request.use((config) => {
+nodeApi.interceptors.request.use((config: any) => {
     const token = localStorage.getItem('fbh_access_token');
     if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
     return config;
@@ -60,7 +60,7 @@ const AiAgents: React.FC = () => {
 
     // Fetch targets from MobSF via Node.js authenticated proxy
     useEffect(() => {
-        nodeApi.get('/mobsf/scans').then(res => {
+        nodeApi.get('/mobsf/scans').then((res: any) => {
             setTargets(res.data?.results || res.data || []);
         }).catch(() => { /* MobSF offline — silent fail */ });
     }, []);
@@ -85,10 +85,11 @@ const AiAgents: React.FC = () => {
                 }
             };
 
-            eventSource.onerror = () => {
-                console.warn('SSE Stream Connection Lost. Retrying in 5s...');
+            eventSource.onerror = (err: any) => {
+                console.warn('SSE Stream Connection Error. Stopping retry loop.');
                 eventSource.close();
-                setTimeout(setupStream, 5000);
+                // Optionally add a log to the terminal
+                addLog('CRITICAL: SSE LINK SEVERED. AUTHENTICATION OR SUBSYSTEM FAULT.', 'error');
             };
         };
 

@@ -37,6 +37,30 @@ class IntentAnalyzer:
     Analyzes intent handling for security vulnerabilities
     """
     
+    def __init__(self, source_dir: str = None):
+        self.source_dir = Path(source_dir) if source_dir else None
+    
+    def analyze(self):
+        """Standard entry point for Workflow engine"""
+        if not self.source_dir:
+            return []
+        
+        manifest_vulns = []
+        manifest_path = self.source_dir / "AndroidManifest.xml"
+        if manifest_path.exists():
+            manifest_vulns = self.analyze_manifest(manifest_path)
+            
+        source_vulns = self.analyze_source_code(self.source_dir)
+        
+        # Merge and convert to dict for scanner
+        all_vulns = manifest_vulns + source_vulns
+        return [{
+            'severity': v.severity,
+            'title': v.vuln_type,
+            'description': v.description,
+            'poc': v.poc
+        } for v in all_vulns]
+    
     # Dangerous intent operations
     DANGEROUS_OPERATIONS = {
         "loadUrl": "WebView URL loading from intent",

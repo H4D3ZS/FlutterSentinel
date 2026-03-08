@@ -43,7 +43,7 @@ const IncidentResponse: React.FC = () => {
         const fetchAlerts = async () => {
             try {
                 setLoading(true);
-                const data = await api.getSwarmAlerts();
+                const data = await api.getSwarmAlerts() as any;
                 if (isMounted) {
                     // Adapt list format to what UI expects based on API implementation
                     const fetchedIncidents = data.alerts || data || [];

@@ -20,10 +20,8 @@ class WebViewAnalyzer(Scanner):
             "pattern": r"addJavascriptInterface\(Ljava/lang/Object;Ljava/lang/String;\)V",
             "title": "Remote Code Execution (RCE) via JS Bridge",
             "severity": "critical",
-            "description": "Exposing Java objects to WebView via addJavascriptInterface allows RCE on Android < 4.2 and
-                and potential logic bypasses on newer versions.",
-            "remediation": "Audit exposed methods and
-                and ensure they are annotated with @JavascriptInterface. Use safe communication channels like evaluateJavascript."
+            "description": "Exposing Java objects to WebView via addJavascriptInterface allows RCE on Android < 4.2 and potential logic bypasses on newer versions.",
+            "remediation": "Audit exposed methods and ensure they are annotated with @JavascriptInterface. Use safe communication channels like evaluateJavascript."
         },
         "ALLOW_FILE_ACCESS": {
             "pattern": r"setAllowFileAccess\(Z\)V.*?const/4 v\d, 0x1",
@@ -37,8 +35,7 @@ class WebViewAnalyzer(Scanner):
             "title": "Insecure Universal File Access",
             "severity": "critical",
             "description": "WebView allows JavaScript from file URLs to access content from ANY origin, leading to total data exfiltration.",
-            "remediation": "Ensure setAllowUniversalAccessFromFileURLs(false) and
-                and setAllowFileAccessFromFileURLs(false)."
+            "remediation": "Ensure setAllowUniversalAccessFromFileURLs(false) and setAllowFileAccessFromFileURLs(false)."
         },
         "INSECURE_SSL_ERROR": {
             "pattern": r"onReceivedSslError\(Landroid/webkit/WebView;Landroid/webkit/SslErrorHandler;Landroid/net/http/SslError;\)V.*?proceed\(\)V",

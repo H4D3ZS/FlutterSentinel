@@ -28,7 +28,7 @@ export function MissionControl() {
 
     useEffect(() => {
         api.getPlaybooks()
-            .then(setPlaybooks)
+            .then((res: any) => setPlaybooks(res))
             .catch((err: any) => console.error('Failed to load playbooks', err));
     }, []);
 

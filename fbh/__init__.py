@@ -20,7 +20,7 @@ __version__ = "2.0.0"
 __author__ = "Security Researcher"
 
 from fbh.domain.entities.target import Target
-from fbh.application.services.workflow import WorkflowEngine as Workflow
+from fbh.application.services.workflow import Workflow
 from fbh.application.services.reporter import Reporter
 from fbh.infrastructure.database.database import Database
 

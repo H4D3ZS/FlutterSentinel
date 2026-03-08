@@ -18,7 +18,7 @@ def test_sentinel_intelligence():
     """Test Sentinel Intelligence features on Grab app"""
     console.print("[bold cyan]═══════════════════════════════════════════════[/bold cyan]")
     console.print("[bold cyan]  Sentinel Intelligence Engine[/bold cyan]")
-    console.print("[bold cyan]  FlutterSentinel AI Analysis[/bold cyan]")
+    console.print("[bold cyan]  SecuritySentinel AI Analysis[/bold cyan]")
     console.print("[bold cyan]═══════════════════════════════════════════════[/bold cyan]\n")
     
     # Initialize Sentinel Intelligence

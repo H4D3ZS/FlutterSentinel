@@ -39,7 +39,7 @@ brew install blacktop/tap/ipsw libimobiledevice idevicerestore
 
 ### Step 2: Mix Firmware (bypasses pccvre entirely)
 ```bash
-cd /Users/hades/Desktop/bugbounty/FlutterSentinel
+cd /Users/hades/Desktop/bugbounty/SecuritySentinel
 python3 scripts/get_fw.py \
   --pcc /Users/hades/Desktop/bugbounty/0cb00f22e0f7a8b33995b49b2bdca77f781ed6093a09c570ac21b0f012bab908 \
   --ipsw /path/to/iPhone17,3_26.2_23C55_Restore.ipsw \

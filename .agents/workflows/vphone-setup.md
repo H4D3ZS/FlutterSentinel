@@ -28,7 +28,7 @@ reboot
 
 4. Install the pccvre bypass script:
 ```bash
-# Script is at: FlutterSentinel/scripts/pccvre_bypass.py
+# Script is at: SecuritySentinel/scripts/pccvre_bypass.py
 ```
 
 5. Download PCC firmware (if 8GB RAM machine, use lldb bypass):
@@ -38,7 +38,7 @@ sudo /System/Library/SecurityResearch/usr/bin/pccvre release download --release 
 
 # For 8GB machines (lldb bypass):
 sudo lldb \
-  -o "command script import /path/to/FlutterSentinel/scripts/pccvre_bypass.py" \
+  -o "command script import /path/to/SecuritySentinel/scripts/pccvre_bypass.py" \
   -o "process launch -- release download --release 35622" \
   /System/Library/SecurityResearch/usr/bin/pccvre
 ```
@@ -50,7 +50,7 @@ sudo /System/Library/SecurityResearch/usr/bin/pccvre instance create -N pcc-rese
 
 # For 8GB machines — run vrevm directly:
 sudo lldb \
-  -o "command script import /path/to/FlutterSentinel/scripts/pccvre_bypass.py" \
+  -o "command script import /path/to/SecuritySentinel/scripts/pccvre_bypass.py" \
   -o "settings set target.run-args create --name=pcc-research --restore=/var/root/pcc/firmware.ipsw --variant=research --fusing=prod --darwin-init=/var/root/pcc/darwin-init.json --network=nat --network=hostOnly" \
   -o run \
   /System/Library/SecurityResearch/usr/bin/vrevm

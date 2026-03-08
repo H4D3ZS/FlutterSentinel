@@ -1,8 +1,7 @@
 /**
  * Dashboard API Service
  *
- * Provides operational scan targets, global statistics, playbooks, missions,
- * swarm alerts and live admin user data (from PostgreSQL).
+ * Provides operational scan targets and global statistics from PostgreSQL.
  */
 import db from '../db/database.js';
 
@@ -40,87 +39,12 @@ export interface GlobalStats {
     critical_findings: number;
     total_scans: number;
     severity_distribution: Record<string, number>;
+    compliance: {
+        mobile: number;
+        web: number;
+        llm: number;
+    };
 }
-
-// ─── Seed Data (Operational Baseline) ───────────────────────────────────────
-
-const seedTargets: DashboardTarget[] = [
-    {
-        id: 'tgt-001',
-        name: 'Sentinel Alpha',
-        package: 'com.fbh.sentinel.alpha',
-        platform: 'android',
-        status: 'complete',
-        scan_progress: 100,
-        created_at: Date.now() - 7 * 86400000,
-        updated_at: Date.now() - 3600000,
-        stats: { total_findings: 24, findings_by_severity: { critical: 3, high: 7, medium: 9, low: 4, info: 1 } },
-        compliance: {
-            framework: 'MASVS v4.0',
-            overall_score: 78,
-            categories: [
-                { label: 'STORAGE', full_label: 'MSTG-STORAGE', score: 82, findings: 5 },
-                { label: 'CRYPTO', full_label: 'MSTG-CRYPTO', score: 71, findings: 6 },
-                { label: 'AUTH', full_label: 'MSTG-AUTH', score: 85, findings: 4 },
-                { label: 'NETWORK', full_label: 'MSTG-NETWORK', score: 79, findings: 5 },
-            ],
-        },
-    },
-    {
-        id: 'tgt-002',
-        name: 'Raven Payload',
-        package: 'io.raven.payload.agent',
-        platform: 'ios',
-        status: 'complete',
-        scan_progress: 100,
-        created_at: Date.now() - 5 * 86400000,
-        updated_at: Date.now() - 7200000,
-        stats: { total_findings: 18, findings_by_severity: { critical: 1, high: 5, medium: 8, low: 3, info: 1 } },
-        compliance: {
-            framework: 'MASVS v4.0',
-            overall_score: 84,
-            categories: [
-                { label: 'STORAGE', full_label: 'MSTG-STORAGE', score: 90, findings: 2 },
-                { label: 'CRYPTO', full_label: 'MSTG-CRYPTO', score: 80, findings: 4 },
-                { label: 'AUTH', full_label: 'MSTG-AUTH', score: 88, findings: 3 },
-                { label: 'NETWORK', full_label: 'MSTG-NETWORK', score: 82, findings: 4 },
-            ],
-        },
-    },
-    {
-        id: 'tgt-003',
-        name: 'Ghost Protocol',
-        package: 'com.ghost.protocol.mobile',
-        platform: 'android',
-        status: 'scanning',
-        scan_progress: 63,
-        created_at: Date.now() - 2 * 86400000,
-        updated_at: Date.now() - 1800000,
-        stats: { total_findings: 11, findings_by_severity: { critical: 2, high: 3, medium: 4, low: 2, info: 0 } },
-        compliance: {
-            framework: 'MASVS v4.0',
-            overall_score: 67,
-            categories: [
-                { label: 'STORAGE', full_label: 'MSTG-STORAGE', score: 65, findings: 4 },
-                { label: 'CRYPTO', full_label: 'MSTG-CRYPTO', score: 60, findings: 3 },
-                { label: 'AUTH', full_label: 'MSTG-AUTH', score: 72, findings: 2 },
-                { label: 'NETWORK', full_label: 'MSTG-NETWORK', score: 68, findings: 3 },
-            ],
-        },
-    },
-    {
-        id: 'tgt-004',
-        name: 'Eclipse Client',
-        package: 'com.eclipse.client.v2',
-        platform: 'hybrid',
-        status: 'idle',
-        scan_progress: 0,
-        created_at: Date.now() - 86400000,
-        updated_at: Date.now() - 86400000,
-        stats: { total_findings: 0, findings_by_severity: { critical: 0, high: 0, medium: 0, low: 0, info: 0 } },
-        compliance: { framework: 'MASVS v4.0', overall_score: 0, categories: [] },
-    },
-];
 
 // ─── Role → Subscription Display Name ────────────────────────────────────────
 
@@ -139,62 +63,84 @@ function roleToSubscription(role: string): string {
 
 export const dashboardService = {
     /** Full target list with stats & compliance */
-    getTargets: async () => ({ targets: seedTargets }),
+    getTargets: async (userId: string): Promise<{ targets: DashboardTarget[] }> => {
+        const result = await db.query(
+            `SELECT * FROM targets WHERE user_id = $1 ORDER BY updated_at DESC`,
+            [userId]
+        );
+        return { targets: result.rows as DashboardTarget[] };
+    },
 
     /** Aggregated global stats */
-    getGlobalStats: async (): Promise<GlobalStats> => {
-        const totals = seedTargets.reduce(
+    getGlobalStats: async (userId: string): Promise<GlobalStats> => {
+        const result = await db.query(
+            `SELECT * FROM targets WHERE user_id = $1`,
+            [userId]
+        );
+        const targets = result.rows as any[];
+
+        const complianceSums = { mobile: 0, web: 0, llm: 0 };
+        const complianceCounts = { mobile: 0, web: 0, llm: 0 };
+
+        const totals = targets.reduce(
             (acc, t) => {
-                acc.total_findings += t.stats.total_findings;
-                acc.critical_findings += t.stats.findings_by_severity.critical;
-                Object.entries(t.stats.findings_by_severity).forEach(([sev, count]) => {
-                    acc.severity_distribution[sev] = (acc.severity_distribution[sev] || 0) + count;
-                });
+                const stats = typeof t.stats === 'string' ? JSON.parse(t.stats as string) : t.stats;
+                const comp = typeof t.compliance === 'string' ? JSON.parse(t.compliance as string) : t.compliance;
+
+                acc.total_findings += stats?.total_findings || 0;
+                acc.critical_findings += stats?.findings_by_severity?.critical || 0;
+
+                if (stats?.findings_by_severity) {
+                    Object.entries(stats.findings_by_severity).forEach(([sev, count]) => {
+                        acc.severity_distribution[sev] = (acc.severity_distribution[sev] || 0) + (count as number);
+                    });
+                }
+
+                // Compliance Aggregation
+                if (comp?.overall_score !== undefined) {
+                    const platform = t.platform || 'mobile';
+                    if (platform === 'android' || platform === 'ios') {
+                        complianceSums.mobile += comp.overall_score;
+                        complianceCounts.mobile++;
+                    } else if (platform === 'llm') {
+                        complianceSums.llm += comp.overall_score;
+                        complianceCounts.llm++;
+                    } else {
+                        complianceSums.web += comp.overall_score;
+                        complianceCounts.web++;
+                    }
+                }
+
                 return acc;
             },
             {
-                total_targets: seedTargets.length,
+                total_targets: targets.length,
                 total_findings: 0,
                 critical_findings: 0,
-                total_scans: seedTargets.filter(t => t.status === 'complete').length,
+                total_scans: targets.filter(t => t.status === 'complete').length,
                 severity_distribution: {} as Record<string, number>,
+                compliance: { mobile: 0, web: 0, llm: 0 }
             }
         );
+
+        // Average the scores
+        totals.compliance.mobile = complianceCounts.mobile > 0 ? Math.round(complianceSums.mobile / complianceCounts.mobile) : 0;
+        totals.compliance.web = complianceCounts.web > 0 ? Math.round(complianceSums.web / complianceCounts.web) : 0;
+        totals.compliance.llm = complianceCounts.llm > 0 ? Math.round(complianceSums.llm / complianceCounts.llm) : 0;
+
         return totals;
     },
-
-    /** AI Playbooks */
-    getPlaybooks: async () => ([
-        { id: 'pb-001', name: 'SENTINEL-AUTH-REMEDIATE', description: 'Automated authentication hardening and credential-stuffing defence.', category: 'auth', severity: 'critical', status: 'ready' },
-        { id: 'pb-002', name: 'SENTINEL-STORAGE-SCAN', description: 'Deep scan of local storage and keychain for insecure data residues.', category: 'storage', severity: 'high', status: 'ready' },
-        { id: 'pb-003', name: 'SENTINEL-CRYPTO-AUDIT', description: 'Cryptographic primitive validation across all cipher suites.', category: 'crypto', severity: 'medium', status: 'ready' },
-        { id: 'pb-004', name: 'SENTINEL-NETWORK-INTERCEPT', description: 'MITM simulation and certificate-pinning bypass detection.', category: 'network', severity: 'high', status: 'ready' },
-        { id: 'pb-005', name: 'SENTINEL-FRIDA-HOOK', description: 'Dynamic Frida instrumentation for runtime tamper detection.', category: 'dynamic', severity: 'high', status: 'ready' },
-    ]),
-
-    /** Active missions */
-    getMissions: async () => ([
-        { id: 'msn-001', target: 'Sentinel Alpha', playbook: 'SENTINEL-AUTH-REMEDIATE', status: 'complete', started_at: Date.now() - 3600000, completed_at: Date.now() - 1800000, findings: 7 },
-        { id: 'msn-002', target: 'Raven Payload', playbook: 'SENTINEL-NETWORK-INTERCEPT', status: 'running', started_at: Date.now() - 1200000, completed_at: null, findings: 3 },
-        { id: 'msn-003', target: 'Ghost Protocol', playbook: 'SENTINEL-STORAGE-SCAN', status: 'queued', started_at: null, completed_at: null, findings: 0 },
-    ]),
-
-    /** Tactical swarm alerts */
-    getSwarmAlerts: async () => ([
-        { id: 'alt-001', type: 'CRITICAL', title: 'Hardcoded API key detected', target: 'Sentinel Alpha', severity: 'critical', timestamp: Date.now() - 1800000, details: 'Google Maps API key found in plaintext inside AndroidManifest.xml' },
-        { id: 'alt-002', type: 'HIGH', title: 'Insecure WebView configuration', target: 'Ghost Protocol', severity: 'high', timestamp: Date.now() - 3600000, details: 'JavaScript interface exposed without input sanitisation' },
-        { id: 'alt-003', type: 'MEDIUM', title: 'Weak random number generator', target: 'Raven Payload', severity: 'medium', timestamp: Date.now() - 7200000, details: 'java.util.Random used for session token generation' },
-    ]),
 
     /** Live admin user list from PostgreSQL */
     getAdminUsers: async () => {
         const result = await db.query(
-            `SELECT id, email, name, role, created_at, last_login FROM users ORDER BY created_at ASC`
+            `SELECT id, email, name, avatar_url, role, created_at, last_login FROM users ORDER BY created_at ASC`
         );
         return result.rows.map((u: any) => ({
             id: u.id,
             email: u.email,
             name: u.name || u.email.split('@')[0],
+            avatar_url: u.avatar_url,
             role: u.role,
             subscription: roleToSubscription(u.role),
             ip: '—',

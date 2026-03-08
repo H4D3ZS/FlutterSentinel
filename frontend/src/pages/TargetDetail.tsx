@@ -60,7 +60,7 @@ import { toast } from 'sonner';
 
 // Route through Node.js backend — all authenticated via authMiddleware
 const nodeApi = axios.create({ baseURL: '/api' });
-nodeApi.interceptors.request.use((config) => {
+nodeApi.interceptors.request.use((config: any) => {
     const token = localStorage.getItem('fbh_access_token');
     if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
     return config;
@@ -97,8 +97,15 @@ interface Finding {
     description: string;
     severity: string;
     category: string;
+    owasp_category?: string;
     file_path?: string;
     location?: string;
+}
+
+interface ComplianceCategory {
+    label: string;
+    count: number;
+    status: string;
 }
 
 interface Target {
@@ -112,7 +119,21 @@ interface Target {
         total_findings: number;
         findings_by_severity: Record<string, number>;
     };
+    compliance?: {
+        framework: string;
+        overall_score: number;
+        categories: ComplianceCategory[];
+    };
 }
+
+const OWASPBadge = ({ category }: { category?: string }) => {
+    if (!category) return null;
+    return (
+        <Badge variant="outline" className="text-[9px] uppercase font-bold tracking-widest h-5 bg-primary/10 text-primary border-primary/30">
+            {category}
+        </Badge>
+    );
+};
 
 const SeverityBadge = ({ severity }: { severity: string }) => {
     const sev = severity.toLowerCase();
@@ -150,7 +171,7 @@ const TargetDetail: React.FC = () => {
                 target: target.name || target.package,
                 query: target.name || target.package,
                 mode
-            });
+            }) as any;
             if (mode === 'cluster') setClusters(response.data);
             else setRelationshipGraph(response.data);
         } catch (error) {
@@ -176,7 +197,7 @@ const TargetDetail: React.FC = () => {
         setLoading(true);
         try {
             // MobSF report via Node.js proxy (enforces authMiddleware)
-            const response = await nodeApi.post('/mobsf/report', { hash: id });
+            const response = await nodeApi.post('/mobsf/report', { hash: id }) as any;
             const data = response.data;
 
             // Transform MobSF data if needed (MobSF report structure is nested)
@@ -198,6 +219,7 @@ const TargetDetail: React.FC = () => {
                     description: f.description || f.stat || 'No description provided.',
                     severity: f.severity || 'info',
                     category: f.category || 'General',
+                    owasp_category: f.owasp_category,
                     file_path: f.file || f.path
                 })),
                 stats: {
@@ -213,7 +235,10 @@ const TargetDetail: React.FC = () => {
                 transformedTarget.stats!.total_findings++;
             });
 
-            setTarget(transformedTarget);
+            setTarget({
+                ...transformedTarget,
+                compliance: data.compliance && typeof data.compliance === 'string' ? JSON.parse(data.compliance) : data.compliance
+            });
         } catch (error) {
             console.error('Failed to fetch target detail:', error);
             toast.error('Mission Failed', {
@@ -489,6 +514,7 @@ const TargetDetail: React.FC = () => {
                                                         <div className="flex justify-between items-center mb-3">
                                                             <div className="flex items-center gap-4">
                                                                 <SeverityBadge severity={finding.severity} />
+                                                                <OWASPBadge category={finding.owasp_category} />
                                                                 <Badge variant="outline" className="text-[9px] font-mono text-slate-500 uppercase tracking-widest bg-slate-950/50 h-5 px-2 border border-border/20">
                                                                     {finding.category}
                                                                 </Badge>

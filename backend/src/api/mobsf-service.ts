@@ -12,7 +12,7 @@ export class MobSFService {
         this.client = axios.create({
             baseURL: MOBSF_URL,
             headers: {
-                'Authorization': MOBSF_API_KEY,
+                'X-Mobsf-Api-Key': MOBSF_API_KEY,
             },
         });
     }

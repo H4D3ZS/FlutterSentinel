@@ -1,5 +1,5 @@
 """
-JavaScript Bridge Analyzer for FlutterSentinel
+JavaScript Bridge Analyzer for SecuritySentinel
 Detects and analyzes JavaScript → Java bridge exposures
 
 This analyzer identifies:

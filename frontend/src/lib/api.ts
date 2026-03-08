@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: '/fbh/api',
+    baseURL: '/api',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -52,7 +52,7 @@ export interface GlobalStats {
 // Request interceptor to add the access token to every request
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('fbh_access_token');
-    if (token) {
+    if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -72,17 +72,19 @@ api.interceptors.response.use((response) => {
             if (!refreshToken) {
                 throw new Error('No refresh token available');
             }
-            
-            const res = await axios.post('/fbh/api/token/refresh/', { refresh: refreshToken });
-            const { access } = res.data;
-            localStorage.setItem('fbh_access_token', access);
-            api.defaults.headers.common['Authorization'] = `Bearer ${access}`;
+
+            const res = await axios.post('/api/auth/refresh', {}, {
+                headers: { 'Cookie': `fbh_refresh_token=${refreshToken}` }
+            });
+            const { access_token } = res.data as { access_token: string };
+            localStorage.setItem('fbh_access_token', access_token);
+            api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
             return api(originalRequest);
         } catch (err) {
             // Refresh token expired or failed
             localStorage.removeItem('fbh_access_token');
             localStorage.removeItem('fbh_refresh_token');
-            window.location.href = '/fbh/login';
+            window.location.href = '/login';
         }
     }
     return Promise.reject(error);
@@ -90,10 +92,15 @@ api.interceptors.response.use((response) => {
 
 export const FBH_API = {
     login: async (username: string, password: string) => {
-        const response = await api.post('/token/', { username, password });
-        const { access, refresh } = response.data;
-        localStorage.setItem('fbh_access_token', access);
-        localStorage.setItem('fbh_refresh_token', refresh);
+        const response = await api.post('/auth/login', { email: username, password });
+        const { access_token, refresh_token, token } = response.data as any;
+        const finalToken = access_token || token;
+        if (finalToken) {
+            localStorage.setItem('fbh_access_token', finalToken);
+        }
+        if (refresh_token) {
+            localStorage.setItem('fbh_refresh_token', refresh_token);
+        }
         return response.data;
     },
 
@@ -165,7 +172,7 @@ export const FBH_API = {
         const response = await api.get(`/targets/${name}/nuclei/export/`, {
             responseType: 'blob',
         });
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const url = window.URL.createObjectURL(new Blob([response.data as BlobPart]));
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', `${name}_nuclei_templates.zip`);
