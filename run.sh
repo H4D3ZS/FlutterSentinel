@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ============================================================
-# FlutterSentinel — Unified Launcher
+# SecuritySentinel — Unified Launcher
 # Starts: Backend (4000) · Frontend (5173) · FBHBot (3000) · MobSF (8000)
 # ============================================================
 
@@ -19,7 +19,7 @@ cd "$DIR"
 echo -e "${BLUE}"
 cat << "EOF"
 ╔══════════════════════════════════════════════════════════╗
-║          FlutterSentinel — Unified War Room              ║
+║          SecuritySentinel — Unified War Room              ║
 ╚══════════════════════════════════════════════════════════╝
 EOF
 echo -e "${NC}"

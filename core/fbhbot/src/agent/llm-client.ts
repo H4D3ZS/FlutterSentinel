@@ -24,6 +24,11 @@ export interface NativeTool {
     parameters?: any; // JSON schema for parameters
 }
 
+export interface NativeHistoryMessage {
+    role: "user" | "assistant";
+    content: string;
+}
+
 export class NativeAgent {
     public state: { messages: NativeMessage[] } = { messages: [] };
     private systemPrompt: string = "";
@@ -42,6 +47,25 @@ export class NativeAgent {
 
     setTools(tools: NativeTool[]) {
         this.tools = tools;
+    }
+
+    setConversationHistory(history: NativeHistoryMessage[] = []) {
+        this.state.messages = [];
+
+        if (this.systemPrompt) {
+            this.state.messages.push({ role: "system", content: this.systemPrompt });
+        }
+
+        for (const message of history) {
+            if ((message.role !== "user" && message.role !== "assistant") || !message.content) {
+                continue;
+            }
+
+            this.state.messages.push({
+                role: message.role,
+                content: message.content
+            });
+        }
     }
 
     private getOpenAIToolsSchema() {

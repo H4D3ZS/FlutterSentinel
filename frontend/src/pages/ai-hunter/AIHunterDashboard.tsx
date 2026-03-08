@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Send, Trash2, Plus, MessageSquare, User, Bot, Menu, X, Eye, Cpu, Copy, Check, Download, RefreshCw, Bug, Zap, FileCode, Search, ChevronDown, Shield, Activity, Square, Pencil } from 'lucide-react';
+import { Send, Trash2, Plus, MessageSquare, User, Bot, Menu, X, Eye, Cpu, Copy, Check, Download, RefreshCw, Bug, Zap, FileCode, Search, ChevronDown, Shield, Activity, Square, Pencil, Fingerprint } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -11,6 +12,7 @@ import { toast } from 'sonner';
 // --- Types ---
 export type Message = { role: 'user' | 'assistant'; content: string; rawResults?: any[] };
 export type ChatSession = { id: string; title: string; messages: Message[]; timestamp: number };
+type ChatHistoryPayload = Pick<Message, 'role' | 'content'>;
 
 // --- Components ---
 
@@ -357,6 +359,17 @@ function AIHunterDashboard() {
     }
   }, [isLoading]);
 
+  // Load chat history from backend on mount
+  useEffect(() => {
+    nodeApi.get<{ sessions?: ChatSession[] }>('/chat/history')
+      .then(res => {
+        if (res.data?.sessions) {
+          setChats(res.data.sessions);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
   // Extract objective from messages or terminal
   useEffect(() => {
     const lastStatus = terminalLogs.filter(log => log.includes('Initiated') || log.includes('Targeting') || log.includes('Analyzing')).pop();
@@ -386,11 +399,16 @@ function AIHunterDashboard() {
 
   const updateActiveChat = (newMessages: Message[]) => {
     if (activeChatId) {
-      setChats(prev => prev.map(chat =>
-        chat.id === activeChatId
-          ? { ...chat, messages: newMessages }
-          : chat
-      ));
+      setChats(prev => {
+        const updated = prev.map(chat =>
+          chat.id === activeChatId
+            ? { ...chat, messages: newMessages }
+            : chat
+        );
+        const updatedChat = updated.find(c => c.id === activeChatId);
+        if (updatedChat) nodeApi.post('/chat/history', { session: updatedChat }).catch(console.error);
+        return updated;
+      });
     }
   };
 
@@ -404,6 +422,7 @@ function AIHunterDashboard() {
     };
     setChats(prev => [newChat, ...prev]);
     setActiveChatId(newId);
+    nodeApi.post('/chat/history', { session: newChat }).catch(console.error);
     return newId;
   };
 
@@ -436,7 +455,12 @@ function AIHunterDashboard() {
   const handleClearActiveChat = useCallback(() => {
     if (activeChatId) {
       setMessages([]);
-      setChats(prev => prev.map(c => c.id === activeChatId ? { ...c, messages: [] } : c));
+      setChats(prev => {
+        const updated = prev.map(c => c.id === activeChatId ? { ...c, messages: [] } : c);
+        const updatedChat = updated.find(c => c.id === activeChatId);
+        if (updatedChat) nodeApi.post('/chat/history', { session: updatedChat }).catch(console.error);
+        return updated;
+      });
       toast.success('Chat cleared');
     }
   }, [activeChatId]);
@@ -447,7 +471,17 @@ function AIHunterDashboard() {
       setActiveChatId(null);
       setMessages([]);
     }
+    nodeApi.delete(`/chat/history/${id}`).catch(console.error);
   };
+
+  const handleClearAllHistory = useCallback(() => {
+    setChats([]);
+    setMessages([]);
+    setActiveChatId(null);
+    setSidebarOpen(false);
+    nodeApi.delete('/chat/history').catch(console.error);
+    toast.success('All sessions terminated');
+  }, []);
 
   const handleNewOperation = () => {
     setActiveChatId(null);
@@ -520,6 +554,7 @@ function AIHunterDashboard() {
     }
 
     const newMessage: Message = { role: 'user', content: userMessage };
+    const historyForRequest: ChatHistoryPayload[] = [...messages, newMessage].map(({ role, content }) => ({ role, content }));
 
     setMessages(prev => {
       const updated = [...prev, newMessage];
@@ -537,7 +572,8 @@ function AIHunterDashboard() {
       // Use the authenticated nodeApi instead of raw fetch
       const response = await nodeApi.post('/chat', {
         message: userMessage,
-        model: selectedModel
+        model: selectedModel,
+        history: historyForRequest
       }, { signal: controller.signal } as any);
       const data = response.data as { content: string, rawResults?: any[] };
       const assistantMessage: Message = {
@@ -577,10 +613,12 @@ function AIHunterDashboard() {
     if (messages.length === 0) return;
     if (isLoading) handleStopLoading();
     const lastUserMsg = [...messages].reverse().find(m => m.role === 'user');
+    let baseMessages = messages;
 
     if (lastUserMsg) {
       if (messages[messages.length - 1].role === 'assistant') {
         const newMessages = messages.slice(0, -1);
+        baseMessages = newMessages;
         setMessages(newMessages);
         updateActiveChat(newMessages);
       }
@@ -589,9 +627,11 @@ function AIHunterDashboard() {
       const controller = new AbortController();
       abortControllerRef.current = controller;
       try {
+        const historyForRequest: ChatHistoryPayload[] = baseMessages.map(({ role, content }) => ({ role, content }));
         const response = await nodeApi.post('/chat', {
           message: lastUserMsg.content,
-          model: selectedModel
+          model: selectedModel,
+          history: historyForRequest
         }, { signal: controller.signal } as any);
         const data = response.data as { content: string, rawResults?: any[] };
 
@@ -782,7 +822,7 @@ function AIHunterDashboard() {
 
             <div className="p-2 border-t border-white/5">
               <button
-                onClick={() => { setChats([]); setSidebarOpen(false); }}
+                onClick={handleClearAllHistory}
                 className="w-full flex items-center justify-center gap-2 px-3 py-2 text-[10px] font-mono text-slate-500 hover:text-red-400 rounded-lg hover:bg-red-500/5 transition-all"
               >
                 <Trash2 size={10} /> Clear All
@@ -1047,6 +1087,35 @@ function AIHunterDashboard() {
                     <span className="text-[10px] text-slate-500 block mb-1">WAF_EVASION</span>
                     <span className="text-xs text-matrix-green font-bold uppercase">Stealth</span>
                   </div>
+                </div>
+              </div>
+
+              {/* OWASP LLM Risks */}
+              <div>
+                <h3 className="text-xs font-bold text-matrix-green uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <Fingerprint size={14} /> OWASP LLM_CORRELATION
+                </h3>
+                <div className="space-y-2">
+                  {[
+                    { id: 'LLM01', label: 'Prompt Injection', risk: activeObjective?.toLowerCase().includes('jailbreak') || activeObjective?.toLowerCase().includes('prompt') ? 'HIGH' : 'LOW' },
+                    { id: 'LLM02', label: 'Insecure Output', risk: 'NOMINAL' },
+                    { id: 'LLM06', label: 'Sensitive Info Leak', risk: activeObjective?.toLowerCase().includes('credential') || activeObjective?.toLowerCase().includes('leak') ? 'ELEVATED' : 'LOW' },
+                    { id: 'LLM08', label: 'Excessive Agency', risk: 'PROTECTED' }
+                  ].map((risk) => (
+                    <div key={risk.id} className="flex items-center justify-between p-3 bg-white/[0.02] border border-white/5 rounded-xl">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] font-mono text-matrix-green/60">{risk.id}</span>
+                        <span className="text-[10px] font-mono text-slate-300">{risk.label}</span>
+                      </div>
+                      <Badge variant="outline" className={cn(
+                        "text-[8px] font-mono border-none",
+                        risk.risk === 'HIGH' ? "text-red-500 animate-pulse" :
+                          risk.risk === 'ELEVATED' ? "text-orange-500" : "text-matrix-green/40"
+                      )}>
+                        {risk.risk}
+                      </Badge>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

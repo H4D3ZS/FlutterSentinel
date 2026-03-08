@@ -40,7 +40,7 @@ VPhone is a **virtualized jailbroken iPhone** running iOS 26.1 inside a modified
 
 - **iOS security research** without a physical device
 - **Dynamic analysis** (Frida, debugserver) on a jailbroken iOS instance
-- **Bug bounty hunting** with FlutterSentinel toolchain integration
+- **Bug bounty hunting** with SecuritySentinel toolchain integration
 - **Exploit development** and kernel debugging via GDB on port 8000
 
 ### Key Repos
@@ -51,7 +51,7 @@ VPhone is a **virtualized jailbroken iPhone** running iOS 26.1 inside a modified
 | [super-tart-vphone](https://github.com/wh1te4ever/super-tart-vphone) | Modified tart that supports vresearch/vphone boot modes |
 | [libirecovery](https://github.com/wh1te4ever/libirecovery) | Modified recovery library that works with virtual DFU devices |
 | [super-tart-vphone-writeup](https://github.com/wh1te4ever/super-tart-vphone-writeup) | Original research writeup by wh1te4ever |
-| [FlutterSentinel](file:///Users/hades/Desktop/FlutterSentinel) | Our automation scripts and bypass tools |
+| [SecuritySentinel](file:///Users/hades/Desktop/SecuritySentinel) | Our automation scripts and bypass tools |
 
 ### High-Level Flow
 
@@ -150,23 +150,23 @@ After a fresh macOS Tahoe 26.2 format, the system had Xcode, Homebrew, Python3, 
 
 ### 3.1 Fixed Hardcoded Paths
 
-Two scripts had stale paths from a previous directory structure (`bugbounty/FlutterSentinel` → `FlutterSentinel`):
+Two scripts had stale paths from a previous directory structure (`bugbounty/SecuritySentinel` → `SecuritySentinel`):
 
-**File**: [pccvre_wrapper.c](file:///Users/hades/Desktop/FlutterSentinel/scripts/pccvre_wrapper.c)
+**File**: [pccvre_wrapper.c](file:///Users/hades/Desktop/SecuritySentinel/scripts/pccvre_wrapper.c)
 ```diff
--#define SHIM_PATH "/Users/hades/Desktop/bugbounty/FlutterSentinel/scripts/memshim.dylib"
-+#define SHIM_PATH "/Users/hades/Desktop/FlutterSentinel/scripts/memshim.dylib"
+-#define SHIM_PATH "/Users/hades/Desktop/bugbounty/SecuritySentinel/scripts/memshim.dylib"
++#define SHIM_PATH "/Users/hades/Desktop/SecuritySentinel/scripts/memshim.dylib"
 ```
 
-**File**: [pccvre_bypass.lldb](file:///Users/hades/Desktop/FlutterSentinel/scripts/pccvre_bypass.lldb)
+**File**: [pccvre_bypass.lldb](file:///Users/hades/Desktop/SecuritySentinel/scripts/pccvre_bypass.lldb)
 ```diff
--   sudo lldb -s /Users/hades/Desktop/bugbounty/FlutterSentinel/scripts/pccvre_bypass.lldb
-+   sudo lldb -s /Users/hades/Desktop/FlutterSentinel/scripts/pccvre_bypass.lldb
+-   sudo lldb -s /Users/hades/Desktop/bugbounty/SecuritySentinel/scripts/pccvre_bypass.lldb
++   sudo lldb -s /Users/hades/Desktop/SecuritySentinel/scripts/pccvre_bypass.lldb
 ```
 
 Then recompiled the wrapper:
 ```bash
-cd /Users/hades/Desktop/FlutterSentinel/scripts
+cd /Users/hades/Desktop/SecuritySentinel/scripts
 clang -arch arm64 -o pccvre_wrapper pccvre_wrapper.c
 ```
 
@@ -242,7 +242,7 @@ Apple's `pccvre` tool requires **16GB RAM** — our machine has only **8GB**. We
 
 #### Approach A: DYLD Interpose Shim (memshim.dylib)
 
-**File**: [memshim.c](file:///Users/hades/Desktop/FlutterSentinel/scripts/memshim.c)
+**File**: [memshim.c](file:///Users/hades/Desktop/SecuritySentinel/scripts/memshim.c)
 
 Hooks `sysctlbyname("hw.memsize")` and `sysctl(CTL_HW, HW_MEMSIZE)` via DYLD interposition to report 16GB:
 
@@ -260,7 +260,7 @@ int my_sysctlbyname(const char *name, void *oldp, size_t *oldlenp, ...) {
 }
 ```
 
-Launched via [pccvre_wrapper.c](file:///Users/hades/Desktop/FlutterSentinel/scripts/pccvre_wrapper.c):
+Launched via [pccvre_wrapper.c](file:///Users/hades/Desktop/SecuritySentinel/scripts/pccvre_wrapper.c):
 ```c
 setenv("DYLD_INSERT_LIBRARIES", SHIM_PATH, 1);
 setenv("DYLD_FORCE_FLAT_NAMESPACE", "1", 1);
@@ -269,7 +269,7 @@ execv(PCCVRE_PATH, new_argv);
 
 #### Approach B: lldb Breakpoint Callback (pccvre_bypass.py)
 
-**File**: [pccvre_bypass.py](file:///Users/hades/Desktop/FlutterSentinel/scripts/pccvre_bypass.py)
+**File**: [pccvre_bypass.py](file:///Users/hades/Desktop/SecuritySentinel/scripts/pccvre_bypass.py)
 
 Sets a breakpoint on `sysctlbyname`, checks if the name is `"hw.memsize"`, then sets a one-shot return breakpoint to patch the output buffer:
 
@@ -286,7 +286,7 @@ def on_return(frame, bp_loc, dict):
 
 #### Approach C: Binary Patching (pccvre_patcher.py)
 
-**File**: [pccvre_patcher.py](file:///Users/hades/Desktop/FlutterSentinel/scripts/pccvre_patcher.py)
+**File**: [pccvre_patcher.py](file:///Users/hades/Desktop/SecuritySentinel/scripts/pccvre_patcher.py)
 
 Directly patches the `pccvre` binary, replacing the 16GB constant (`0x400000000`) with 1GB (`0x040000000`) in the arm64e code section:
 
@@ -553,7 +553,7 @@ A backup of the original AVPBooter already exists at:
 
 ### 9.1 Get Mixed Firmware
 
-**Script**: [get_fw.py](file:///Users/hades/Desktop/FlutterSentinel/scripts/get_fw.py)
+**Script**: [get_fw.py](file:///Users/hades/Desktop/SecuritySentinel/scripts/get_fw.py)
 
 This script combines PCC cloudOS firmware with iPhone 16 IPSW:
 
@@ -601,7 +601,7 @@ gunzip shsh/*.shsh.gz
 
 ### 9.3 Patch Firmware Components
 
-**Script**: [patch_fw.py](file:///Users/hades/Desktop/FlutterSentinel/scripts/patch_fw.py)
+**Script**: [patch_fw.py](file:///Users/hades/Desktop/SecuritySentinel/scripts/patch_fw.py)
 
 ```bash
 cd ~/super-tart-vphone/CFW
@@ -782,26 +782,26 @@ python3 install_jb_basebin.py
 
 | Script | Purpose | How It Works |
 |--------|---------|--------------|
-| [memshim.c](file:///Users/hades/Desktop/FlutterSentinel/scripts/memshim.c) | DYLD interpose shim | Hooks `sysctlbyname`/`sysctl` via `__DATA,__interpose` section |
-| [pccvre_wrapper.c](file:///Users/hades/Desktop/FlutterSentinel/scripts/pccvre_wrapper.c) | DYLD env launcher | Sets `DYLD_INSERT_LIBRARIES` + `DYLD_FORCE_FLAT_NAMESPACE`, then `execv(pccvre)` |
-| [pccvre_bypass.py](file:///Users/hades/Desktop/FlutterSentinel/scripts/pccvre_bypass.py) | lldb callback intercept | Sets breakpoint on `sysctlbyname`, patches return buffer via return breakpoint |
-| [pccvre_bypass.lldb](file:///Users/hades/Desktop/FlutterSentinel/scripts/pccvre_bypass.lldb) | Simple lldb script | Basic breakpoint + step-out approach (less reliable) |
-| [pccvre_run.py](file:///Users/hades/Desktop/FlutterSentinel/scripts/pccvre_run.py) | Automated pexpect driver | Drives lldb via pexpect, auto-handles breakpoints and memory writes |
-| [pccvre_patcher.py](file:///Users/hades/Desktop/FlutterSentinel/scripts/pccvre_patcher.py) | Binary patcher (USED) | Patches `pccvre` binary directly: 16GB→1GB constant in arm64e slice |
+| [memshim.c](file:///Users/hades/Desktop/SecuritySentinel/scripts/memshim.c) | DYLD interpose shim | Hooks `sysctlbyname`/`sysctl` via `__DATA,__interpose` section |
+| [pccvre_wrapper.c](file:///Users/hades/Desktop/SecuritySentinel/scripts/pccvre_wrapper.c) | DYLD env launcher | Sets `DYLD_INSERT_LIBRARIES` + `DYLD_FORCE_FLAT_NAMESPACE`, then `execv(pccvre)` |
+| [pccvre_bypass.py](file:///Users/hades/Desktop/SecuritySentinel/scripts/pccvre_bypass.py) | lldb callback intercept | Sets breakpoint on `sysctlbyname`, patches return buffer via return breakpoint |
+| [pccvre_bypass.lldb](file:///Users/hades/Desktop/SecuritySentinel/scripts/pccvre_bypass.lldb) | Simple lldb script | Basic breakpoint + step-out approach (less reliable) |
+| [pccvre_run.py](file:///Users/hades/Desktop/SecuritySentinel/scripts/pccvre_run.py) | Automated pexpect driver | Drives lldb via pexpect, auto-handles breakpoints and memory writes |
+| [pccvre_patcher.py](file:///Users/hades/Desktop/SecuritySentinel/scripts/pccvre_patcher.py) | Binary patcher (USED) | Patches `pccvre` binary directly: 16GB→1GB constant in arm64e slice |
 
 ### Firmware Scripts
 
 | Script | Purpose |
 |--------|---------|
-| [get_fw.py](file:///Users/hades/Desktop/FlutterSentinel/scripts/get_fw.py) | Mix PCC + iPhone IPSW into custom firmware |
-| [patch_fw.py](file:///Users/hades/Desktop/FlutterSentinel/scripts/patch_fw.py) | Patch bootloaders, TXM, and kernel (signature + SSV bypasses) |
+| [get_fw.py](file:///Users/hades/Desktop/SecuritySentinel/scripts/get_fw.py) | Mix PCC + iPhone IPSW into custom firmware |
+| [patch_fw.py](file:///Users/hades/Desktop/SecuritySentinel/scripts/patch_fw.py) | Patch bootloaders, TXM, and kernel (signature + SSV bypasses) |
 
 ### Automation
 
 | Script | Purpose |
 |--------|---------|
-| [vphone_setup.sh](file:///Users/hades/Desktop/FlutterSentinel/scripts/vphone_setup.sh) | All-in-one 8-step setup script with progress tracking |
-| [vphone-setup.md](file:///Users/hades/Desktop/FlutterSentinel/.agents/workflows/vphone-setup.md) | Workflow for Antigravity AI agent |
+| [vphone_setup.sh](file:///Users/hades/Desktop/SecuritySentinel/scripts/vphone_setup.sh) | All-in-one 8-step setup script with progress tracking |
+| [vphone-setup.md](file:///Users/hades/Desktop/SecuritySentinel/.agents/workflows/vphone-setup.md) | Workflow for Antigravity AI agent |
 
 ### Source Patches
 
@@ -863,7 +863,7 @@ python3 install_jb_basebin.py
 | Issue | Solution |
 |-------|----------|
 | `pccvre` requires 16GB RAM | Binary patching via `pccvre_patcher.py` — changes constant from 16GB to 1GB |
-| Stale hardcoded paths in scripts | Updated `pccvre_wrapper.c` and `pccvre_bypass.lldb` from `bugbounty/FlutterSentinel` to `FlutterSentinel` |
+| Stale hardcoded paths in scripts | Updated `pccvre_wrapper.c` and `pccvre_bypass.lldb` from `bugbounty/SecuritySentinel` to `SecuritySentinel` |
 | `Darwin.swift` crashes on PCC ECID/hardwareModel | Added fallback: create placeholder `VZMacMachineIdentifier()` and use private API `_VZMacHardwareModelDescriptor` for hardware model |
 | `hardwareModel.isSupported` returns false for vresearch | Changed from error→crash to warning log |
 | PCC files unreadable by non-root user | `chmod -R a+r` on PCC VM directory + `chmod a+x` on path components |

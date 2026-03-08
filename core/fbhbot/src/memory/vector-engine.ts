@@ -115,6 +115,14 @@ export class VectorMemoryManager {
         last_validated DATETIME DEFAULT CURRENT_TIMESTAMP,
         metadata TEXT
       );
+
+      CREATE TABLE IF NOT EXISTS chat_sessions(
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        title TEXT NOT NULL,
+        messages TEXT NOT NULL,
+        timestamp BIGINT NOT NULL
+      );
 `);
 
     this.seedPlaybooks();
@@ -143,6 +151,35 @@ export class VectorMemoryManager {
 
   async storeForgeSession(data: any): Promise<void> {
     log.info("Mock storeForgeSession");
+  }
+
+  // --- Chat History Methods ---
+  async getChatSessions(userId: string) {
+    const stmt = this.db.prepare("SELECT id, title, messages, timestamp FROM chat_sessions WHERE user_id = ? ORDER BY timestamp DESC");
+    const rows = stmt.all(userId) as any[];
+    return rows.map(row => ({
+      id: row.id,
+      title: row.title,
+      messages: JSON.parse(row.messages),
+      timestamp: row.timestamp
+    }));
+  }
+
+  async saveChatSession(userId: string, session: { id: string; title: string; messages: any[], timestamp: number }) {
+    const stmt = this.db.prepare(
+      "INSERT OR REPLACE INTO chat_sessions (id, user_id, title, messages, timestamp) VALUES (?, ?, ?, ?, ?)"
+    );
+    stmt.run(session.id, userId, session.title, JSON.stringify(session.messages), session.timestamp);
+  }
+
+  async deleteChatSession(userId: string, sessionId: string) {
+    const stmt = this.db.prepare("DELETE FROM chat_sessions WHERE id = ? AND user_id = ?");
+    stmt.run(sessionId, userId);
+  }
+
+  async clearChatSessions(userId: string) {
+    const stmt = this.db.prepare("DELETE FROM chat_sessions WHERE user_id = ?");
+    stmt.run(userId);
   }
 
   private seedPlaybooks() {

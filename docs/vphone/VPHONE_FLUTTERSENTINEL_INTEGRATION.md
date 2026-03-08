@@ -1,4 +1,4 @@
-# VPhone Integration with FlutterSentinel & MobSF
+# VPhone Integration with SecuritySentinel & MobSF
 
 > **Replacing Corellium with VPhone for iOS Pentesting**
 >
@@ -15,7 +15,7 @@
 2. [Architecture Overview](#2-architecture-overview)
 3. [VPhone as Dynamic Analysis Device](#3-vphone-as-dynamic-analysis-device)
 4. [MobSF Integration](#4-mobsf-integration)
-5. [FlutterSentinel Integration](#5-fluttersentinel-integration)
+5. [SecuritySentinel Integration](#5-securitysentinel-integration)
 6. [iOS Pentest Workflow](#6-ios-pentest-workflow)
 7. [Tool Setup on VPhone](#7-tool-setup-on-vphone)
 8. [Automation Scripts](#8-automation-scripts)
@@ -46,7 +46,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  FlutterSentinel Platform                                       │
+│  SecuritySentinel Platform                                       │
 │                                                                 │
 │  ┌──────────────┐  ┌──────────────┐  ┌───────────────────────┐ │
 │  │   Frontend   │  │   FBHBot     │  │       MobSF           │ │
@@ -123,7 +123,7 @@ mitmproxy --mode transparent
 
 ## 4. MobSF Integration
 
-MobSF is already in the FlutterSentinel stack at `http://localhost:8000`. Adding VPhone enables **dynamic analysis** (currently static-only for iOS in MobSF without a device).
+MobSF is already in the SecuritySentinel stack at `http://localhost:8000`. Adding VPhone enables **dynamic analysis** (currently static-only for iOS in MobSF without a device).
 
 ### 4.1 Configure MobSF for VPhone
 
@@ -135,7 +135,7 @@ idevice_id -l
 # Should list: 0000FE01-1DE1518ECFFE2725
 
 # Run MobSF dynamic analysis setup
-cd /Users/hades/Desktop/FlutterSentinel/MOBSF
+cd /Users/hades/Desktop/SecuritySentinel/MOBSF
 # Edit MobSF settings to point to VPhone
 ```
 
@@ -177,7 +177,7 @@ cat target.ipa | ssh -p 22222 root@192.168.64.2 'cat > /tmp/target.ipa'
 
 ---
 
-## 5. FlutterSentinel Integration
+## 5. SecuritySentinel Integration
 
 ### 5.1 VPhone Bridge Module (New Component)
 
@@ -289,7 +289,7 @@ Find all Corellium references and replace with VPhoneBridge:
 
 ```bash
 # Find all Corellium references in codebase
-grep -r "corellium\|Corellium" /Users/hades/Desktop/FlutterSentinel/fbh/ \
+grep -r "corellium\|Corellium" /Users/hades/Desktop/SecuritySentinel/fbh/ \
   --include="*.py" -l
 ```
 
@@ -583,8 +583,8 @@ echo "   Frida output:  $OUTPUT_DIR/frida_output.txt"
 
 ```bash
 grep -r "corellium\|Corellium\|CORELLIUM" \
-  /Users/hades/Desktop/FlutterSentinel/fbh/ \
-  /Users/hades/Desktop/FlutterSentinel/backend/ \
+  /Users/hades/Desktop/SecuritySentinel/fbh/ \
+  /Users/hades/Desktop/SecuritySentinel/backend/ \
   --include="*.py" --include="*.ts" --include="*.js" -l
 ```
 
@@ -630,7 +630,7 @@ objection -g com.target.app -N -h 192.168.64.2 -p 27042 explore
 # MobSF
 open http://localhost:8000
 
-# FlutterSentinel Dashboard
+# SecuritySentinel Dashboard
 open http://localhost:5173
 
 # Full pentest

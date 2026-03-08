@@ -27,7 +27,7 @@ ipatool download -b com.lululemon.lululemon
 ipatool search lululemon
 ```
 
-### Method 2: Using FlutterSentinel Automated
+### Method 2: Using SecuritySentinel Automated
 
 ```bash
 python3 bounty_hunt.py --target com.lululemon.lululemon --platform ios
@@ -93,7 +93,7 @@ python3 toolkit.py full lululemon.ipa
 # 1. Download app
 ipatool download -b com.lululemon.lululemon
 
-# 2. Run FlutterSentinel
+# 2. Run SecuritySentinel
 python3 toolkit.py full com.lululemon.lululemon.ipa
 
 # 3. Review findings

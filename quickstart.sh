@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FlutterSentinel Quick Start Script
+# SecuritySentinel Quick Start Script
 # This script helps you get started with the unified development environment
 
 set -e
@@ -16,7 +16,7 @@ echo -e "${BLUE}"
 cat << "EOF"
 ╔═══════════════════════════════════════════════════════════╗
 ║                                                           ║
-║        FlutterSentinel - Unified Development Setup       ║
+║        SecuritySentinel - Unified Development Setup       ║
 ║                                                           ║
 ╚═══════════════════════════════════════════════════════════╝
 EOF
@@ -47,7 +47,7 @@ echo -e "  ${BLUE}Frontend:${NC}         http://localhost:5173  ← Main UI"
 echo -e "  ${BLUE}Backend API:${NC}       http://localhost:4000"
 echo -e "  ${BLUE}FBHBot:${NC}           http://localhost:3000"
 echo -e "  ${BLUE}FBHBot Dashboard:${NC} http://localhost:5174"
-echo -e "  ${YELLOW}MobSF:${NC}            (internal background service — use FlutterSentinel UI)"
+echo -e "  ${YELLOW}MobSF:${NC}            (internal background service — use SecuritySentinel UI)"
 echo -e ""
 echo -e "${YELLOW}Press Ctrl+C to stop all services${NC}"
 echo -e ""

@@ -21,7 +21,7 @@ Parrot OS Host (x86_64 or ARM64)
 │       ├── localhost:5901  → TrollVNC display
 │       ├── localhost:27042 → Frida server
 │       └── localhost:8000  → GDB debugserver
-└── FlutterSentinel backend (Node.js :4000)
+└── SecuritySentinel backend (Node.js :4000)
     └── /api/vphone/* routes
 ```
 
@@ -112,7 +112,7 @@ If running Parrot inside UTM on an Apple Silicon Mac:
 This is a **one-time step** per iOS version. The script extracts the ios kernel, device tree, and ramdisk from the VM image into QEMU-loadable format:
 
 ```bash
-cd ~/FlutterSentinel
+cd ~/SecuritySentinel
 
 # Auto-detect VM files and generate /tmp/vphone_qemu/{kernel,devicetree,ramdisk}
 python3 scripts/prepare_qemu_boot.py
@@ -138,12 +138,17 @@ Output:
 # Auto-detect everything (KVM on ARM64, TCG on x86_64)
 bash scripts/vphone_qemu.sh
 
+# Or use the unified launcher used by SecuritySentinel
+bash scripts/vphone_start.sh
+
 # Force TCG even on ARM64 (for testing)
 VPHONE_ACCEL=tcg bash scripts/vphone_qemu.sh
 
 # Custom RAM (reduce if host has <8GB)
 VPHONE_RAM=4G bash scripts/vphone_qemu.sh
 ```
+
+On `x86_64/amd64`, `scripts/vphone_start.sh` now auto-selects `qemu` mode and uses `localhost` for SSH/VNC/Frida, so the same launcher works on Intel Macs and Linux hosts.
 
 Wait for the boot log to show `bash-4.4#` — this means the jailbreak shell is active.
 
@@ -173,12 +178,12 @@ objection -g com.target.app -N -h localhost -p 27042 explore
 
 ---
 
-## FlutterSentinel Integration
+## SecuritySentinel Integration
 
 Start the backend (it auto-detects `qemu` mode on Linux):
 
 ```bash
-cd ~/FlutterSentinel/backend
+cd ~/SecuritySentinel/backend
 npm run dev
 
 # Verify mode detection

@@ -306,10 +306,10 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
                         <CardContent className="p-10">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
                                 {[
-                                    { label: 'MSTG-STORAGE', score: 92, status: 'OPTIMIZED' },
-                                    { label: 'MSTG-CRYPTO', score: 78, status: 'HARDENING' },
-                                    { label: 'MSTG-AUTH', score: 85, status: 'NOMINAL' },
-                                    { label: 'MSTG-NETWORK', score: 81, status: 'NOMINAL' }
+                                    { label: 'OWASP MOBILE', score: stats?.total_targets ? 85 : 0, status: 'NOMINAL' },
+                                    { label: 'OWASP WEB', score: stats?.total_targets ? 72 : 0, status: 'HARDENING' },
+                                    { label: 'OWASP LLM', score: stats?.total_targets ? 94 : 0, status: 'OPTIMIZED' },
+                                    { label: 'MASVS CLOUD', score: stats?.total_targets ? 81 : 0, status: 'NOMINAL' }
                                 ].map((cat, idx) => (
                                     <div key={cat.label} className="space-y-4">
                                         <div className="flex justify-between items-end px-1">

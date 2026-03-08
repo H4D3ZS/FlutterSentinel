@@ -16,6 +16,7 @@ import { dashboardService } from './api/dashboard-service.js';
 import { vphoneService } from './api/vphone-service.js';
 import { initializeDatabase } from './db/database.js';
 import { db } from './db/database.js';
+import { mapFindingToOWASP } from './utils/owasp-mapper.js';
 import type { LoginRequest, RegisterRequest } from './types/auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -186,6 +187,26 @@ app.post('/api/mobsf/upload', authMiddleware, upload.single('file'), async (req:
         }
 
         const result = await mobsfService.uploadFile(req.file.path);
+
+        // Sync with PostgreSQL
+        if (result && result.hash) {
+            const platform = req.file.originalname.toLowerCase().endsWith('.ipa') ? 'ios' : 'android';
+            await db.query(
+                `INSERT INTO targets (user_id, name, package, platform, status, created_at, updated_at)
+                 VALUES ($1, $2, $3, $4, $5, $6, $6)
+                 ON CONFLICT (user_id, package) 
+                 DO UPDATE SET name = EXCLUDED.name, updated_at = EXCLUDED.updated_at, status = EXCLUDED.status`,
+                [
+                    req.user!.userId,
+                    req.file.originalname,
+                    result.package_name || result.file_name || req.file.originalname,
+                    platform,
+                    'idle',
+                    Date.now()
+                ]
+            );
+        }
+
         res.json(result);
     } catch (error: any) {
         console.error('MobSF upload error:', error);
@@ -206,6 +227,13 @@ app.post('/api/mobsf/scan', authMiddleware, async (req: Request, res: Response) 
         }
 
         const result = await mobsfService.startScan(hash, scan_type);
+
+        // Update status in PostgreSQL
+        await db.query(
+            `UPDATE targets SET status = $1, updated_at = $2 WHERE user_id = $3 AND (package = $4 OR id = $4)`,
+            ['scanning', Date.now(), req.user!.userId, hash]
+        );
+
         res.json(result);
     } catch (error: any) {
         console.error('MobSF scan error:', error);
@@ -226,6 +254,67 @@ app.post('/api/mobsf/report', authMiddleware, async (req: Request, res: Response
         }
 
         const result = await mobsfService.getScanResults(hash);
+
+        // Update stats in PostgreSQL
+        if (result && result.findings) {
+            const findings = result.findings;
+            const stats = {
+                total_findings: Object.keys(findings).length,
+                findings_by_severity: {
+                    critical: 0,
+                    high: 0,
+                    medium: 0,
+                    low: 0,
+                    info: 0
+                }
+            };
+
+            // Mobile findings are often categorized by severity in the JSON
+            if (result.vulnerabilities) {
+                stats.findings_by_severity.critical = result.vulnerabilities.critical || 0;
+                stats.findings_by_severity.high = result.vulnerabilities.high || 0;
+                stats.findings_by_severity.medium = result.vulnerabilities.warning || 0;
+                stats.findings_by_severity.low = result.vulnerabilities.info || 0;
+            } else if (result.high_count !== undefined) {
+                stats.findings_by_severity.high = result.high_count;
+                stats.findings_by_severity.medium = result.warning_count;
+                stats.findings_by_severity.info = result.info_count;
+            }
+
+            // Calculate OWASP Compliance
+            const owaspCounts: Record<string, number> = {};
+            const findingsList = result.findings ? Object.values(result.findings) : [];
+
+            findingsList.forEach((f: any) => {
+                const category = mapFindingToOWASP(f.title || '', f.description || '', result.platform || 'mobile');
+                if (category) {
+                    owaspCounts[category.id] = (owaspCounts[category.id] || 0) + 1;
+                    f.owasp_category = category.id;
+                }
+            });
+
+            // Derive overall score (simplified logic)
+            const totalIssues = Object.values(owaspCounts).reduce((a, b) => a + b, 0);
+            const overallScore = Math.max(0, 100 - (totalIssues * 2)); // 2% penalty per issue
+
+            const compliance = {
+                framework: result.platform === 'llm' ? 'OWASP LLM v1.1' : (result.platform === 'web' ? 'OWASP Top 10 2021' : 'OWASP Mobile 2024'),
+                overall_score: overallScore,
+                categories: Object.entries(owaspCounts).map(([id, count]) => ({
+                    label: id,
+                    count: count,
+                    status: count > 3 ? 'CRITICAL' : (count > 0 ? 'WARNING' : 'SECURE')
+                }))
+            };
+
+            await db.query(
+                `UPDATE targets 
+                 SET stats = $1, compliance = $2, status = $3, updated_at = $4 
+                 WHERE user_id = $5 AND (package = $6 OR id = $6)`,
+                [JSON.stringify(stats), JSON.stringify(compliance), 'complete', Date.now(), req.user!.userId, hash]
+            );
+        }
+
         res.json(result);
     } catch (error: any) {
         console.error('MobSF report error:', error);
@@ -337,11 +426,11 @@ app.post('/api/fbhbot/input', authMiddleware, async (req: Request, res: Response
  */
 app.post('/api/chat', authMiddleware, async (req: Request, res: Response) => {
     try {
-        const { message, model } = req.body;
+        const { message, model, history } = req.body;
         if (!message) {
             return res.status(400).json({ error: 'Message is required' }) as any;
         }
-        const result = await fbhbotService.sendChat(message, model);
+        const result = await fbhbotService.sendChat(message, model, history);
         res.json(result);
     } catch (error: any) {
         console.error('FBHBot chat error:', error);
@@ -393,7 +482,7 @@ app.get('/api/fbhbot/stream', authMiddleware, async (req: Request, res: Response
  */
 app.get('/api/targets', authMiddleware, async (req: Request, res: Response) => {
     try {
-        const data = await dashboardService.getTargets();
+        const data = await dashboardService.getTargets(req.user!.userId);
         res.json(data);
     } catch (error: any) {
         res.status(500).json({ error: 'Failed to get targets' });
@@ -406,7 +495,7 @@ app.get('/api/targets', authMiddleware, async (req: Request, res: Response) => {
  */
 app.get('/api/stats/global', authMiddleware, async (req: Request, res: Response) => {
     try {
-        const stats = await dashboardService.getGlobalStats();
+        const stats = await dashboardService.getGlobalStats(req.user!.userId);
         res.json(stats);
     } catch (error: any) {
         res.status(500).json({ error: 'Failed to get global stats' });
@@ -419,8 +508,8 @@ app.get('/api/stats/global', authMiddleware, async (req: Request, res: Response)
  */
 app.get('/api/playbooks', authMiddleware, async (req: Request, res: Response) => {
     try {
-        const playbooks = await dashboardService.getPlaybooks();
-        res.json({ playbooks });
+        const playbooks = await fbhbotService.getPlaybooks();
+        res.json(playbooks); // Note: fbhbot returns { playbooks: [...] } natively
     } catch (error: any) {
         res.status(500).json({ error: 'Failed to get playbooks' });
     }
@@ -432,10 +521,49 @@ app.get('/api/playbooks', authMiddleware, async (req: Request, res: Response) =>
  */
 app.get('/api/missions', authMiddleware, async (req: Request, res: Response) => {
     try {
-        const missions = await dashboardService.getMissions();
-        res.json({ missions });
+        const missions = await fbhbotService.getMissions();
+        res.json(missions); // natively { missions: [] }
     } catch (error: any) {
         res.status(500).json({ error: 'Failed to get missions' });
+    }
+});
+
+/**
+ * Chat History
+ */
+app.get('/api/chat/history', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const history = await fbhbotService.getChatHistory();
+        res.json(history);
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to get chat history' });
+    }
+});
+
+app.post('/api/chat/history', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const result = await fbhbotService.saveChatSession(req.body.session);
+        res.json(result);
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to save chat session' });
+    }
+});
+
+app.delete('/api/chat/history', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const result = await fbhbotService.deleteChatHistory();
+        res.json(result);
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to clear chat history' });
+    }
+});
+
+app.delete('/api/chat/history/:id', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const result = await fbhbotService.deleteChatSession(req.params.id);
+        res.json(result);
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to delete chat session' });
     }
 });
 
@@ -445,10 +573,83 @@ app.get('/api/missions', authMiddleware, async (req: Request, res: Response) => 
  */
 app.get('/api/alerts/swarm', authMiddleware, async (req: Request, res: Response) => {
     try {
-        const alerts = await dashboardService.getSwarmAlerts();
-        res.json({ alerts });
+        const alerts = await fbhbotService.getTacticalAlerts();
+        res.json(alerts); // natively { alerts: [] }
     } catch (error: any) {
         res.status(500).json({ error: 'Failed to get swarm alerts' });
+    }
+});
+
+/**
+ * GET /api/settings
+ * Get user settings from PostgreSQL
+ */
+app.get('/api/settings', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const result = await db.query(
+            `SELECT key, value FROM settings WHERE user_id = $1`,
+            [req.user!.userId]
+        );
+        const settings: Record<string, string> = {};
+        result.rows.forEach(row => {
+            settings[row.key] = row.value;
+        });
+        res.json({ settings });
+    } catch (error: any) {
+        console.error('Settings error:', error);
+        res.status(500).json({ error: 'Failed to get settings' });
+    }
+});
+
+/**
+ * POST /api/settings/save
+ * Update user settings in PostgreSQL
+ */
+app.post('/api/settings/save', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const settings = req.body;
+        const userId = req.user!.userId;
+        const now = Date.now();
+
+        await db.query('BEGIN');
+        for (const [key, value] of Object.entries(settings)) {
+            if (typeof value === 'string') {
+                await db.query(
+                    `INSERT INTO settings (user_id, key, value, updated_at) 
+                     VALUES ($1, $2, $3, $4) 
+                     ON CONFLICT (user_id, key) 
+                     DO UPDATE SET value = $3, updated_at = $4`,
+                    [userId, key, value, now]
+                );
+            }
+        }
+        await db.query('COMMIT');
+        res.json(settings);
+    } catch (error: any) {
+        await db.query('ROLLBACK');
+        console.error('Settings save error:', error);
+        res.status(500).json({ error: 'Failed to save settings' });
+    }
+});
+
+/**
+ * POST /api/profile/avatar
+ * Upload a profile avatar
+ */
+app.post('/api/profile/avatar', authMiddleware, upload.single('avatar'), async (req: Request, res: Response) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No avatar uploaded' });
+        }
+        const avatarUrl = '/uploads/' + req.file.filename;
+        await db.query(
+            `UPDATE users SET avatar_url = $1 WHERE id = $2`,
+            [avatarUrl, req.user!.userId]
+        );
+        res.json({ avatar_url: avatarUrl });
+    } catch (error: any) {
+        console.error('Avatar upload error:', error);
+        res.status(500).json({ error: 'Failed to upload avatar' });
     }
 });
 

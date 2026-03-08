@@ -89,7 +89,8 @@ const Trends: React.FC = () => {
 
             // Map live trends from actual target findings
             const liveTrends = rawTargets.map((t: any) => {
-                const severities = t.stats?.findings_by_severity || {};
+                const stats = typeof t.stats === 'string' ? JSON.parse(t.stats) : (t.stats || {});
+                const severities = stats.findings_by_severity || {};
                 return {
                     target: t.name || t.package || 'Unknown',
                     counts: {

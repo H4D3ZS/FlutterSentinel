@@ -71,9 +71,9 @@ export class FBHBotService {
     /**
      * Send chat to FBHBot intelligence core
      */
-    async sendChat(message: string, model?: string): Promise<any> {
+    async sendChat(message: string, model?: string, history?: Array<{ role: 'user' | 'assistant'; content: string }>): Promise<any> {
         if (!this.token) await this.login();
-        const response = await this.client.post('/api/chat', { message, model });
+        const response = await this.client.post('/api/chat', { message, model, history });
         return response.data;
     }
 
@@ -92,6 +92,31 @@ export class FBHBotService {
     async getAuthenticatedStreamUrl(): Promise<string> {
         if (!this.token) await this.login();
         return `${FBHBOT_URL}/api/stream?token=${this.token}`;
+    }
+
+    // --- Chat History Management ---
+    async getChatHistory(): Promise<any> {
+        if (!this.token) await this.login();
+        const response = await this.client.get('/api/chat/history');
+        return response.data;
+    }
+
+    async saveChatSession(session: any): Promise<any> {
+        if (!this.token) await this.login();
+        const response = await this.client.post('/api/chat/history', { session });
+        return response.data;
+    }
+
+    async deleteChatSession(id: string): Promise<any> {
+        if (!this.token) await this.login();
+        const response = await this.client.delete(`/api/chat/history/${id}`);
+        return response.data;
+    }
+
+    async deleteChatHistory(): Promise<any> {
+        if (!this.token) await this.login();
+        const response = await this.client.delete('/api/chat/history');
+        return response.data;
     }
 }
 

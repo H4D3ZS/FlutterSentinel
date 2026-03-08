@@ -15,7 +15,8 @@ import {
     Terminal,
     Bug,
     Book,
-    Smartphone
+    Smartphone,
+    User
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { motion } from 'framer-motion';
@@ -132,6 +133,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className, isCollapsed, toggleCollaps
                         <p className="px-3 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Core</p>
                     )}
                     <SidebarNavItem to="/" icon={LayoutDashboard} isCollapsed={isCollapsed} closeMobile={closeMobile}>Overview</SidebarNavItem>
+                    <SidebarNavItem to="/profile" icon={User} isCollapsed={isCollapsed} closeMobile={closeMobile}>My Profile</SidebarNavItem>
                     {['tier3', 'vip', 'admin'].includes(user?.role || '') && (
                         <SidebarNavItem to="/mobsf" icon={ShieldAlert} isCollapsed={isCollapsed} badge="API" closeMobile={closeMobile}>MobSF Analysis</SidebarNavItem>
                     )}

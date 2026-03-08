@@ -1,4 +1,4 @@
-import { NativeAgent, NativeModelConfig } from "./llm-client.js";
+import { NativeAgent, NativeHistoryMessage, NativeModelConfig } from "./llm-client.js";
 import { fbhTools } from "../tools/fbh.js";
 import { shodanSearch, googleDork } from "../tools/recon.js";
 import { VectorMemoryManager } from "../memory/vector-engine.js";
@@ -28,6 +28,176 @@ export class FBHBotAgent {
         this.agent.setSystemPrompt(FBHBOT_PERSONA);
     }
 
+    private stringParam(description: string) {
+        return { type: "string", description };
+    }
+
+    private historyToNativeMessages(history?: NativeHistoryMessage[]) {
+        if (!history || history.length === 0) return [];
+
+        return history
+            .filter((message) => message && (message.role === "user" || message.role === "assistant") && typeof message.content === "string" && message.content.trim() !== "")
+            .map((message) => ({ role: message.role, content: message.content }));
+    }
+
+    private getRequiredProvider(model?: string): 'google' | 'openai' | 'anthropic' | 'any' | 'xai' | 'groq' | 'cerebras' | 'openrouter' {
+        if (!model) return 'any';
+
+        const normalized = model.toLowerCase();
+        if (normalized.includes("gemini")) return 'google';
+        if (normalized.includes("claude")) return 'anthropic';
+        if (normalized.includes("gpt") || normalized.includes("openai")) return 'openai';
+        if (normalized.includes("grok") || normalized.includes("xai")) return 'xai';
+        if (normalized.includes("groq") || normalized.includes("mixtral") || normalized.includes("llama3-70b-8192")) return 'groq';
+        if (normalized.includes("cerebras") || normalized.includes("llama3.1-8b")) return 'cerebras';
+        if (normalized.includes("openrouter")) return 'openrouter';
+        return 'any';
+    }
+
+    private resolveSelectedModel(model: string | undefined, defaults: { providerId?: string; modelId?: string }, keys: { googleKey?: string; openaiKey?: string; anthropicKey?: string; groqKey?: string; cerebrasKey?: string; xaiKey?: string; openrouterKey?: string }): { providerId: NativeModelConfig["provider"]; modelId: string; baseUrl: string; apiKey: string } {
+        if (!model) {
+            const providerId = (defaults.providerId || "google") as NativeModelConfig["provider"];
+            return {
+                providerId,
+                modelId: defaults.modelId || "gemini-1.5-flash-latest",
+                baseUrl: providerId === "anthropic"
+                    ? "https://api.anthropic.com/v1"
+                    : providerId === "openai"
+                        ? "https://api.openai.com/v1"
+                        : providerId === "xai"
+                            ? "https://api.x.ai/v1"
+                            : providerId === "groq"
+                                ? "https://api.groq.com/openai/v1"
+                                : providerId === "cerebras"
+                                    ? "https://api.cerebras.ai/v1"
+                                    : providerId === "openrouter"
+                                        ? "https://openrouter.ai/api/v1"
+                                        : "https://generativelanguage.googleapis.com/v1beta/openai",
+                apiKey: providerId === "anthropic"
+                    ? (keys.anthropicKey || "")
+                    : providerId === "openai"
+                        ? (keys.openaiKey || "")
+                        : providerId === "xai"
+                            ? (keys.xaiKey || "")
+                            : providerId === "groq"
+                                ? (keys.groqKey || "")
+                                : providerId === "cerebras"
+                                    ? (keys.cerebrasKey || "")
+                                    : providerId === "openrouter"
+                                        ? (keys.openrouterKey || "")
+                                        : (keys.googleKey || "")
+            };
+        }
+
+        const normalized = model.toLowerCase();
+
+        const candidates: Array<{
+            match: boolean;
+            providerId: NativeModelConfig["provider"];
+            modelId: string;
+            baseUrl: string;
+            apiKey: string;
+        }> = [
+                {
+                    match: normalized.includes("gemini"),
+                    providerId: "google",
+                    modelId: model,
+                    baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai",
+                    apiKey: keys.googleKey || ""
+                },
+                {
+                    match: normalized.includes("claude-3-5-sonnet"),
+                    providerId: "anthropic",
+                    modelId: normalized.includes("2024") ? model : "claude-3-5-sonnet-20241022",
+                    baseUrl: "https://api.anthropic.com/v1",
+                    apiKey: keys.anthropicKey || ""
+                },
+                {
+                    match: normalized.includes("claude-3-opus"),
+                    providerId: "anthropic",
+                    modelId: "claude-3-opus-20240229",
+                    baseUrl: "https://api.anthropic.com/v1",
+                    apiKey: keys.anthropicKey || ""
+                },
+                {
+                    match: normalized.includes("gpt-4o") || normalized.includes("gpt-4-turbo") || normalized.includes("gpt-4.1"),
+                    providerId: "openai",
+                    modelId: model,
+                    baseUrl: "https://api.openai.com/v1",
+                    apiKey: keys.openaiKey || ""
+                },
+                {
+                    match: normalized.includes("grok") || normalized.includes("xai"),
+                    providerId: "xai",
+                    modelId: model === "grok-2" ? "grok-2-latest" : model,
+                    baseUrl: "https://api.x.ai/v1",
+                    apiKey: keys.xaiKey || ""
+                },
+                {
+                    match: normalized.includes("llama-3-70b-groq") || normalized.includes("llama3-70b-8192") || normalized.includes("groq"),
+                    providerId: "groq",
+                    modelId: normalized.includes("mixtral") ? "mixtral-8x7b-32768" : "llama3-70b-8192",
+                    baseUrl: "https://api.groq.com/openai/v1",
+                    apiKey: keys.groqKey || ""
+                },
+                {
+                    match: normalized.includes("mixtral-8x7b-groq") || normalized.includes("mixtral-8x7b-32768"),
+                    providerId: "groq",
+                    modelId: "mixtral-8x7b-32768",
+                    baseUrl: "https://api.groq.com/openai/v1",
+                    apiKey: keys.groqKey || ""
+                },
+                {
+                    match: normalized.includes("llama-3-70b-cerebras") || normalized.includes("llama3.1-8b") || normalized.includes("cerebras"),
+                    providerId: "cerebras",
+                    modelId: "llama3.1-8b",
+                    baseUrl: "https://api.cerebras.ai/v1",
+                    apiKey: keys.cerebrasKey || ""
+                },
+                {
+                    match: normalized.includes("openrouter"),
+                    providerId: "openrouter",
+                    modelId: defaults.modelId || "meta-llama/llama-3-8b-instruct:free",
+                    baseUrl: "https://openrouter.ai/api/v1",
+                    apiKey: keys.openrouterKey || ""
+                }
+            ];
+
+        const resolved = candidates.find((candidate) => candidate.match);
+        if (resolved) return resolved;
+
+        return {
+            providerId: (defaults.providerId || "google") as NativeModelConfig["provider"],
+            modelId: defaults.modelId || model,
+            baseUrl: defaults.providerId === "anthropic"
+                ? "https://api.anthropic.com/v1"
+                : defaults.providerId === "openai"
+                    ? "https://api.openai.com/v1"
+                    : defaults.providerId === "xai"
+                        ? "https://api.x.ai/v1"
+                        : defaults.providerId === "groq"
+                            ? "https://api.groq.com/openai/v1"
+                            : defaults.providerId === "cerebras"
+                                ? "https://api.cerebras.ai/v1"
+                                : defaults.providerId === "openrouter"
+                                    ? "https://openrouter.ai/api/v1"
+                                    : "https://generativelanguage.googleapis.com/v1beta/openai",
+            apiKey: defaults.providerId === "anthropic"
+                ? (keys.anthropicKey || "")
+                : defaults.providerId === "openai"
+                    ? (keys.openaiKey || "")
+                    : defaults.providerId === "xai"
+                        ? (keys.xaiKey || "")
+                        : defaults.providerId === "groq"
+                            ? (keys.groqKey || "")
+                            : defaults.providerId === "cerebras"
+                                ? (keys.cerebrasKey || "")
+                                : defaults.providerId === "openrouter"
+                                    ? (keys.openrouterKey || "")
+                                    : (keys.googleKey || "")
+        };
+    }
+
     private getTools(options?: { settings?: Record<string, string>, missionId?: string }) {
         const settings = options?.settings;
         const missionId = options?.missionId || "global";
@@ -36,6 +206,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_human_checkpoint",
                 description: "Pause execution and wait for tactical guidance or missing information from a human operator.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        prompt: this.stringParam("Clear question for the operator describing the missing information or decision.")
+                    },
+                    required: ["prompt"]
+                },
                 execute: async (args: { prompt: string }) => {
                     log.info(`Agent waiting for human input: ${args.prompt}`);
                     return await agentEvents.waitForInput(missionId, args.prompt);
@@ -44,6 +221,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_master_scan",
                 description: "The Singularity Engine: Executes a full end-to-end autonomous bounty hunt pipeline (Acquisition -> Discovery -> Analysis -> Chain -> Report).",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        target: this.stringParam("Primary target hostname, URL, domain, or identifier to assess.")
+                    },
+                    required: ["target"]
+                },
                 execute: async (args: { target: string }) => {
                     return await fbhTools.masterScan(args.target);
                 }
@@ -51,6 +235,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_scan",
                 description: "Perform deep security analysis on a target.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        target: this.stringParam("Target URL, hostname, package, or asset identifier.")
+                    },
+                    required: ["target"]
+                },
                 execute: async (args: { target: string }) => {
                     log.info(`Agent calling fbh_scan on ${args.target}`);
                     agentEvents.emitEvent({ type: "action", message: `Executing fbh_scan on ${args.target}` });
@@ -60,6 +251,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_exploit",
                 description: "Generate and execute exploits to prove impact.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        target: this.stringParam("Target host, endpoint, or vulnerable asset for proof-of-impact testing.")
+                    },
+                    required: ["target"]
+                },
                 execute: async (args: { target: string }) => {
                     log.info(`Agent calling fbh_exploit on ${args.target}`);
                     agentEvents.emitEvent({ type: "action", message: `Executing fbh_exploit on ${args.target}` });
@@ -124,6 +322,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_research_vulnerability",
                 description: "Research a specific vulnerability or technology to extract exploitation patterns.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        query: this.stringParam("Vulnerability name, CVE, product, technology, or exploit research question.")
+                    },
+                    required: ["query"]
+                },
                 execute: async (args: { query: string }) => {
                     const { researchVulnerability } = await import("../tools/research.js");
                     return await researchVulnerability(args.query);
@@ -172,6 +377,13 @@ export class FBHBotAgent {
             {
                 name: "web_fetch",
                 description: "Fetch and extract technical intelligence from a URL.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        url: this.stringParam("Fully qualified URL to fetch and analyze.")
+                    },
+                    required: ["url"]
+                },
                 execute: async (args: { url: string }) => {
                     const { webFetch } = await import("../tools/web.js");
                     return await webFetch(args.url);
@@ -359,6 +571,13 @@ export class FBHBotAgent {
             {
                 name: "shodan_search",
                 description: "Search Shodan for infrastructure reconnaissance.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        query: this.stringParam("Shodan search query for hosts, services, versions, or internet-exposed assets.")
+                    },
+                    required: ["query"]
+                },
                 execute: async (args: { query: string }) => {
                     log.info(`Agent calling shodan_search: ${args.query}`);
                     agentEvents.emitEvent({ type: "action", message: `Shodan Query: ${args.query}` });
@@ -369,6 +588,13 @@ export class FBHBotAgent {
             {
                 name: "google_dork",
                 description: "Search Google for sensitive leaks.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        query: this.stringParam("Google dork query targeting exposed documents, secrets, or sensitive endpoints.")
+                    },
+                    required: ["query"]
+                },
                 execute: async (args: { query: string }) => {
                     log.info(`Agent calling google_dork: ${args.query}`);
                     agentEvents.emitEvent({ type: "action", message: `Google Dork: ${args.query}` });
@@ -380,6 +606,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_shadow_recon",
                 description: "Search Certificate Transparency logs for hidden subdomains of a target.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        domain: this.stringParam("Base domain to enumerate through certificate transparency logs.")
+                    },
+                    required: ["domain"]
+                },
                 execute: async (args: { domain: string }) => {
                     log.info(`Agent calling fbh_shadow_recon: ${args.domain}`);
                     agentEvents.emitEvent({ type: "action", message: `Shadow Recon (CT Logs): ${args.domain}` });
@@ -389,6 +622,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_wayback_scan",
                 description: "Discover legacy endpoints, APIs, and subdomains via the Wayback Machine.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        domain: this.stringParam("Domain to inspect for archived URLs, APIs, and subdomains.")
+                    },
+                    required: ["domain"]
+                },
                 execute: async (args: { domain: string }) => {
                     log.info(`Agent calling fbh_wayback_scan: ${args.domain}`);
                     agentEvents.emitEvent({ type: "action", message: `Wayback Scan: ${args.domain}` });
@@ -398,6 +638,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_github_intel",
                 description: "Search for developer leaks and sensitive data on GitHub related to a domain.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        domain: this.stringParam("Domain, organization, or namespace to investigate for GitHub exposure.")
+                    },
+                    required: ["domain"]
+                },
                 execute: async (args: { domain: string }) => {
                     log.info(`Agent calling fbh_github_intel: ${args.domain}`);
                     agentEvents.emitEvent({ type: "action", message: `GitHub Intelligence Search: ${args.domain}` });
@@ -510,10 +757,35 @@ export class FBHBotAgent {
             {
                 name: "fbh_secret_validate",
                 description: "Tactical Secret Validator: Verify discovered credentials (openai_key, anthropic_api_key, gemini_api_key, groq_api_key, etc.) against real APIs to prove impact.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        type: this.stringParam("Credential type identifier, such as openai_key, anthropic_api_key, gemini_api_key, or groq_api_key."),
+                        value: this.stringParam("Credential value to validate.")
+                    },
+                    required: ["type", "value"]
+                },
                 execute: async (args: { type: string, value: string }) => {
                     const { SecretValidator } = await import("../tools/secret_validator.js");
                     const validator = new SecretValidator();
                     return await validator.validate(args.type, args.value);
+                }
+            },
+            {
+                name: "fbh_generate_poc",
+                description: "Automated Evidence Generator: Abuse a leaked API key 5-10 times to prove financial/data impact and format a strict Bug Bounty report.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        provider: this.stringParam("The provider of the leaked key (e.g., openai, anthropic, google, cerebras, groq)."),
+                        key: this.stringParam("The leaked API key to abuse.")
+                    },
+                    required: ["provider", "key"]
+                },
+                execute: async (args: { provider: string, key: string }) => {
+                    const { PoCGenerator } = await import("../tools/poc_generator.js");
+                    const generator = new PoCGenerator();
+                    return await generator.executePoC(args.provider, args.key, 5); // Default to 5 hits to prove impact
                 }
             },
             {
@@ -545,6 +817,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_web_recon",
                 description: "Universal Web Surface Discovery: Find subdomains, cloud buckets, and endpoints for a given domain.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        domain: this.stringParam("Target domain for subdomain, endpoint, and storage discovery.")
+                    },
+                    required: ["domain"]
+                },
                 execute: async (args: { domain: string }) => {
                     return await fbhTools.webRecon(args);
                 }
@@ -552,6 +831,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_web_scan",
                 description: "Tactical Web Scanner: Automated vulnerability discovery for web targets (XSS, SQLi, SSRF, Header Audit).",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        target_url: this.stringParam("Target URL to scan for web vulnerabilities.")
+                    },
+                    required: ["target_url"]
+                },
                 execute: async (args: { target_url: string }) => {
                     return await fbhTools.webScan(args);
                 }
@@ -559,6 +845,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_web_active_scan",
                 description: "Proactive Vulnerability Scanner: Template-based active probing for high-impact flaws (Nuclei integration).",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        target_url: this.stringParam("Target URL to actively probe with templates.")
+                    },
+                    required: ["target_url"]
+                },
                 execute: async (args: { target_url: string }) => {
                     return await fbhTools.webActiveScan(args);
                 }
@@ -566,6 +859,13 @@ export class FBHBotAgent {
             {
                 name: "fbh_infra_audit",
                 description: "Infrastructure Intelligence: Deep service fingerprinting, port scanning, and banner grabbing.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        host: this.stringParam("Hostname or IP address to fingerprint and audit.")
+                    },
+                    required: ["host"]
+                },
                 execute: async (args: { host: string }) => {
                     return await fbhTools.infraAudit(args);
                 }
@@ -573,6 +873,18 @@ export class FBHBotAgent {
             {
                 name: "fbh_sigint_recon",
                 description: "Global Signal Intelligence: LLM-driven internet-scale discovery for shadow assets and deployments.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        target_url: this.stringParam("Target domain or URL to investigate."),
+                        mode: {
+                            type: "string",
+                            enum: ["application", "organization"],
+                            description: "Discovery mode based on a single application or a broader organization footprint."
+                        }
+                    },
+                    required: ["target_url"]
+                },
                 execute: async (args: { target_url: string, mode?: "application" | "organization" }) => {
                     return await fbhTools.sigintRecon(args);
                 }
@@ -787,7 +1099,7 @@ export class FBHBotAgent {
         ];
     }
 
-    async runMission(goal: string, options?: { playbookId?: string, strategy?: 'stealth' | 'aggressive', settings?: Record<string, string>, model?: string }) {
+    async runMission(goal: string, options?: { playbookId?: string, strategy?: 'stealth' | 'aggressive', settings?: Record<string, string>, model?: string, history?: NativeHistoryMessage[] }) {
         log.info(`Starting mission with goal: ${goal}${options?.model ? ` using brain: ${options.model}` : ""}`);
 
         // 1. Apply Playbook (if any)
@@ -822,6 +1134,7 @@ export class FBHBotAgent {
         const missionId = missionIdMatch ? missionIdMatch[1] : "global";
 
         this.agent.setSystemPrompt(systemPrompt);
+        this.agent.setConversationHistory(this.historyToNativeMessages(options?.history));
         this.agent.setTools(this.getTools({
             settings: options?.settings,
             missionId
@@ -915,13 +1228,7 @@ export class FBHBotAgent {
             return listMsg;
         }
 
-        let requiredProvider: 'google' | 'openai' | 'anthropic' | 'any' | 'xai' | 'groq' | 'cerebras' = 'any';
-        if (options?.model?.includes("gemini")) requiredProvider = 'google';
-        else if (options?.model?.includes("claude")) requiredProvider = 'anthropic';
-        else if (options?.model?.includes("gpt") || options?.model?.includes("OpenRouter")) requiredProvider = 'openai';
-        else if (options?.model?.includes("grok")) requiredProvider = 'xai';
-        else if (options?.model?.includes("groq")) requiredProvider = 'groq';
-        else if (options?.model?.includes("cerebras")) requiredProvider = 'cerebras';
+        const requiredProvider = this.getRequiredProvider(options?.model);
 
         const hasRequiredKey =
             (requiredProvider === 'google' && googleKey && googleKey.trim() !== "") ||
@@ -930,6 +1237,7 @@ export class FBHBotAgent {
             (requiredProvider === 'groq' && groqKey && groqKey.trim() !== "") ||
             (requiredProvider === 'cerebras' && cerebrasKey && cerebrasKey.trim() !== "") ||
             (requiredProvider === 'xai' && xaiKey && xaiKey.trim() !== "") ||
+            (requiredProvider === 'openrouter' && openrouterKey && openrouterKey.trim() !== "") ||
             (requiredProvider === 'any' && (defaultProviderId !== undefined));
 
         if (!hasRequiredKey && !isApiradarGoal) {
@@ -1019,47 +1327,23 @@ export class FBHBotAgent {
             let apiKey = "";
 
             if (options?.model) {
-                if (options.model.includes("gemini")) {
-                    providerId = "google";
-                    modelId = options.model; // e.g., gemini-1.5-pro
-                    baseUrl = "https://generativelanguage.googleapis.com/v1beta/openai";
-                    apiKey = googleKey || "";
-                } else if (options.model.includes("claude-3-5-sonnet")) {
-                    providerId = "anthropic";
-                    modelId = "claude-3-5-sonnet-20241022";
-                    baseUrl = "https://api.anthropic.com/v1";
-                    apiKey = anthropicKey || "";
-                } else if (options.model.includes("claude-3-opus")) {
-                    providerId = "anthropic";
-                    modelId = "claude-3-opus-20240229";
-                    baseUrl = "https://api.anthropic.com/v1";
-                    apiKey = anthropicKey || "";
-                } else if (options.model.includes("gpt-4o") || options.model.includes("gpt-4-turbo")) {
-                    providerId = "openai";
-                    modelId = options.model;
-                    baseUrl = "https://api.openai.com/v1";
-                    apiKey = openaiKey || "";
-                } else if (options.model === "grok-2") {
-                    providerId = "xai";
-                    modelId = "grok-2-latest";
-                    baseUrl = "https://api.x.ai/v1";
-                    apiKey = xaiKey || "";
-                } else if (options.model.includes("llama-3-70b-groq")) {
-                    providerId = "groq";
-                    modelId = "llama3-70b-8192";
-                    baseUrl = "https://api.groq.com/openai/v1";
-                    apiKey = groqKey || "";
-                } else if (options.model.includes("mixtral-8x7b-groq")) {
-                    providerId = "groq";
-                    modelId = "mixtral-8x7b-32768";
-                    baseUrl = "https://api.groq.com/openai/v1";
-                    apiKey = groqKey || "";
-                } else if (options.model.includes("llama-3-70b-cerebras")) {
-                    providerId = "cerebras";
-                    modelId = "llama3.1-8b";
-                    baseUrl = "https://api.cerebras.ai/v1";
-                    apiKey = cerebrasKey || "";
-                }
+                const resolvedModel = this.resolveSelectedModel(options.model, {
+                    providerId: defaultProviderId,
+                    modelId: defaultModelId
+                }, {
+                    googleKey,
+                    openaiKey,
+                    anthropicKey,
+                    groqKey,
+                    cerebrasKey,
+                    xaiKey,
+                    openrouterKey
+                });
+
+                providerId = resolvedModel.providerId;
+                modelId = resolvedModel.modelId;
+                baseUrl = resolvedModel.baseUrl;
+                apiKey = resolvedModel.apiKey;
             } else {
                 // Map defaults
                 if (providerId === "google") { baseUrl = "https://generativelanguage.googleapis.com/v1beta/openai"; apiKey = googleKey || ""; }
@@ -1083,6 +1367,7 @@ export class FBHBotAgent {
             });
 
             this.agent.setSystemPrompt(systemPrompt);
+            this.agent.setConversationHistory(this.historyToNativeMessages(options?.history));
             this.agent.setTools(this.getTools({
                 settings: options?.settings,
                 missionId

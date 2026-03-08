@@ -27,7 +27,7 @@ Replace the macOS-only `super-tart-vphone` + TrollVNC setup with a **cross-platf
 1. Runs on **ParrotSec Linux ARM64** inside UTM
 2. Has a **custom phone UI** — no raw VNC client needed
 3. Provides **native touch translation** via keyboard/mouse → iOS HID injection
-4. Integrates with **FlutterSentinel** security tooling
+4. Integrates with **SecuritySentinel** security tooling
 
 ### Architecture Comparison
 

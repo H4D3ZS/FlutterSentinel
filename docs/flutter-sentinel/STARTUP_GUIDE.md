@@ -1,4 +1,4 @@
-# FlutterSentinel - Unified Development Guide
+# SecuritySentinel - Unified Development Guide
 
 ## 🚀 Quick Start
 
@@ -179,7 +179,7 @@ To stop all services:
 ## 📦 Project Structure
 
 ```
-FlutterSentinel/
+SecuritySentinel/
 ├── package.json              # Root orchestration
 ├── scripts/
 │   ├── start-mobsf.js       # MobSF launcher
