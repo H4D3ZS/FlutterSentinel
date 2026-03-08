@@ -306,10 +306,10 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
                         <CardContent className="p-10">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
                                 {[
-                                    { label: 'OWASP MOBILE', score: stats?.total_targets ? 85 : 0, status: 'NOMINAL' },
-                                    { label: 'OWASP WEB', score: stats?.total_targets ? 72 : 0, status: 'HARDENING' },
-                                    { label: 'OWASP LLM', score: stats?.total_targets ? 94 : 0, status: 'OPTIMIZED' },
-                                    { label: 'MASVS CLOUD', score: stats?.total_targets ? 81 : 0, status: 'NOMINAL' }
+                                    { label: 'OWASP MOBILE', score: stats?.compliance?.mobile || 0, status: stats?.compliance?.mobile ? (stats.compliance.mobile > 80 ? 'NOMINAL' : 'WARNING') : 'NOT EVALUATED' },
+                                    { label: 'OWASP WEB', score: stats?.compliance?.web || 0, status: stats?.compliance?.web ? (stats.compliance.web > 80 ? 'NOMINAL' : 'WARNING') : 'NOT EVALUATED' },
+                                    { label: 'OWASP LLM', score: stats?.compliance?.llm || 0, status: stats?.compliance?.llm ? (stats.compliance.llm > 80 ? 'NOMINAL' : 'WARNING') : 'NOT EVALUATED' },
+                                    { label: 'MASVS CLOUD', score: stats?.compliance?.mobile || 0, status: stats?.compliance?.mobile ? (stats.compliance.mobile > 80 ? 'NOMINAL' : 'WARNING') : 'NOT EVALUATED' }
                                 ].map((cat, idx) => (
                                     <div key={cat.label} className="space-y-4">
                                         <div className="flex justify-between items-end px-1">
@@ -321,11 +321,11 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
                                                 initial={{ width: 0 }}
                                                 animate={{ width: `${cat.score}%` }}
                                                 transition={{ duration: 1, delay: idx * 0.1 }}
-                                                className={cn("h-full", cat.score > 90 ? 'bg-green-500' : 'bg-primary')}
+                                                className={cn("h-full", cat.score > 90 ? 'bg-green-500' : (cat.score > 70 ? 'bg-primary' : 'bg-orange-500'))}
                                             />
                                         </div>
                                         <div className="flex items-center gap-2 text-[9px] font-mono text-slate-600 uppercase font-black">
-                                            <div className={cn("w-1.5 h-1.5 rounded-full", cat.score > 90 ? 'bg-green-500' : 'bg-primary')} />
+                                            <div className={cn("w-1.5 h-1.5 rounded-full", cat.score > 90 ? 'bg-green-500' : (cat.score > 70 ? 'bg-primary' : 'bg-orange-500'))} />
                                             {cat.status}
                                         </div>
                                     </div>

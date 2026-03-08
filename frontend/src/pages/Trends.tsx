@@ -79,14 +79,19 @@ ChartJS.register(
 
 const Trends: React.FC = () => {
     const [trends, setTrends] = useState<any[]>([]);
+    const [globalStats, setGlobalStats] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
     const fetchTrends = async () => {
         try {
-            // Fetch live targets to map their actual vulnerability telemetry
-            const response = await api.getTargets();
-            const rawTargets = Array.isArray(response) ? response : (response.targets || []);
+            // Fetch live targets and global stats
+            const [response, globalStatsRes] = await Promise.all([
+                api.getTargets(),
+                api.getGlobalStats()
+            ]);
 
+            const rawTargets = Array.isArray(response) ? response : (response.targets || []);
+            setGlobalStats(globalStatsRes);
             // Map live trends from actual target findings
             const liveTrends = rawTargets.map((t: any) => {
                 const stats = typeof t.stats === 'string' ? JSON.parse(t.stats) : (t.stats || {});
@@ -145,6 +150,22 @@ const Trends: React.FC = () => {
                 borderRadius: 4,
             },
         ],
+    };
+
+    const complianceData = {
+        labels: ['OWASP Mobile', 'OWASP Web', 'OWASP LLM'],
+        datasets: [
+            {
+                label: 'Compliance Score',
+                data: [
+                    globalStats?.compliance?.mobile || 0,
+                    globalStats?.compliance?.web || 0,
+                    globalStats?.compliance?.llm || 0
+                ],
+                backgroundColor: ['rgba(59, 130, 246, 0.8)', 'rgba(34, 197, 94, 0.8)', 'rgba(249, 115, 22, 0.8)'],
+                borderRadius: 4,
+            }
+        ]
     };
 
     const pieData = {
@@ -382,6 +403,41 @@ const Trends: React.FC = () => {
                                 </div>
                             ))}
                         </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* Compliance Radar Chart Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                <Card className="border-border/40 bg-slate-900/30 backdrop-blur-xl shadow-[0_0_50px_rgba(0,0,0,0.3)] rounded-[2.5rem] overflow-hidden group">
+                    <CardHeader className="p-10 pb-4 border-b border-white/5 bg-primary/5">
+                        <CardTitle className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-3">
+                            <div className="p-2 bg-primary/10 rounded-lg">
+                                <ShieldCheck size={20} className="text-primary" />
+                            </div>
+                            OWASP Fleet Compliance
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-10 h-[350px]">
+                        <Bar
+                            data={complianceData}
+                            options={{
+                                maintainAspectRatio: false,
+                                indexAxis: 'y',
+                                plugins: {
+                                    legend: { display: false },
+                                    tooltip: {
+                                        backgroundColor: '#05060f',
+                                        titleFont: { size: 11, family: 'monospace', weight: 'bold' },
+                                        bodyFont: { size: 10, family: 'monospace' },
+                                    }
+                                },
+                                scales: {
+                                    x: { max: 100, grid: { color: 'rgba(59, 130, 246, 0.05)' }, ticks: { color: '#64748b' } },
+                                    y: { grid: { display: false }, ticks: { color: '#64748b', font: { weight: 'bold' } } }
+                                }
+                            }}
+                        />
                     </CardContent>
                 </Card>
             </div>

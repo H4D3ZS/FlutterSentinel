@@ -39,6 +39,11 @@ export interface GlobalStats {
     critical_findings: number;
     total_scans: number;
     severity_distribution: Record<string, number>;
+    compliance: {
+        mobile: number;
+        web: number;
+        llm: number;
+    };
 }
 
 // ─── Role → Subscription Display Name ────────────────────────────────────────
@@ -72,19 +77,40 @@ export const dashboardService = {
             `SELECT * FROM targets WHERE user_id = $1`,
             [userId]
         );
-        const targets = result.rows as DashboardTarget[];
+        const targets = result.rows as any[];
+
+        const complianceSums = { mobile: 0, web: 0, llm: 0 };
+        const complianceCounts = { mobile: 0, web: 0, llm: 0 };
 
         const totals = targets.reduce(
             (acc, t) => {
                 const stats = typeof t.stats === 'string' ? JSON.parse(t.stats as string) : t.stats;
-                acc.total_findings += stats.total_findings || 0;
-                acc.critical_findings += stats.findings_by_severity?.critical || 0;
+                const comp = typeof t.compliance === 'string' ? JSON.parse(t.compliance as string) : t.compliance;
 
-                if (stats.findings_by_severity) {
+                acc.total_findings += stats?.total_findings || 0;
+                acc.critical_findings += stats?.findings_by_severity?.critical || 0;
+
+                if (stats?.findings_by_severity) {
                     Object.entries(stats.findings_by_severity).forEach(([sev, count]) => {
                         acc.severity_distribution[sev] = (acc.severity_distribution[sev] || 0) + (count as number);
                     });
                 }
+
+                // Compliance Aggregation
+                if (comp?.overall_score !== undefined) {
+                    const platform = t.platform || 'mobile';
+                    if (platform === 'android' || platform === 'ios') {
+                        complianceSums.mobile += comp.overall_score;
+                        complianceCounts.mobile++;
+                    } else if (platform === 'llm') {
+                        complianceSums.llm += comp.overall_score;
+                        complianceCounts.llm++;
+                    } else {
+                        complianceSums.web += comp.overall_score;
+                        complianceCounts.web++;
+                    }
+                }
+
                 return acc;
             },
             {
@@ -93,8 +119,15 @@ export const dashboardService = {
                 critical_findings: 0,
                 total_scans: targets.filter(t => t.status === 'complete').length,
                 severity_distribution: {} as Record<string, number>,
+                compliance: { mobile: 0, web: 0, llm: 0 }
             }
         );
+
+        // Average the scores
+        totals.compliance.mobile = complianceCounts.mobile > 0 ? Math.round(complianceSums.mobile / complianceCounts.mobile) : 0;
+        totals.compliance.web = complianceCounts.web > 0 ? Math.round(complianceSums.web / complianceCounts.web) : 0;
+        totals.compliance.llm = complianceCounts.llm > 0 ? Math.round(complianceSums.llm / complianceCounts.llm) : 0;
+
         return totals;
     },
 
