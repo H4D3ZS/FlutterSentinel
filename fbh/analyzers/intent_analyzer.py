@@ -1,1 +1,0 @@
-from fbh.infrastructure.adapters.analyzers.intent_analyzer import IntentAnalyzer

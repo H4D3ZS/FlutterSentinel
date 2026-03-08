@@ -1,1 +1,0 @@
-from fbh.infrastructure.adapters.analyzers.advanced_flutter import AdvancedFlutterAnalyzer
