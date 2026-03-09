@@ -1,5 +1,4 @@
-{% load mobsf_filters %}
-{% load mobsf_filters %}
+{% extends "base/base_layout.html" %}
    {% load static %}
      {% block sidebar_option %}
       sidebar-mini
@@ -1141,7 +1140,7 @@
                       <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>
-                        {{item|key:"title" | safe}}
+                        {{item|key:"title"}}
                         </td>
                         <td>
 

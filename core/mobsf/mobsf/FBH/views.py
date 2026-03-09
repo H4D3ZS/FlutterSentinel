@@ -177,7 +177,7 @@ try:
         from fbh.domain.agents.reflutter_orchestrator import ReflutterOrchestrator
     except ImportError:
         ReflutterOrchestrator = None
-    from fbh.services.target_service import TargetService
+    from fbh.infrastructure.adapters.target_service import TargetService
 except ImportError as e:
     # If FBH not found, provide dummy implementations
     import logging
@@ -356,7 +356,7 @@ def api_targets(request):
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
-# Legacy acquisition logic removed - handled by fbh.services.TargetService
+# Legacy acquisition logic removed - handled by fbh.infrastructure.adapters.TargetService
 
 @csrf_exempt
 

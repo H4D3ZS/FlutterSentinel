@@ -1,5 +1,4 @@
-{% load mobsf_filters %}
-{% load mobsf_filters %}
+{% extends "base/base_layout.html" %}
    {% load static %}
      {% block sidebar_option %}
       sidebar-mini
@@ -873,17 +872,17 @@
                                         <tr>
                                             <td>
                                                 {% for url in urls.common %}
-                                                    {{ url | safe}} <br/>
+                                                    {{ url }} <br/>
                                                 {% endfor %}
                                             </td>
                                             <td>
                                                 {% for url in urls.only_first %}
-                                                    {{ url | safe }} <br/>
+                                                    {{ url }} <br/>
                                                 {% endfor %}
                                             </td>
                                             <td>
                                                 {% for url in urls.only_second %}
-                                                    {{ url | safe}} <br/>
+                                                    {{ url }} <br/>
                                                 {% endfor %}
                                             </td>
                                         </tr>

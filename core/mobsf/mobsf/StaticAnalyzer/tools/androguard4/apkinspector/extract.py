@@ -18,8 +18,7 @@ def extract_file_based_on_header_info(apk_file, local_header_info, central_direc
     :type local_header_info: dict
     :param central_directory_info: The central directory entry for that specific filename
     :type central_directory_info: dict
-    :return: Returns the actual extracted data for that file along with an indication of whether a static analysis evasion technique was used or
-        or not.
+    :return: Returns the actual extracted data for that file along with an indication of whether a static analysis evasion technique was used or not.
     :rtype: set(bytes, str)
     """
     filename_length = local_header_info["file_name_length"]

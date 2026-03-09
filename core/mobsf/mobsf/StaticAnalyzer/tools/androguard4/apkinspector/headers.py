@@ -33,8 +33,7 @@ class EndOfCentralDirectoryRecord:
     def parse(cls, apk_file):
         """
         Method to locate the "end of central directory record signature" as the first step of the correct process of
-        reading a ZIP archive. Should be noted that certain APKs do not follow the zip specification and
-            and declare multiple
+        reading a ZIP archive. Should be noted that certain APKs do not follow the zip specification and declare multiple
         "end of central directory records". For this reason the search for the corresponding signature of the eocd starts
         from the end of the apk.
 
@@ -398,8 +397,7 @@ class LocalHeaderRecord:
 
 class ZipEntry:
     """
-    Is the actual APK represented as a composition of the previous classes, which are: the EndOfCentralDirectoryRecord, the CentralDirectory and
-        and a dictionary of values of LocalHeaderRecord.
+    Is the actual APK represented as a composition of the previous classes, which are: the EndOfCentralDirectoryRecord, the CentralDirectory and a dictionary of values of LocalHeaderRecord.
     """
 
     def __init__(self, zip_bytes, eocd: EndOfCentralDirectoryRecord, central_directory: CentralDirectory,
@@ -523,8 +521,7 @@ class ZipEntry:
         """
         List of information about the entries in the central directory.
 
-        :return: returns a dictionary where the keys are the filenames and
-            and the values are each an instance of the CentralDirectoryEntry
+        :return: returns a dictionary where the keys are the filenames and the values are each an instance of the CentralDirectoryEntry
         :rtype: dict
         """
         return self.central_directory.entries

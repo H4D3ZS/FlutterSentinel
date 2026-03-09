@@ -68,7 +68,7 @@ function startMobSF() {
 
     const mobsf = spawn(
         'poetry',
-        ['run', 'python', 'manage.py', 'runserver', '127.0.0.1:8000'],
+        ['run', 'gunicorn', '-b', '127.0.0.1:8000', 'mobsf.MobSF.wsgi:application', '--workers=1', '--threads=10', '--timeout=3600'],
         {
             cwd: mobsfDir,
             stdio: 'inherit',

@@ -2724,8 +2724,7 @@ class ARSCHeader:
     It is not checked if the data is outside the buffer size nor if the current
     chunk fits into the parent chunk (if any)!
 
-    The parameter `expected_type` can be used to immediately check the header for the type or
-        or raise a :class:`ResParserError`.
+    The parameter `expected_type` can be used to immediately check the header for the type or raise a :class:`ResParserError`.
     This is useful if you know what type of chunk must follow.
 
     See http://androidxref.com/9.0.0_r3/xref/frameworks/base/libs/androidfw/include/androidfw/ResourceTypes.h#196
