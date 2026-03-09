@@ -14,6 +14,8 @@ import { authMiddleware, adminMiddleware } from './middleware/auth.js';
 import { mobsfService } from './api/mobsf-service.js';
 import { dashboardService } from './api/dashboard-service.js';
 import { vphoneService } from './api/vphone-service.js';
+import { downloaderService } from './api/downloader-service.js';
+import { initializeScannerAutomation } from './api/scanner-automation.js';
 import { initializeDatabase } from './db/database.js';
 import { db } from './db/database.js';
 import { mapFindingToOWASP } from './utils/owasp-mapper.js';
@@ -820,25 +822,15 @@ app.post('/api/settings', authMiddleware, async (req: Request, res: Response) =>
     }
 });
 
-// ============================================================================
-// ERROR HANDLING
-// ============================================================================
-
-app.use((req: Request, res: Response) => {
-    res.status(404).json({ error: 'Not found' });
-});
-
-app.use((err: any, req: Request, res: Response, next: any) => {
-    console.error('Server error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-});
-
-// ============================================================================
+// Removed error handling from here as it shadowed downstream routes
 // START SERVER
 // ============================================================================
 
 async function startServer() {
     try {
+        // 0. Initialize Downloader/Scanner Automation Background Listeners
+        initializeScannerAutomation();
+
         // 1. Initialize DB tables first
         await initializeDatabase();
 
@@ -861,6 +853,53 @@ async function startServer() {
         process.exit(1);
     }
 }
+
+// ============================================================================
+// APP DOWNLOADER ROUTES
+// ============================================================================
+
+app.get('/api/apps/search', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { q, platform } = req.query;
+        if (!q) return res.status(400).json({ error: 'Query is required' }) as any;
+        const results = await downloaderService.search(q as string, platform as 'ios' | 'android');
+        res.json({ results });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/apps/download', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { appId, name, platform } = req.body;
+        if (!appId || !name || !platform) return res.status(400).json({ error: 'appId, name, and platform required' }) as any;
+
+        const downloadId = Date.now().toString() + Math.random().toString(36).substring(7);
+        downloaderService.startDownload(appId, name, platform, downloadId);
+
+        res.json({ success: true, downloadId });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/apps/download-stream', authMiddleware, (req: Request, res: Response) => {
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    });
+
+    const onProgress = (data: any) => {
+        res.write(`data: ${JSON.stringify(data)}\n\n`);
+    };
+
+    downloaderService.on('progress', onProgress);
+
+    req.on('close', () => {
+        downloaderService.removeListener('progress', onProgress);
+    });
+});
 
 // ============================================================================
 // REPORTS API — Auto-read target markdown & save generated reports
@@ -963,6 +1002,19 @@ app.get('/api/reports/saved', authMiddleware, (_req: Request, res: Response) => 
     } catch (err: any) {
         res.status(500).json({ error: err.message });
     }
+});
+
+// ============================================================================
+// ERROR HANDLING
+// ============================================================================
+
+app.use((req: Request, res: Response) => {
+    res.status(404).json({ error: 'Not found' });
+});
+
+app.use((err: any, req: Request, res: Response, next: any) => {
+    console.error('Server error:', err);
+    res.status(500).json({ error: 'Internal server error' });
 });
 
 startServer();

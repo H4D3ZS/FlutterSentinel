@@ -1,2 +1,0 @@
-# WhatsApp Test - Research Notes
-

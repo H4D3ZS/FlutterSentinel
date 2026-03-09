@@ -59,7 +59,7 @@ export class FBHBotAgent {
             const providerId = (defaults.providerId || "google") as NativeModelConfig["provider"];
             return {
                 providerId,
-                modelId: defaults.modelId || "gemini-1.5-flash-latest",
+                modelId: defaults.modelId || "gemini-2.5-pro",
                 baseUrl: providerId === "anthropic"
                     ? "https://api.anthropic.com/v1"
                     : providerId === "openai"
@@ -1183,7 +1183,7 @@ export class FBHBotAgent {
 
             // Intelligent defaults based on available keys
             if (googleKey) {
-                defaultProviderId = "google"; defaultModelId = "gemini-1.5-flash-latest";
+                defaultProviderId = "google"; defaultModelId = "gemini-2.5-pro";
             } else if (anthropicKey) {
                 defaultProviderId = "anthropic"; defaultModelId = "claude-3-5-sonnet-20240620";
             } else if (openaiKey) {
@@ -1322,7 +1322,7 @@ export class FBHBotAgent {
 
         try {
             let providerId = defaultProviderId || "google";
-            let modelId = defaultModelId || "gemini-1.5-flash-latest";
+            let modelId = defaultModelId || "gemini-2.5-pro";
             let baseUrl = "";
             let apiKey = "";
 

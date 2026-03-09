@@ -60,6 +60,11 @@ interface GlobalStats {
     critical_findings: number;
     total_scans: number;
     severity_distribution: Record<string, number>;
+    compliance?: {
+        mobile: number;
+        web: number;
+        llm: number;
+    };
 }
 
 interface DashboardProps {

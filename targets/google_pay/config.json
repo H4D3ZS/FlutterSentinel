@@ -1,9 +1,0 @@
-{
-  "name": "google_pay",
-  "package_name": "com.google.android.apps.nbu.paisa.user",
-  "platform": "android",
-  "bug_bounty_program": "",
-  "scope": [],
-  "out_of_scope": [],
-  "notes": ""
-}

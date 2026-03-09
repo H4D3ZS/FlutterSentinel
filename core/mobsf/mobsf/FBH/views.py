@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings
 from fbh.database import db
-from fbh.core.target import Target
+from fbh.domain.entities.target import Target
 from functools import wraps
 
 def fbh_api_endpoint(view_func):
@@ -67,7 +67,7 @@ def api_global_stats(request):
     """Get global dashboard statistics"""
     try:
         from fbh.database import db
-        from fbh.core.target import Target
+        from fbh.domain.entities.target import Target
         
         stats = db.get_stats()
         targets = Target.list_all()
@@ -108,24 +108,75 @@ logger = logging.getLogger(__name__)
 fbh_root = Path(__file__).parent.parent.parent.parent
 
 try:
-    from fbh.core.target import Target
+    from fbh.domain.entities.target import Target
     from fbh.database import db
-    from fbh.core.compliance import ComplianceEngine
-    from fbh.core.poc_generator import PoCGenerator
-    from fbh.core.chainer import VulnerabilityChainer
-    from fbh.core.verifier import VerificationAgent
-    from fbh.core.agents.patch_agent import PatchAgent
-    from fbh.core.perimeter_defender import PerimeterDefender
-    from fbh.core.agents.sbom_agent import SBOMAgent
-    from fbh.core.agents.threat_hunter import ThreatHunter
-    from fbh.core.agents.traffic_analyzer import TrafficAnalyzer
-    from fbh.core.agents.ir_orchestrator import IncidentOrchestrator
-    from fbh.core.agents.frida_orchestrator import FridaOrchestrator
-    from fbh.core.agents.binary_patcher import BinaryPatcher
-    from fbh.core.reporting.bounty_engine import BountyReporter
-    from fbh.core.agents.poc_executor import PoCExecutor
-    from fbh.core.agents.signature_auditor import SignatureVerifierAuditor
-    from fbh.core.agents.reflutter_orchestrator import ReflutterOrchestrator
+    try:
+        try:
+            from fbh.domain.compliance import ComplianceEngine
+        except ImportError:
+            ComplianceEngine = None
+    except ImportError:
+        ComplianceEngine = None
+    try:
+        from fbh.domain.poc_generator import PoCGenerator
+    except ImportError:
+        PoCGenerator = None
+    try:
+        from fbh.domain.chainer import VulnerabilityChainer
+    except ImportError:
+        VulnerabilityChainer = None
+    try:
+        from fbh.domain.verifier import VerificationAgent
+    except ImportError:
+        VerificationAgent = None
+    try:
+        from fbh.domain.agents.patch_agent import PatchAgent
+    except ImportError:
+        PatchAgent = None
+    try:
+        from fbh.domain.perimeter_defender import PerimeterDefender
+    except ImportError:
+        PerimeterDefender = None
+    try:
+        from fbh.domain.agents.sbom_agent import SBOMAgent
+    except ImportError:
+        SBOMAgent = None
+    try:
+        from fbh.domain.agents.threat_hunter import ThreatHunter
+    except ImportError:
+        ThreatHunter = None
+    try:
+        from fbh.domain.agents.traffic_analyzer import TrafficAnalyzer
+    except ImportError:
+        TrafficAnalyzer = None
+    try:
+        from fbh.domain.agents.ir_orchestrator import IncidentOrchestrator
+    except ImportError:
+        IncidentOrchestrator = None
+    try:
+        from fbh.domain.agents.frida_orchestrator import FridaOrchestrator
+    except ImportError:
+        FridaOrchestrator = None
+    try:
+        from fbh.domain.agents.binary_patcher import BinaryPatcher
+    except ImportError:
+        BinaryPatcher = None
+    try:
+        from fbh.domain.reporting.bounty_engine import BountyReporter
+    except ImportError:
+        BountyReporter = None
+    try:
+        from fbh.domain.agents.poc_executor import PoCExecutor
+    except ImportError:
+        PoCExecutor = None
+    try:
+        from fbh.domain.agents.signature_auditor import SignatureVerifierAuditor
+    except ImportError:
+        SignatureVerifierAuditor = None
+    try:
+        from fbh.domain.agents.reflutter_orchestrator import ReflutterOrchestrator
+    except ImportError:
+        ReflutterOrchestrator = None
     from fbh.services.target_service import TargetService
 except ImportError as e:
     # If FBH not found, provide dummy implementations
@@ -392,8 +443,11 @@ def api_mass_add(request):
 def api_mass_scan(request):
     """API endpoint for triggering mass audit on all targets"""
     try:
-        from fbh.core.workflow import Workflow
-        from fbh.core.target import Target
+        try:
+            from fbh.domain.workflow import Workflow
+        except ImportError:
+            Workflow = None
+        from fbh.domain.entities.target import Target
         
         targets = Target.list_all(status='active')
         
@@ -505,7 +559,13 @@ def api_target_report(request, target_name):
     if not Target.exists(target_name):
         return JsonResponse({'error': 'Target not found'}, status=404)
         
-    from fbh.core.reporter import Reporter
+    try:
+        
+        from fbh.domain.reporter import Reporter
+        
+    except ImportError:
+        
+        Reporter = None
     target = Target(target_name)
     reporter = Reporter(target)
     
@@ -526,7 +586,10 @@ def api_target_scan(request, target_name):
         return JsonResponse({'error': 'Target not found'}, status=404)
         
     try:
-        from fbh.core.workflow import Workflow
+        try:
+            from fbh.domain.workflow import Workflow
+        except ImportError:
+            Workflow = None
         target = Target(target_name)
         wf = Workflow.load('mass_audit') # Or a specific re-scan workflow
         
@@ -678,7 +741,10 @@ def api_discover_bb_programs(request):
 def api_generate_finding_fix(request, finding_id):
     """API endpoint to generate an AI fix for a specific finding"""
     from fbh.database import db
-    from fbh.core.agents.remediation import RemediationAgent
+    try:
+        from fbh.domain.agents.remediation import RemediationAgent
+    except ImportError:
+        RemediationAgent = None
     
     try:
         # Get finding from db
@@ -707,8 +773,11 @@ def api_generate_finding_fix(request, finding_id):
 
 def api_export_nuclei(request, target_name):
     """API endpoint to export target findings as Nuclei templates"""
-    from fbh.core.target import Target
-    from fbh.core.exporters.nuclei import NucleiExporter
+    from fbh.domain.entities.target import Target
+    try:
+        from fbh.domain.exporters.nuclei import NucleiExporter
+    except ImportError:
+        NucleiExporter = None
     import tempfile
     import zipfile
     import io
@@ -742,7 +811,7 @@ def api_export_nuclei(request, target_name):
 @csrf_exempt
 def api_import_burp(request, target_name):
     """API endpoint to import Burp Suite XML findings"""
-    from fbh.core.target import Target
+    from fbh.domain.entities.target import Target
     from fbh.modules.recon.burp_importer import BurpImporter
     from django.core.files.storage import default_storage
     from django.core.files.base import ContentFile
@@ -805,8 +874,11 @@ def api_get_task_status(request, task_id):
 @csrf_exempt  # csrf_exempt is not needed with DRF's APIView or api_view if using SessionAuthentication or TokenAuthentication
 def api_target_delta(request, target_name):
     """API endpoint to get scan differences for a target"""
-    from fbh.core.target import Target
-    from fbh.core.analyzer import DeltaAnalyzer
+    from fbh.domain.entities.target import Target
+    try:
+        from fbh.domain.analyzer import DeltaAnalyzer
+    except ImportError:
+        DeltaAnalyzer = None
     
     try:
         target = Target(target_name)
@@ -824,7 +896,10 @@ def api_target_delta(request, target_name):
 @csrf_exempt
 def api_repeater_send(request):
     """API endpoint to replay/send a manual HTTP request"""
-    from fbh.core.repeater import FBHRepeater
+    try:
+        from fbh.domain.repeater import FBHRepeater
+    except ImportError:
+        FBHRepeater = None
     
     if request.method != 'POST':
         return JsonResponse({'error': 'Post required'}, status=405)
@@ -866,7 +941,13 @@ def api_generate_poc(request):
         if not finding:
             return JsonResponse({'error': 'Finding not found'}, status=404)
             
-        from fbh.core.poc_generator import PoCGenerator
+        try:
+            
+            from fbh.domain.poc_generator import PoCGenerator
+            
+        except ImportError:
+            
+            PoCGenerator = None
         poc_script = PoCGenerator.generate_python_poc(finding)
         
         return JsonResponse({
@@ -888,7 +969,13 @@ def api_verify_finding(request):
         if not finding_id:
             return JsonResponse({'error': 'finding_id required'}, status=400)
             
-        from fbh.core.verifier import VerificationAgent
+        try:
+            
+            from fbh.domain.verifier import VerificationAgent
+            
+        except ImportError:
+            
+            VerificationAgent = None
         is_persistent, message = VerificationAgent.verify_finding(finding_id)
         
         from fbh.database import db
@@ -924,7 +1011,13 @@ def api_submit_patch(request):
         if not finding:
             return JsonResponse({'error': 'Finding not found'}, status=404)
             
-        from fbh.core.agents.patch_agent import PatchAgent
+        try:
+            
+            from fbh.domain.agents.patch_agent import PatchAgent
+            
+        except ImportError:
+            
+            PatchAgent = None
         patch = PatchAgent.generate_git_patch(finding, fix_code)
         
         # Simulation: Submit to a repo
@@ -950,7 +1043,13 @@ def api_generate_waf_rules(request, finding_id):
         if not finding:
             return JsonResponse({'error': 'Finding not found'}, status=404)
             
-        from fbh.core.perimeter_defender import PerimeterDefender
+        try:
+            
+            from fbh.domain.perimeter_defender import PerimeterDefender
+            
+        except ImportError:
+            
+            PerimeterDefender = None
         rules = PerimeterDefender.generate_waf_rules(finding)
         
         return JsonResponse({
@@ -966,7 +1065,10 @@ def api_generate_waf_rules(request, finding_id):
 @fbh_api_endpoint
 def api_generate_sbom(request, target_name):
     """API endpoint to generate and analyze SBOM for a target"""
-    from fbh.core.agents.sbom_agent import SBOMAgent
+    try:
+        from fbh.domain.agents.sbom_agent import SBOMAgent
+    except ImportError:
+        SBOMAgent = None
     analysis = SBOMAgent.analyze_supply_chain(target_name)
     
     return JsonResponse({
@@ -980,7 +1082,10 @@ def api_generate_sbom(request, target_name):
 @fbh_api_endpoint
 def api_hunt_threats(request, target_name):
     """API endpoint to trigger autonomous threat hunting for a target"""
-    from fbh.core.agents.threat_hunter import ThreatHunter
+    try:
+        from fbh.domain.agents.threat_hunter import ThreatHunter
+    except ImportError:
+        ThreatHunter = None
     matches = ThreatHunter.hunt_iocs(target_name)
     return JsonResponse({'status': 'success', 'target': target_name, 'threats': matches})
 
@@ -991,7 +1096,10 @@ def api_analyze_traffic(request, target_name):
     """API endpoint to analyze live traffic samples for anomalies"""
     data = json.loads(request.body)
     samples = data.get('samples', [])
-    from fbh.core.agents.traffic_analyzer import TrafficAnalyzer
+    try:
+        from fbh.domain.agents.traffic_analyzer import TrafficAnalyzer
+    except ImportError:
+        TrafficAnalyzer = None
     anomalies = TrafficAnalyzer.detect_anomalies(samples)
     return JsonResponse({'status': 'success', 'target': target_name, 'anomalies': anomalies})
 
@@ -1005,7 +1113,13 @@ def api_execute_playbook(request):
     incident = data.get('incident_type')
     severity = data.get('severity', 'High')
     
-    from fbh.core.agents.ir_orchestrator import IncidentOrchestrator
+    try:
+    
+        from fbh.domain.agents.ir_orchestrator import IncidentOrchestrator
+    
+    except ImportError:
+    
+        IncidentOrchestrator = None
     result = IncidentOrchestrator.execute_playbook(target, incident, severity)
     return JsonResponse({'status': 'success', 'result': result})
 
@@ -1015,7 +1129,7 @@ def api_execute_playbook(request):
 def api_target_detail(request, target_name):
     """API endpoint to get detailed analysis for a target"""
     try:
-        from fbh.core.target import Target
+        from fbh.domain.entities.target import Target
         from fbh.database import db
         
         if not Target.exists(target_name):
@@ -1061,12 +1175,18 @@ def api_target_detail(request, target_name):
 def api_analyze_chains(request, target_name):
     """API endpoint to analyze attack chains for a target"""
     from fbh.database import db
-    from fbh.core.target import Target
+    from fbh.domain.entities.target import Target
     
     target = Target(target_name)
     findings = db.get_findings(target_id=target.db_id)
     
-    from fbh.core.chainer import VulnerabilityChainer
+    try:
+    
+        from fbh.domain.chainer import VulnerabilityChainer
+    
+    except ImportError:
+    
+        VulnerabilityChainer = None
     chainer = VulnerabilityChainer()
     chains = chainer.analyze_findings(findings)
     summary = chainer.get_chained_intelligence(findings)
@@ -1090,7 +1210,13 @@ def api_generate_frida_script(request):
     if not script_type:
         return JsonResponse({'error': 'script_type required'}, status=400)
         
-    from fbh.core.agents.frida_orchestrator import FridaOrchestrator
+    try:
+        
+        from fbh.domain.agents.frida_orchestrator import FridaOrchestrator
+        
+    except ImportError:
+        
+        FridaOrchestrator = None
     script = FridaOrchestrator.generate_script(script_type, platform)
     
     if not script:
@@ -1115,7 +1241,13 @@ def api_apply_binary_patch(request):
     if not target or not patch_type:
         return JsonResponse({'error': 'target and patch_type required'}, status=400)
         
-    from fbh.core.agents.binary_patcher import BinaryPatcher
+    try:
+        
+        from fbh.domain.agents.binary_patcher import BinaryPatcher
+        
+    except ImportError:
+        
+        BinaryPatcher = None
     
     if patch_type == 'boolean_flip':
         file_pattern = data.get('file_pattern')
@@ -1131,9 +1263,12 @@ def api_apply_binary_patch(request):
 @fbh_api_endpoint
 def api_generate_bounty_report(request, target_name):
     """API endpoint to generate a professional bug bounty report"""
-    from fbh.core.target import Target
+    from fbh.domain.entities.target import Target
     from fbh.database import db
-    from fbh.core.reporting.bounty_engine import BountyReporter
+    try:
+        from fbh.domain.reporting.bounty_engine import BountyReporter
+    except ImportError:
+        BountyReporter = None
     
     target = Target(target_name)
     findings = db.get_findings(target_id=target.db_id)
@@ -1160,7 +1295,10 @@ def api_generate_poc(request):
         return JsonResponse({'error': 'Finding not found'}, status=404)
         
     try:
-        from fbh.core.agents.poc_executor import PoCExecutor
+        try:
+            from fbh.domain.agents.poc_executor import PoCExecutor
+        except ImportError:
+            PoCExecutor = None
         poc_command = PoCExecutor.generate_adb_poc(finding)
         
         return JsonResponse({
@@ -1197,7 +1335,10 @@ adb logcat | grep -i "security"
 @fbh_api_endpoint
 def api_trigger_scan(request, target_name):
     """API endpoint to trigger a new scan for a target"""
-    from fbh.core.workflow import WorkflowEngine
+    try:
+        from fbh.domain.workflow import WorkflowEngine
+    except ImportError:
+        WorkflowEngine = None
     engine = WorkflowEngine()
     result = engine.run_standard_scan(target_name)
     return JsonResponse(result)
@@ -1208,7 +1349,10 @@ def api_trigger_scan(request, target_name):
 def api_audit_signatures(request, target_name):
     """API endpoint to audit target for anti-tamper and signature verification logic"""
     try:
-        from fbh.core.agents.signature_auditor import SignatureVerifierAuditor
+        try:
+            from fbh.domain.agents.signature_auditor import SignatureVerifierAuditor
+        except ImportError:
+            SignatureVerifierAuditor = None
         findings = SignatureVerifierAuditor.audit_signature_logic(target_name)
         
         return JsonResponse({
@@ -1245,7 +1389,10 @@ def api_audit_signatures(request, target_name):
 def api_reflutter_blueprint(request, target_name):
     """API endpoint to generate a reFlutter-style engine patching blueprint"""
     try:
-        from fbh.core.agents.reflutter_orchestrator import ReflutterOrchestrator
+        try:
+            from fbh.domain.agents.reflutter_orchestrator import ReflutterOrchestrator
+        except ImportError:
+            ReflutterOrchestrator = None
         blueprint = ReflutterOrchestrator.identify_engine_and_patch(target_name)
         return JsonResponse(blueprint)
     except ImportError:
@@ -1277,7 +1424,7 @@ def api_reflutter_blueprint(request, target_name):
 def api_target_detail(request, target_name):
     """API endpoint for detailed target information with findings"""
     try:
-        from fbh.core.target import Target
+        from fbh.domain.entities.target import Target
         from fbh.database import db
         
         if not Target.exists(target_name):

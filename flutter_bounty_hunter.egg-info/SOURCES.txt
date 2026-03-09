@@ -2,6 +2,7 @@ README.md
 setup.py
 fbh/__init__.py
 fbh/config.py
+fbh/database.py
 fbh/analyzers/__init__.py
 fbh/core/__init__.py
 fbh/core/scanner.py

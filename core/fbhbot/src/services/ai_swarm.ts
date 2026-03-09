@@ -188,7 +188,7 @@ NOW GENERATE THE PoC CODE:`;
             const response = await axios.post<{
                 candidates: { content: { parts: { text: string }[] } }[];
             }>(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${this.config.google_api_key}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${this.config.google_api_key}`,
                 {
                     contents: [{ parts: [{ text: `${system}\n\n${prompt}` }] }]
                 }

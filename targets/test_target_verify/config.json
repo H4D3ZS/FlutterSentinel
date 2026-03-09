@@ -1,9 +1,0 @@
-{
-  "name": "test_target_verify",
-  "package_name": "com.example.verify",
-  "platform": "android",
-  "bug_bounty_program": "",
-  "scope": [],
-  "out_of_scope": [],
-  "notes": ""
-}

@@ -9,11 +9,13 @@ export class MobSFService {
     private client: AxiosInstance;
 
     constructor() {
-        this.client = axios.create({
-            baseURL: MOBSF_URL,
-            headers: {
-                'X-Mobsf-Api-Key': MOBSF_API_KEY,
-            },
+        this.client = axios.create();
+
+        this.client.interceptors.request.use((config) => {
+            // Lazy-load environment variables to bypass ES Module hoisting of process.env imports
+            config.baseURL = process.env.MOBSF_URL || 'http://localhost:8000';
+            config.headers['X-Mobsf-Api-Key'] = process.env.MOBSF_API_KEY || '';
+            return config;
         });
     }
 
@@ -26,7 +28,7 @@ export class MobSFService {
 
         const response = await this.client.post('/api/v1/upload', form, {
             headers: {
-                ...form.getHeaders(),
+                ...form.getHeaders()
             },
         });
 

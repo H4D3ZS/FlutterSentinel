@@ -322,7 +322,7 @@ function AIHunterDashboard() {
   const [showTerminal, setShowTerminal] = useState(false);
   const [neuralLoad, setNeuralLoad] = useState(0);
   const [activeObjective, setActiveObjective] = useState<string | null>(null); // Internal State
-  const [selectedModel, setSelectedModel] = useState('gemini-1.5-flash-latest');
+  const [selectedModel, setSelectedModel] = useState('gemini-2.5-pro');
   const [inputMessage, setInputMessage] = useState('');
   const [showModelDropdown, setShowModelDropdown] = useState(false);
   const [showExploitDashboard, setShowExploitDashboard] = useState(false);
@@ -337,8 +337,9 @@ function AIHunterDashboard() {
     { id: 'claude-3-opus', name: 'Claude 3 Opus', provider: 'Anthropic', status: 'ready' },
     { id: 'claude-3-5-sonnet-20240620', name: 'Claude 3.5 Sonnet', provider: 'Anthropic', status: 'ready' },
     // Google
-    { id: 'gemini-1.5-pro-latest', name: 'Gemini 1.5 Pro', provider: 'Google', status: 'ready' },
-    { id: 'gemini-1.5-flash-latest', name: 'Gemini 1.5 Flash', provider: 'Google', status: 'ready' },
+    { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', provider: 'Google', status: 'ready' },
+    { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', provider: 'Google', status: 'ready' },
+    { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', provider: 'Google', status: 'ready' },
     // xAI
     { id: 'grok-2-latest', name: 'Grok 2', provider: 'xAI', status: 'ready' },
     // Groq

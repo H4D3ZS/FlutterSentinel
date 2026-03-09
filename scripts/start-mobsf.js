@@ -72,7 +72,8 @@ function startMobSF() {
         {
             cwd: mobsfDir,
             stdio: 'inherit',
-            shell: true
+            shell: true,
+            env: { ...process.env, PYTHONPATH: rootDir }
         }
     );
 

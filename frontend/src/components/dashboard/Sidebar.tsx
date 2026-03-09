@@ -16,7 +16,8 @@ import {
     Bug,
     Book,
     Smartphone,
-    User
+    User,
+    Download
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { motion } from 'framer-motion';
@@ -168,6 +169,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className, isCollapsed, toggleCollaps
                         <p className="px-3 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Resources</p>
                     )}
                     <SidebarNavItem to="/methodology" icon={Book} isCollapsed={isCollapsed} closeMobile={closeMobile}>Methodology</SidebarNavItem>
+                    <SidebarNavItem to="/downloader" icon={Download} isCollapsed={isCollapsed} closeMobile={closeMobile}>App Downloader</SidebarNavItem>
                     <SidebarNavItem to="/targets" icon={Search} isCollapsed={isCollapsed} closeMobile={closeMobile}>Shadow Scans</SidebarNavItem>
                     <SidebarNavItem to="/reports" icon={Bug} isCollapsed={isCollapsed} closeMobile={closeMobile}>Exfil Reports</SidebarNavItem>
                 </nav>

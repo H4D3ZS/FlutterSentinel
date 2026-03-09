@@ -1,2 +1,0 @@
-# mint - Research Notes
-
