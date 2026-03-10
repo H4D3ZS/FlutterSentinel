@@ -48,7 +48,7 @@ async function securityMission() {
         }
     }
 
-    const targets = ["emeraldball.com", "dancevision.com"]; // Demo targets
+    const targets = ["www.example.com", "tryhackme.com"]; // Demo targets
 
     for (const target of targets) {
         log.info(`ORCHESTRATING MISSION FOR TARGET: ${target}`);
