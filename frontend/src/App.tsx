@@ -22,6 +22,7 @@ import AdminDashboardTicketManagement from './pages/AdminDashboardTicketManageme
 import VPhone from './pages/VPhone';
 import ReportGenerator from './pages/ReportGenerator';
 import AppDownloader from './pages/AppDownloader';
+import ShadowScan from './pages/ShadowScan';
 import { Search } from 'lucide-react';
 import { Toaster } from '@/components/ui/sonner';
 
@@ -103,7 +104,7 @@ const App = () => {
 
                     {/* Expansion Channels */}
                     <Route path="/downloader" element={<AppDownloader />} />
-                    <Route path="/targets" element={<UnderConstruction title="Shadow Scanning Grid" description="The global offensive mesh is currently being synchronized. Tactical target mapping will be available shortly." icon={Search} />} />
+                    <Route path="/targets" element={<ShadowScan />} />
                     <Route path="/reports" element={<ReportGenerator />} />
                 </Route>
 

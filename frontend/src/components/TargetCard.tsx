@@ -34,6 +34,7 @@ interface Target {
     platform: string;
     status: string;
     scan_progress: number;
+    mobsf_hash?: string;
     stats?: {
         total_findings: number;
         findings_by_severity: Record<string, number>;
@@ -42,11 +43,31 @@ interface Target {
 
 interface TargetCardProps {
     target: Target;
-    onClick?: () => void;
+    onViewDetails?: (target: Target) => void;
+    onScanHistory?: (target: Target) => void;
+    onFullReport?: (target: Target) => void;
+    onDynamicAnalysis?: (target: Target) => void;
+    onForgeExploit?: (target: Target) => void;
+    onDelete?: (target: Target) => void;
 }
 
-const TargetCard: React.FC<TargetCardProps> = ({ target, onClick }) => {
-    const isScanning = target.status === 'active' || target.status.includes('running');
+const TargetCard: React.FC<TargetCardProps> = ({
+    target,
+    onViewDetails,
+    onScanHistory,
+    onFullReport,
+    onDynamicAnalysis,
+    onForgeExploit,
+    onDelete
+}) => {
+    const isScanning = target.status === 'active' ||
+        target.status === 'scanning' ||
+        target.status === 'downloading' ||
+        target.status.includes('running');
+
+    const handleCardClick = () => {
+        if (onViewDetails) onViewDetails(target);
+    };
 
     return (
         <motion.div
@@ -58,12 +79,12 @@ const TargetCard: React.FC<TargetCardProps> = ({ target, onClick }) => {
         >
             <Card
                 className="group relative cursor-pointer overflow-hidden border-border/40 bg-slate-900/40 backdrop-blur-sm hover:bg-slate-900/60 hover:border-primary/40 transition-all duration-300 shadow-xl"
-                onClick={onClick}
+                onClick={handleCardClick}
             >
                 {/* Status Indicator Bar */}
                 <div className={cn(
                     "absolute top-0 left-0 w-full h-[2px]",
-                    target.status === 'completed' ? "bg-green-500/50" : "bg-primary/50"
+                    target.status === 'completed' || target.status === 'complete' ? "bg-green-500/50" : "bg-primary/50"
                 )} />
 
                 <CardHeader className="p-5 pb-3">
@@ -92,9 +113,42 @@ const TargetCard: React.FC<TargetCardProps> = ({ target, onClick }) => {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="bg-slate-900 border-border">
-                                    <DropdownMenuItem className="text-xs text-slate-300 focus:bg-slate-800">View Details</DropdownMenuItem>
-                                    <DropdownMenuItem className="text-xs text-slate-300 focus:bg-slate-800">Scan History</DropdownMenuItem>
-                                    <DropdownMenuItem className="text-xs text-red-400 focus:bg-red-500/10">Delete Target</DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        className="text-xs text-slate-300 focus:bg-slate-800 focus:text-white cursor-pointer"
+                                        onClick={(e) => { e.stopPropagation(); if (onViewDetails) onViewDetails(target); }}
+                                    >
+                                        View Dashboard
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        className="text-xs text-primary focus:bg-primary/10 focus:text-primary cursor-pointer font-bold"
+                                        onClick={(e) => { e.stopPropagation(); if (onFullReport) onFullReport(target); }}
+                                    >
+                                        Full FBH Report
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        className="text-xs text-orange-400 focus:bg-orange-500/10 focus:text-orange-400 cursor-pointer font-bold"
+                                        onClick={(e) => { e.stopPropagation(); if (onDynamicAnalysis) onDynamicAnalysis(target); }}
+                                    >
+                                        Dynamic Analysis
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        className="text-xs text-purple-400 focus:bg-purple-500/10 focus:text-purple-400 cursor-pointer font-bold"
+                                        onClick={(e) => { e.stopPropagation(); if (onForgeExploit) onForgeExploit(target); }}
+                                    >
+                                        Forge Exploit
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        className="text-xs text-slate-400 focus:bg-slate-800 focus:text-white cursor-pointer"
+                                        onClick={(e) => { e.stopPropagation(); if (onScanHistory) onScanHistory(target); }}
+                                    >
+                                        Scan History
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        className="text-xs text-red-500 focus:bg-red-500/10 focus:text-red-500 cursor-pointer font-bold"
+                                        onClick={(e) => { e.stopPropagation(); if (onDelete) onDelete(target); }}
+                                    >
+                                        Delete Target
+                                    </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>

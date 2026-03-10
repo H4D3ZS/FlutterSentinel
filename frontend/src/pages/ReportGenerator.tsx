@@ -27,7 +27,7 @@ interface BugcrowdForm {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const API = 'http://localhost:4000/api';
+const API = '/api';
 
 const H1_SEVERITIES: { value: Severity; label: string }[] = [
     { value: 'none', label: 'None' },
@@ -81,8 +81,7 @@ const CWE_OPTIONS = [
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getToken(): string {
-    // Try localStorage first (standard auth token location)
-    return localStorage.getItem('access_token') || localStorage.getItem('token') || '';
+    return localStorage.getItem('fbh_access_token') || '';
 }
 
 function authHeaders() {
@@ -445,10 +444,10 @@ const ReportGenerator: React.FC = () => {
                     {(['hackerone', 'bugcrowd'] as Platform[]).map(p => (
                         <button key={p} onClick={() => setPlatform(p)}
                             className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition ${platform === p
-                                    ? p === 'hackerone'
-                                        ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                                        : 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                                    : 'text-slate-400 hover:text-slate-200'
+                                ? p === 'hackerone'
+                                    ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                    : 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                                : 'text-slate-400 hover:text-slate-200'
                                 }`}>
                             <Shield className="w-3.5 h-3.5" />
                             {p === 'hackerone' ? 'HackerOne' : 'Bugcrowd'}
@@ -476,8 +475,8 @@ const ReportGenerator: React.FC = () => {
 
             {/* Platform badge */}
             <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium mb-5 ${platform === 'hackerone'
-                    ? 'bg-green-500/10 border-green-500/20 text-green-400'
-                    : 'bg-orange-500/10 border-orange-500/20 text-orange-400'
+                ? 'bg-green-500/10 border-green-500/20 text-green-400'
+                : 'bg-orange-500/10 border-orange-500/20 text-orange-400'
                 }`}>
                 <Zap className="w-3.5 h-3.5" />
                 {platform === 'hackerone'

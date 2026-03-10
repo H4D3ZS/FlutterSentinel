@@ -173,11 +173,11 @@ const Trends: React.FC = () => {
         datasets: [
             {
                 data: [
-                    trends.reduce((sum, t) => sum + (t.counts.critical || 0), 0) || 5,
-                    trends.reduce((sum, t) => sum + (t.counts.high || 0), 0) || 12,
-                    trends.reduce((sum, t) => sum + (t.counts.medium || 0), 0) || 24,
-                    trends.reduce((sum, t) => sum + (t.counts.low || 0), 0) || 45,
-                    trends.reduce((sum, t) => sum + (t.counts.info || 0), 0) || 110,
+                    trends.reduce((sum, t) => sum + (t.counts.critical || 0), 0),
+                    trends.reduce((sum, t) => sum + (t.counts.high || 0), 0),
+                    trends.reduce((sum, t) => sum + (t.counts.medium || 0), 0),
+                    trends.reduce((sum, t) => sum + (t.counts.low || 0), 0),
+                    trends.reduce((sum, t) => sum + (t.counts.info || 0), 0),
                 ],
                 backgroundColor: [
                     severityColors.critical,
@@ -391,17 +391,23 @@ const Trends: React.FC = () => {
                         </div>
 
                         <div className="w-full space-y-3">
-                            {['Critical', 'High', 'Medium', 'Low', 'Info'].map((label, idx) => (
-                                <div key={label} className="flex items-center justify-between p-2 rounded-xl border border-transparent hover:border-white/5 hover:bg-white/5 transition-all">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-2.5 h-2.5 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]" style={{ backgroundColor: Object.values(severityColors)[idx] }} />
-                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</span>
+                            {['Critical', 'High', 'Medium', 'Low', 'Info'].map((label, idx) => {
+                                const total = trends.reduce((sum, t) => sum + Object.values(t.counts).reduce((a: any, b: any) => a + b, 0), 0);
+                                const count = trends.reduce((sum, t) => sum + (t.counts[label.toLowerCase()] || 0), 0);
+                                const percentage = total > 0 ? ((count / total) * 100).toFixed(0) : '0';
+
+                                return (
+                                    <div key={label} className="flex items-center justify-between p-2 rounded-xl border border-transparent hover:border-white/5 hover:bg-white/5 transition-all">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-2.5 h-2.5 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]" style={{ backgroundColor: Object.values(severityColors)[idx] }} />
+                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</span>
+                                        </div>
+                                        <Badge variant="outline" className="text-[9px] font-mono border-white/10 text-slate-500 bg-black/40">
+                                            {percentage}%
+                                        </Badge>
                                     </div>
-                                    <Badge variant="outline" className="text-[9px] font-mono border-white/10 text-slate-500 bg-black/40">
-                                        {((idx + 1) * 15 + Math.random() * 10).toFixed(0)}%
-                                    </Badge>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </CardContent>
                 </Card>
@@ -455,9 +461,9 @@ const Trends: React.FC = () => {
                             <Badge className="bg-primary text-white text-[9px] font-black tracking-widest px-2 py-0.5 self-center md:self-auto">REAL_TIME_ANALYSIS</Badge>
                         </div>
                         <p className="text-sm text-slate-400 leading-relaxed max-w-4xl font-medium italic">
-                            Trend analysis has identified a <span className="text-primary font-black">15% increase</span> in insecure storage findings across the Android fleet over the last 30 days.
-                            Heuristic modeling suggests a potential regression in the core authentication module common across targets.
-                            Mitigation playbook <span className="text-primary underline decoration-primary/50 underline-offset-4 cursor-pointer font-bold">[SENTINEL-AUTH-REMEDIATE]</span> is ready for deployment.
+                            Trend analysis has identified <span className="text-primary font-black">{trends.reduce((sum, t) => sum + (t.counts.critical || 0), 0)} critical points</span> across the operational fleet.
+                            Heuristic modeling suggests focus on {trends.length > 0 ? (trends.sort((a, b) => (b.counts.critical - a.counts.critical))[0].target) : 'active targets'}.
+                            Mitigation playbook <span className="text-primary underline decoration-primary/50 underline-offset-4 cursor-pointer font-bold">[SENTINEL-REMEDIATE-V4]</span> is ready for deployment.
                         </p>
                     </div>
                     <div className="md:ml-auto flex shrink-0">

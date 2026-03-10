@@ -24,26 +24,47 @@ export class MobSFService {
      */
     async uploadFile(filePath: string): Promise<any> {
         const form = new FormData();
-        form.append('file', fs.createReadStream(filePath));
+        const fileStream = fs.createReadStream(filePath);
+        const fileName = filePath.split('/').pop() || 'upload.ipa';
 
-        const response = await this.client.post('/api/v1/upload', form, {
-            headers: {
-                ...form.getHeaders()
-            },
+        console.log(`[MobSFService] Uploading file: ${fileName} from ${filePath}`);
+
+        form.append('file', fileStream, {
+            filename: fileName,
+            contentType: 'application/octet-stream',
         });
 
-        return response.data;
+        const apiKey = process.env.MOBSF_API_KEY || '';
+        const headers = {
+            ...form.getHeaders(),
+            'X-Mobsf-Api-Key': apiKey
+        };
+
+        try {
+            const response = await this.client.post('/api/v1/upload', form, {
+                headers
+            });
+            console.log(`[MobSFService] Upload successful for ${fileName}`);
+            return response.data;
+        } catch (error: any) {
+            console.error(`[MobSFService] Upload failed for ${fileName}:`, error.message);
+            if (error.response) {
+                console.error(`[MobSFService] Error Status: ${error.response.status}`);
+                console.error(`[MobSFService] Error Data:`, JSON.stringify(error.response.data));
+            }
+            throw error;
+        }
     }
 
     /**
      * Start static analysis
      */
     async startScan(hash: string, scanType: 'apk' | 'ipa' | 'zip'): Promise<any> {
-        const response = await this.client.post('/api/v1/scan', {
-            hash,
-            scan_type: scanType,
-        });
+        const params = new URLSearchParams();
+        params.append('hash', hash);
+        params.append('scan_type', scanType);
 
+        const response = await this.client.post('/api/v1/scan', params);
         return response.data;
     }
 
@@ -51,10 +72,10 @@ export class MobSFService {
      * Get scan results
      */
     async getScanResults(hash: string): Promise<any> {
-        const response = await this.client.post('/api/v1/report_json', {
-            hash,
-        });
+        const params = new URLSearchParams();
+        params.append('hash', hash);
 
+        const response = await this.client.post('/api/v1/report_json', params);
         return response.data;
     }
 
@@ -62,9 +83,10 @@ export class MobSFService {
      * Get PDF report
      */
     async getPDFReport(hash: string): Promise<Buffer> {
-        const response = await this.client.post('/api/v1/download_pdf', {
-            hash,
-        }, {
+        const params = new URLSearchParams();
+        params.append('hash', hash);
+
+        const response = await this.client.post('/api/v1/download_pdf', params, {
             responseType: 'arraybuffer',
         });
 
@@ -83,10 +105,10 @@ export class MobSFService {
      * Delete scan
      */
     async deleteScan(hash: string): Promise<any> {
-        const response = await this.client.post('/api/v1/delete_scan', {
-            hash,
-        });
+        const params = new URLSearchParams();
+        params.append('hash', hash);
 
+        const response = await this.client.post('/api/v1/delete_scan', params);
         return response.data;
     }
 
@@ -108,6 +130,17 @@ export class MobSFService {
             data,
         });
 
+        return response.data;
+    }
+
+    /**
+     * Obtain a JWT for the FBH Extension (JWT Bootstrapping)
+     */
+    async getFBHJwt(): Promise<{ access: string; refresh: string }> {
+        const apiKey = process.env.MOBSF_API_KEY || '';
+        const response = await this.client.post('/fbh/api/bootstrap/jwt/', {}, {
+            headers: { 'X-Mobsf-Api-Key': apiKey }
+        });
         return response.data;
     }
 }

@@ -51,10 +51,18 @@ export interface Target {
     platform: string;
     status: string;
     scan_progress: number;
+    mobsf_hash?: string;
     findings?: Finding[];
     stats?: {
         total_findings: number;
         findings_by_severity: Record<string, number>;
+        categories?: Record<string, number>;
+        top_findings?: Array<{
+            title: string;
+            severity: string;
+            category: string;
+            file?: string;
+        }>;
     };
     compliance?: {
         framework: string;
@@ -83,7 +91,9 @@ export interface GlobalStats {
 
 // Attach auth token to MobSF requests
 axiosInstance.interceptors.request.use((config: any) => {
-    const token = localStorage.getItem('fbh_access_token');
+    // Prefer the specialized MobSF JWT if available, else fallback to standard token
+    const mobsfToken = localStorage.getItem('fbh_mobsf_token');
+    const token = mobsfToken || localStorage.getItem('fbh_access_token');
     if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
     }
@@ -106,10 +116,13 @@ axiosInstance.interceptors.response.use((response: any) => {
 const methods = {
     login: async (email: string, password: string) => {
         const response = await nodeApi.post('/auth/login', { email, password }) as any;
-        const { token, tier, refresh } = response.data;
+        const { token, tier, refresh, mobsf_token } = response.data;
         localStorage.setItem('fbh_access_token', token);
         if (refresh) {
             localStorage.setItem('fbh_refresh_token', refresh);
+        }
+        if (mobsf_token) {
+            localStorage.setItem('fbh_mobsf_token', mobsf_token);
         }
         return response.data;
     },
@@ -251,6 +264,11 @@ const methods = {
 
     getMissions: async () => {
         const response = await nodeApi.get('/missions');
+        return response.data;
+    },
+
+    getTacticalAlerts: async (): Promise<any> => {
+        const response = await nodeApi.get('/fbhbot/alerts');
         return response.data;
     },
 

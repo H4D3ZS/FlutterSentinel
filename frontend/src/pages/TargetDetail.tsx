@@ -240,10 +240,27 @@ const TargetDetail: React.FC = () => {
                 compliance: data.compliance && typeof data.compliance === 'string' ? JSON.parse(data.compliance) : data.compliance
             });
         } catch (error) {
-            console.error('Failed to fetch target detail:', error);
-            toast.error('Mission Failed', {
-                description: 'Failed to exfiltrate analysis data from the vault.'
-            });
+            console.error('MobSF report failed, trying DB fallback:', error);
+            // Fallback: load target data from PostgreSQL
+            try {
+                const fallback = await nodeApi.get(`/targets/${id}`) as any;
+                const data = fallback.data;
+                setTarget({
+                    name: data.name || 'Unknown Target',
+                    package: data.package || id,
+                    platform: data.platform || 'mobile',
+                    status: data.status || 'pending',
+                    scan_progress: data.scan_progress || 0,
+                    findings: data.findings || [],
+                    stats: data.stats || { total_findings: 0, findings_by_severity: {} },
+                    compliance: data.compliance,
+                });
+            } catch (fallbackError) {
+                console.error('DB fallback also failed:', fallbackError);
+                toast.error('Mission Failed', {
+                    description: 'Failed to exfiltrate analysis data from the vault.'
+                });
+            }
         } finally {
             setLoading(false);
         }

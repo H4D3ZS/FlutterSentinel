@@ -16,6 +16,26 @@ interface StepSectionProps {
 
 const steps: StepSectionProps[] = [
     {
+        id: 'foundation',
+        index: '01',
+        title: 'Build Your Foundation',
+        category: 'PRE-REQUISITES',
+        description: 'Computer science basics, networking, and OS internals. You cannot find bugs in what you do not understand.',
+        command: '$ study --topics "Networking, HTTP, Linux Internals, OWASP Top 10"',
+        bensTake: 'Master the basics first. A hunter who knows how a TLS handshake works will always out-perform one who just runs tools.',
+        tools: ['MDN Web Docs', 'PortSwigger Academy', 'TryHackMe']
+    },
+    {
+        id: 'program',
+        index: '02',
+        title: 'Choose Your Program',
+        category: 'STRATEGY',
+        description: 'Pick a program that suits your skills. Starting with obscure assets can yield more bugs than highly contested ones.',
+        command: '$ search --platform "HackerOne, Bugcrowd" --filter "VDP, Managed"',
+        bensTake: 'Look for programs with wide scopes. More surface area means more chances for common misconfigurations.',
+        tools: ['HackerOne', 'Bugcrowd', 'Intigriti']
+    },
+    {
         id: 'recon',
         index: '03',
         title: 'Recon Everything',
@@ -34,6 +54,16 @@ const steps: StepSectionProps[] = [
         command: '$ gau target.com | grep "\\.js$" | tee js.txt',
         bensTake: 'New features = new attack surface. Watch the changelog — freshly shipped code is almost always the least tested.',
         tools: ['gau', 'linkfinder', 'nuclei']
+    },
+    {
+        id: 'manual',
+        index: '05',
+        title: 'Manual Testing',
+        category: 'EXPLOITATION',
+        description: 'Tools find low-hanging fruit. Manual testing finds the logic flaws that pay high bounties.',
+        command: '$ burp --intercept --repeater --intruder',
+        bensTake: 'Think like a developer trying to save time. Where would they skip a check? That is where you look.',
+        tools: ['Burp Suite', 'Postman', 'Chrome DevTools']
     },
     {
         id: 'report',

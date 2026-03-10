@@ -13,7 +13,7 @@ export default function AppDownloader() {
 
     // Setup SSE for download progress
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('fbh_access_token');
         const eventSource = new EventSource(`/api/apps/download-stream?token=${token}`);
 
         eventSource.onmessage = (event) => {

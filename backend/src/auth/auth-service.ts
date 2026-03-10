@@ -151,6 +151,16 @@ export class AuthService {
         const access_token = this.generateAccessToken(payload);
         const refresh_token = this.generateRefreshToken(payload);
 
+        // Bootstrap MobSF JWT for FBH Extension
+        let mobsf_token = null;
+        try {
+            const { mobsfService } = await import('../api/mobsf-service.js');
+            const tokenRes = await mobsfService.getFBHJwt();
+            mobsf_token = tokenRes.access;
+        } catch (err: any) {
+            console.warn('[AuthService] MobSF JWT bootstrap failed:', err.message);
+        }
+
         // Store refresh token
         const tokenId = randomUUID();
         const expiresAt = now + 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -167,6 +177,7 @@ export class AuthService {
             user: this.toPublicUser(user),
             access_token,
             refresh_token,
+            mobsf_token,
             expires_in: 24 * 60 * 60, // 24 hours in seconds
         };
     }

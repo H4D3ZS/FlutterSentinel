@@ -4,8 +4,8 @@ from fbh.domain.entities.target import Target
 from fbh.domain.repositories.target_repository import TargetRepository
 from fbh.infrastructure.filesystem.target_workspace import FileSystemTargetManager
 from fbh.logger import logger
-from fbh.services.asset_service import AssetService
-from fbh.services.mobsf_service import MobSFService
+from fbh.infrastructure.adapters.asset_service import AssetService
+from fbh.infrastructure.adapters.mobsf_service import MobSFService
 
 class TargetManager:
     """

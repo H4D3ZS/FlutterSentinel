@@ -69,31 +69,30 @@ const IncidentResponse: React.FC = () => {
 
     const handleHunt = async () => {
         setHunting(true);
-        addLog('INITIATING AUTONOMOUS THREAT HUNT...', 'bot');
         try {
-            // Simulated hunt
-            await new Promise(r => setTimeout(r, 2000));
-            toast.success('Hunt Completed', {
-                description: 'Threat Hunt Completed: 0 new IoC matches found.'
+            // Real hunt call via Singularity Mission Engine
+            await api.triggerMission('all', 'Threat Hunt', undefined, 'aggressive');
+            toast.success('Hunt Triggered', {
+                description: 'Autonomous Threat Hunt mission has been dispatched to the Singularity engine.'
+            });
+        } catch (error) {
+            console.error('Failed to trigger hunt:', error);
+            toast.error('Hunt Failed', {
+                description: 'Could not communicate with the autonomous defense engine.'
             });
         } finally {
             setHunting(false);
         }
     };
 
-    const addLog = (msg: string, type: string = 'info') => {
-        // Just a helper for toast or console during demo
-        console.log(`[IR] ${msg}`);
-    };
-
     const handleExecutePlaybook = async (incident: any) => {
-        toast.promise(new Promise(r => setTimeout(r, 2000)), {
-            loading: 'Executing Autonomous Playbook...',
-            success: 'Incident Contained',
+        toast.promise(api.triggerMission(incident.target || 'network', `Containment: ${incident.type}`, undefined, 'containment'), {
+            loading: 'Orchestrating Autonomous Playbook...',
+            success: 'Purge Protocol Dispatched',
             error: 'Playbook Execution Failed',
         });
 
-        setSelectedIncident({ ...incident, status: 'Contained' });
+        setSelectedIncident({ ...incident, status: 'Mitigating' });
     };
 
     return (

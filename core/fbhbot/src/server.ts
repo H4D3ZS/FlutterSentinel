@@ -63,8 +63,23 @@ export function startServer(port: number, memory = defaultMemory, agent = defaul
                     "Access-Control-Allow-Origin": "*"
                 });
 
-                const onEvent = (event: AgentEvent) => {
+                const onEvent = async (event: AgentEvent) => {
                     res.write(`data: ${JSON.stringify(event)}\n\n`);
+
+                    // Persist certain events as tactical alerts for the dashboard feed
+                    if (['output', 'error', 'status'].includes(event.type) && !event.message.startsWith('WAITING_FOR_INPUT')) {
+                        try {
+                            await memory.broadcastAlert({
+                                id: crypto.randomUUID(),
+                                type: event.type.toUpperCase() as any,
+                                message: event.message,
+                                severity: event.type === 'error' ? 'high' : 'medium',
+                                target_scope: event.missionId || 'global'
+                            });
+                        } catch (err) {
+                            log.error(`Failed to persist agent event: ${err}`);
+                        }
+                    }
                 };
 
                 agentEvents.on("agent_event", onEvent);
@@ -72,6 +87,27 @@ export function startServer(port: number, memory = defaultMemory, agent = defaul
                 req.on("close", () => {
                     agentEvents.off("agent_event", onEvent);
                     res.end();
+                });
+                return;
+            }
+
+            // External Tactical Alert Insertion (for Scanners/Other Tools)
+            if (req.method === "POST" && req.url === "/api/alerts") {
+                let body = "";
+                req.on("data", chunk => body += chunk);
+                req.on("end", async () => {
+                    try {
+                        const alert = JSON.parse(body);
+                        await memory.broadcastAlert({
+                            id: crypto.randomUUID(),
+                            ...alert
+                        });
+                        res.writeHead(200, headers);
+                        res.end(JSON.stringify({ status: "ok" }));
+                    } catch (e) {
+                        res.writeHead(400, headers);
+                        res.end(JSON.stringify({ error: "Invalid JSON or alert format" }));
+                    }
                 });
                 return;
             }

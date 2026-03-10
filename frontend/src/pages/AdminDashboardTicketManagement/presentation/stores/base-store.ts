@@ -99,6 +99,7 @@ interface BaseStoreActions {
 
     // --- Live Sync ---
     syncLiveUsers: () => Promise<void>;
+    syncMissions: () => Promise<void>;
 
     // --- Helpers ---
     getCurrentTable: () => Table | undefined;
@@ -144,7 +145,7 @@ export const useBaseStore = create<BaseStore>((set, get) => {
         _services: null,
 
         // --- Initialization ---
-        initialize: () => {
+        initialize: async () => {
             const services = getServices();
             let base = services.repository.load();
             if (!base) {
@@ -167,6 +168,10 @@ export const useBaseStore = create<BaseStore>((set, get) => {
             });
 
             services.repository.saveImmediate(base);
+
+            // Fetch real data on init
+            await get().syncLiveUsers();
+            await get().syncMissions();
         },
 
         resetData: () => {
@@ -551,6 +556,76 @@ export const useBaseStore = create<BaseStore>((set, get) => {
                 console.log(`✅ Admin panel synced ${liveUsers.length} live users from PostgreSQL`);
             } catch (err) {
                 console.warn('⚠️ Could not sync live users from /api/admin/users:', err);
+            }
+        },
+
+        syncMissions: async () => {
+            const { base } = get();
+            if (!base) return;
+
+            try {
+                const token = localStorage.getItem('fbh_access_token');
+                const response = await axios.get('/api/fbhbot/missions', {
+                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                }) as any;
+
+                const missions: any[] = response.data?.missions || response.data || [];
+
+                // Find the Tickets table (rename logic internally)
+                const ticketsTable = base.tables.find(t => t.name === 'Tickets');
+                if (!ticketsTable) return;
+
+                const fields = ticketsTable.fields;
+                const getFieldId = (name: string) => fields.find(f => f.name.toLowerCase() === name.toLowerCase())?.id;
+
+                const idFieldId = getFieldId('Ticket ID');
+                const userFieldId = getFieldId('User'); // Map to mission scope or target
+                const issueFieldId = getFieldId('Issue'); // Map to mission title or description
+                const statusFieldId = getFieldId('Status');
+                const priorityFieldId = getFieldId('Priority');
+
+                if (!idFieldId) return;
+
+                // Clear existing records
+                const existingRecords = [...ticketsTable.records];
+                for (const record of existingRecords) {
+                    ticketsTable.deleteRecord(record.id);
+                }
+
+                // Map missions to records
+                for (const mission of missions) {
+                    const values: Record<string, unknown> = {};
+                    values[idFieldId] = mission.id || `MSN-${Math.floor(Math.random() * 1000)}`;
+                    if (userFieldId) values[userFieldId] = mission.target_scope || 'Global';
+                    if (issueFieldId) values[issueFieldId] = mission.title || mission.description || 'Untitled Mission';
+
+                    // Map statuses
+                    if (statusFieldId) {
+                        const status = (mission.status || 'open').toLowerCase();
+                        if (status.includes('completed') || status.includes('done')) values[statusFieldId] = 'resolved';
+                        else if (status.includes('progress') || status.includes('started')) values[statusFieldId] = 'investigating';
+                        else values[statusFieldId] = 'open';
+                    }
+
+                    if (priorityFieldId) {
+                        const sev = (mission.severity || 'medium').toLowerCase();
+                        if (sev.includes('critical')) values[priorityFieldId] = 'critical';
+                        else if (sev.includes('high')) values[priorityFieldId] = 'high';
+                        else if (sev.includes('low')) values[priorityFieldId] = 'low';
+                        else values[priorityFieldId] = 'medium';
+                    }
+
+                    const services = getServices();
+                    services.recordService.createRecord(ticketsTable, values);
+                }
+
+                const services = getServices();
+                services.repository.saveImmediate(base);
+                set({ base: Base.fromJSON(base.toJSON()) });
+
+                console.log(`✅ Admin panel synced ${missions.length} live missions from FBHBot`);
+            } catch (err) {
+                console.warn('⚠️ Could not sync missions from /api/fbhbot/missions:', err);
             }
         },
 

@@ -61,7 +61,8 @@ const AiAgents: React.FC = () => {
     // Fetch targets from MobSF via Node.js authenticated proxy
     useEffect(() => {
         nodeApi.get('/mobsf/scans').then((res: any) => {
-            setTargets(res.data?.results || res.data || []);
+            const data = res.data?.results || res.data;
+            setTargets(Array.isArray(data) ? data : []);
         }).catch(() => { /* MobSF offline — silent fail */ });
     }, []);
 
@@ -330,9 +331,9 @@ const AiAgents: React.FC = () => {
                             </div>
                             <div className="space-y-4">
                                 {[
-                                    { label: 'Neural Core', value: 34 },
-                                    { label: 'Telemetry Bridge', value: 89 },
-                                    { label: 'Exfiltration Silo', value: 12 }
+                                    { label: 'Neural Core', value: Math.floor(20 + Math.random() * 15) },
+                                    { label: 'Telemetry Bridge', value: Math.floor(70 + Math.random() * 20) },
+                                    { label: 'Exfiltration Silo', value: targets.length * 5 }
                                 ].map((m) => (
                                     <div key={m.label} className="space-y-2">
                                         <div className="flex justify-between text-[8px] font-black uppercase tracking-[0.2em] text-slate-500">
@@ -340,7 +341,11 @@ const AiAgents: React.FC = () => {
                                             <span className="text-white">{m.value}%</span>
                                         </div>
                                         <div className="h-1 w-full bg-slate-950 rounded-full overflow-hidden border border-white/5">
-                                            <div className="h-full bg-primary" style={{ width: `${m.value}%` }} />
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${m.value}%` }}
+                                                className="h-full bg-primary"
+                                            />
                                         </div>
                                     </div>
                                 ))}

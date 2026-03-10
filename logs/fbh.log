@@ -227,3 +227,5 @@
 {"timestamp": "2026-03-06T12:17:15+0800", "level": "INFO", "logger": "fbh", "message": "\u2705 deeplink finished: 0 findings", "module": "workflow", "filename": "workflow.py", "lineno": 43}
 {"timestamp": "2026-03-06T12:17:15+0800", "level": "INFO", "logger": "fbh", "message": "\u2705 webview finished: 0 findings", "module": "workflow", "filename": "workflow.py", "lineno": 43}
 {"timestamp": "2026-03-06T12:17:22+0800", "level": "INFO", "logger": "fbh", "message": "\u2705 deep_scan finished: 1 findings", "module": "workflow", "filename": "workflow.py", "lineno": 43}
+{"timestamp": "2026-03-10T01:21:53+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: fbh_verification_test", "module": "target", "filename": "target.py", "lineno": 35}
+{"timestamp": "2026-03-10T01:21:53+0000", "level": "INFO", "logger": "fbh", "message": "Loaded existing target: test_app", "module": "target", "filename": "target.py", "lineno": 35}

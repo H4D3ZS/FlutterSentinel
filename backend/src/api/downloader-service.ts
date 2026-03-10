@@ -86,7 +86,10 @@ class DownloaderService extends EventEmitter {
 
         if (platform === 'ios') {
             const { spawn } = await import('child_process');
-            const sentinelBinary = path.resolve(__dirname, '../../bin/sentineldownloader');
+            let binaryName = 'sentineldownloader';
+            if (process.platform === 'win32') binaryName += '.exe';
+
+            const sentinelBinary = path.resolve(__dirname, '../../bin', binaryName);
 
             // Force an App Store purchase to link the bundle to the authenticated apple ID 
             const purchaseChild = spawn(sentinelBinary, [
@@ -135,15 +138,10 @@ class DownloaderService extends EventEmitter {
                         });
                     } else {
                         console.error(`[sentineldownloader] Download failed or exited with code ${code}`);
-                        // Fallback stub for scanner testing if auth fails
-                        if (!fs.existsSync(outputPath)) {
-                            const ipaBase64 = 'UEsDBAoAAAAAAHU3alwAAAAAAAAAAAAAAAAIABwAUGF5bG9hZC9VVAkAA95Qr2neUK9pdXgLAAEE9QEAAAQUAAAAUEsDBAoAAAAAAHU3alwAAAAAAAAAAAAAAAAQABwAUGF5bG9hZC9BUFAuYXBwL1VUCQAD3lCvad5Qr2l1eAsAAQT1AQAABBQAAABQSwMEFAAAAAgAdTdqXDClb3a7AAAA8QAAABoAHABQYXlsb2FkL0FQUC5hcHAvSW5mby5wbGlzdFVUCQAD3lCvad5Qr2l1eAsAAQT1AQAABBQAAABVzjFvwjAQBeC9v8L1Hh9sCB1GkIAUKSqRCEPHKj7AIjiWfZDy73GgS9end989XP5eO3GnEG3vFnKqJlKQa3tj3WkhD802m8mlxs9ilzff9Ub4zkYW9WFdlbmQGcDK+44AiqYQdVXuG5EIgM2XFPLM7OcAwzCon7Gl2v46FiPUofcU+FElLEsHyrCRGt/4vzEajW1Z44UeOt+ub850VBpybI+WAsKYY+SQ5urEK6bI4zeEvxDhDcAL1x9PUEsBAh4DCgAAAAAAdTdqXAAAAAAAAAAAAAAAAAgAGAAAAAAAAAAQAO1BAAAAAFBheWxvYWQvVVQFAAPeUK9pdXgLAAEE9QEAAAQUAAAAUEsBAh4DCgAAAAAAdTdqXAAAAAAAAAAAAAAAABAAGAAAAAAAAAAQAO1BQgAAAFBheWxvYWQvQVBQLmFwcC9VVAUAA95Qr2l1eAsAAQT1AQAABBQAAABQSwECHgMUAAAACAB1N2pcMKVvdrsAAADxAAAAGgAYAAAAAAABAAAApIGMAAAAUGF5bG9hZC9BUFAuYXBwL0luZm8ucGxpc3RVVAUAA95Qr2l1eAsAAQT1AQAABBQAAABQSwUGAAAAAAMAAwAEAQAAmwEAAAAA';
-                            fs.writeFileSync(outputPath, Buffer.from(ipaBase64, 'base64'));
-                        }
                         this.emit('progress', {
                             downloadId, appId, name, platform,
-                            progress: 100, status: 'completed',
-                            totalSize: fallbackSize, fileSize: fallbackSize, outputPath
+                            progress: 0, status: 'failed',
+                            error: `Downloader exited with code ${code}`
                         });
                     }
                 });
@@ -157,8 +155,9 @@ class DownloaderService extends EventEmitter {
                 if (progress >= 100) {
                     progress = 100;
                     clearInterval(interval);
-                    const apkBase64 = 'UEsDBBQAAAAIAAM4alyq+3qNTgAAAFMAAAATABwAQW5kcm9pZE1hbmlmZXN0LnhtbFVUCQAD9VCvafVQr2l1eAsAAQT1AQAABAAAAACzsa/IzVEoSy0qzszPs1Uy1DNQUkjNS85PycxLt1UqLUnTtVCyt7PJTczLTEstLlEoSEzOTkxPtVVKzs/VKwGK6CUWFCjZ2ejDVNhxAQBQSwECHgMUAAAACAADOGpcqvt6jU4AAABTAAAAEwAYAAAAAAABAAAApIEAAAAAQW5kcm9pZE1hbmlmZXN0LnhtbFVUBQAD9VCvaXV4CwABBPUBAAAEAAAAAFBLBQYAAAAAAQABAFkAAACbAAAAAAA=';
-                    fs.writeFileSync(outputPath, Buffer.from(apkBase64, 'base64'));
+                    // In a real environment, we would use a tool like gplay-dl or some other method.
+                    // For now, we touch the file to let the scanner know it's there (simulated).
+                    fs.writeFileSync(outputPath, 'SIMULATED_APK_CONTENT');
                     this.emit('progress', {
                         downloadId, appId, name, platform,
                         progress: 100, status: 'completed',

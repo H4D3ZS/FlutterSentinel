@@ -1,6 +1,6 @@
 from fbh.core.target import Target
-from fbh.services.asset_service import AssetService
-from fbh.services.mobsf_service import MobSFService
+from fbh.infrastructure.adapters.asset_service import AssetService
+from fbh.infrastructure.adapters.mobsf_service import MobSFService
 from pathlib import Path
 import logging
 import sys

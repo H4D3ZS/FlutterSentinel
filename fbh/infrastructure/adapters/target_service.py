@@ -5,8 +5,8 @@ import threading
 from pathlib import Path
 from typing import Dict, List, Optional
 from fbh.core.target import Target
-from fbh.services.asset_service import AssetService
-from fbh.services.mobsf_service import MobSFService
+from fbh.infrastructure.adapters.asset_service import AssetService
+from fbh.infrastructure.adapters.mobsf_service import MobSFService
 from fbh.logger import logger
 
 class TargetService:

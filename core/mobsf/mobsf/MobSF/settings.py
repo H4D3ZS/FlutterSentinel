@@ -526,7 +526,7 @@ else:
     # -------------------------
 
     # =======ANDROID DYNAMIC ANALYSIS SETTINGS===========
-    ANALYZER_IDENTIFIER = os.getenv('MOBSF_ANALYZER_IDENTIFIER', '')
+    ANALYZER_IDENTIFIER = os.getenv('MOBSF_ANALYZER_IDENTIFIER', os.getenv('ANALYZER_IDENTIFIER', ''))
     FRIDA_TIMEOUT = int(os.getenv('MOBSF_FRIDA_TIMEOUT', '4'))
     ACTIVITY_TESTER_SLEEP = int(os.getenv('MOBSF_ACTIVITY_TESTER_SLEEP', '4'))
     # ==============================================

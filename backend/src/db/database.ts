@@ -92,6 +92,7 @@ export async function initializeDatabase() {
                 platform TEXT NOT NULL,
                 status TEXT DEFAULT 'idle',
                 scan_progress INTEGER DEFAULT 0,
+                mobsf_hash TEXT,
                 created_at BIGINT NOT NULL,
                 updated_at BIGINT NOT NULL,
                 stats JSONB DEFAULT '{"total_findings": 0, "findings_by_severity": {"critical": 0, "high": 0, "medium": 0, "low": 0, "info": 0}}'::jsonb,
@@ -110,6 +111,10 @@ export async function initializeDatabase() {
                 updated_at BIGINT NOT NULL,
                 UNIQUE(user_id, key)
             )
+        `);
+
+        await db.query(`
+            ALTER TABLE targets ADD COLUMN IF NOT EXISTS mobsf_hash TEXT;
         `);
 
         console.log('✅ PostgreSQL Database initialized successfully');

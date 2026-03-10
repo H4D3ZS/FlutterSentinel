@@ -21,6 +21,7 @@ import TargetCard from '@/components/TargetCard';
 import StatsCard from '@/components/StatsCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import {
     Card,
     CardContent,
@@ -38,9 +39,17 @@ interface Target {
     platform: string;
     status: string;
     scan_progress: number;
+    mobsf_hash?: string;
     stats?: {
         total_findings: number;
         findings_by_severity: Record<string, number>;
+        categories?: Record<string, number>;
+        top_findings?: Array<{
+            title: string;
+            severity: string;
+            category: string;
+            file?: string;
+        }>;
     };
     compliance?: {
         framework: string;
@@ -89,12 +98,72 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
     const [activityFeed, setActivityFeed] = useState<ActivityEvent[]>([]);
 
     const mapEventType = (type: string): any => {
-        switch (type) {
-            case 'action': return { icon: Zap, color: 'text-orange-500' };
-            case 'status': return { icon: Activity, color: 'text-primary' };
-            case 'error': return { icon: ShieldAlert, color: 'text-red-500' };
-            case 'output': return { icon: CheckCircle2, color: 'text-green-500' };
+        const normalized = type.toUpperCase();
+        switch (normalized) {
+            case 'SCAN_COMPLETE': return { icon: CheckCircle2, color: 'text-green-500' };
+            case 'THREAT_LOG': return { icon: ShieldAlert, color: 'text-red-500' };
+            case 'AGENT_DEPLOYED': return { icon: Zap, color: 'text-orange-500' };
+            case 'ACTION': return { icon: Zap, color: 'text-orange-500' };
+            case 'STATUS': return { icon: Activity, color: 'text-primary' };
+            case 'ERROR': return { icon: ShieldAlert, color: 'text-red-500' };
+            case 'OUTPUT': return { icon: CheckCircle2, color: 'text-green-500' };
             default: return { icon: RefreshCcw, color: 'text-slate-500' };
+        }
+    };
+
+    const handleViewDetails = (target: Target) => {
+        if (target.mobsf_hash) {
+            navigate(`/target/${target.mobsf_hash}`);
+        } else {
+            // If hash isn't available, the scan might still be initiating
+            toast.info('Scan in progress', {
+                description: 'The tactical report is still being generated. Please hold.'
+            });
+        }
+    };
+
+    const handleScanHistory = (target: Target) => {
+        // For now, same as view details or could show a dedicated history view if available
+        handleViewDetails(target);
+    };
+
+    const handleFullReport = (target: Target) => {
+        console.log(`[Dashboard] Launching full FBH report for: ${target.name}`);
+        // MobSF FBH uses hash routing for the React app
+        const url = `/fbh/#/target/${encodeURIComponent(target.name)}`;
+        window.open(url, '_blank');
+    };
+
+    const handleDynamicAnalysis = async (target: Target) => {
+        console.log(`[Dashboard] Triggering dynamic analysis for: ${target.name}`);
+        toast.info(`Starting dynamic analysis for ${target.name}...`);
+        try {
+            await api.runFBHBotAnalysis(target.name, undefined, target.platform);
+            toast.success("Dynamic analysis initiated.");
+        } catch (error) {
+            console.error('[Dashboard] Dynamic analysis trigger failed:', error);
+            toast.error("Failed to start dynamic analysis.");
+        }
+    };
+
+    const handleForgeExploit = (target: Target) => {
+        console.log(`[Dashboard] Navigating to Forge for: ${target.name}`);
+        navigate(`/forge?target=${encodeURIComponent(target.name)}`);
+    };
+
+    const handleDelete = async (target: Target) => {
+        if (!window.confirm(`Are you sure you want to purge ${target.name} from the grid?`)) return;
+
+        try {
+            await api.deleteTarget((target as any).id || target.package);
+            fetchData();
+            toast.success('Target Purged', {
+                description: `${target.name} has been removed from the intelligence fleet.`
+            });
+        } catch (error) {
+            toast.error('Purge Failed', {
+                description: 'Failed to disconnect target from the central link.'
+            });
         }
     };
 
@@ -133,7 +202,31 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
     };
 
     useEffect(() => {
-        fetchData();
+        const loadInitialData = async () => {
+            await fetchData();
+            try {
+                const alertData = await api.getTacticalAlerts();
+                if (alertData && alertData.alerts) {
+                    const mappedAlerts: ActivityEvent[] = alertData.alerts.map((a: any) => {
+                        const { icon, color } = mapEventType(a.type);
+                        return {
+                            id: a.id,
+                            type: a.type,
+                            message: a.message,
+                            time: new Date(a.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            icon,
+                            color
+                        };
+                    });
+                    setActivityFeed(mappedAlerts);
+                }
+            } catch (err) {
+                console.error('Failed to load tactical alerts:', err);
+            }
+        };
+
+        loadInitialData();
+
         const interval = setInterval(() => {
             if (localStorage.getItem('fbh_access_token')) {
                 fetchData();
@@ -141,7 +234,8 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
         }, 30000);
 
         // SSE Subscription for Live Activity
-        const eventSource = new EventSource(`${instance.defaults.baseURL}/fbhbot/stream`);
+        const token = localStorage.getItem('fbh_access_token');
+        const eventSource = new EventSource(`/api/fbhbot/stream${token ? `?token=${token}` : ''}`);
 
         eventSource.onmessage = (event) => {
             try {
@@ -174,16 +268,12 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
         };
     }, [workspaceId]);
 
-    // Initialize with some "cached" events if feed is empty
+    // Live view active indicator check
     useEffect(() => {
-        if (activityFeed.length === 0) {
-            setActivityFeed([
-                { id: '1', type: 'SCAN_COMPLETE' as any, message: 'Analysis finalized for target "Sentinel-Alpha"', time: '2m ago', icon: CheckCircle2, color: 'text-green-500' },
-                { id: '2', type: 'THREAT_LOG' as any, message: 'Credential stuffing attempt neutralized on EU-Auth-Gateway', time: '15m ago', icon: ShieldAlert, color: 'text-red-500' },
-                { id: '3', type: 'AGENT_DEPLOYED' as any, message: 'AI Agent "Raven-01" initialized for passive reconnaissance', time: '45m ago', icon: Zap, color: 'text-orange-500' },
-            ]);
+        if (activityFeed.length > 0) {
+            console.log(`[Dashboard] Intelligence Link synchronized. ${activityFeed.length} signals active.`);
         }
-    }, []);
+    }, [activityFeed]);
 
     if (loading) {
         return (
@@ -285,7 +375,16 @@ const Dashboard: React.FC<DashboardProps> = ({ workspaceId }) => {
                             ))
                         ) : targets.length > 0 ? (
                             targets.slice(0, 4).map((target, idx) => (
-                                <TargetCard key={target.package} target={target} />
+                                <TargetCard
+                                    key={target.package}
+                                    target={target}
+                                    onViewDetails={handleViewDetails}
+                                    onScanHistory={handleScanHistory}
+                                    onFullReport={handleFullReport}
+                                    onDynamicAnalysis={handleDynamicAnalysis}
+                                    onForgeExploit={handleForgeExploit}
+                                    onDelete={handleDelete}
+                                />
                             ))
                         ) : (
                             <div className="col-span-2 text-center py-20 bg-slate-900/10 rounded-[2.5rem] border border-dashed border-white/5">

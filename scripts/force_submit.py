@@ -1,5 +1,5 @@
 from fbh.core.target import Target
-from fbh.services.mobsf_service import MobSFService
+from fbh.infrastructure.adapters.mobsf_service import MobSFService
 from pathlib import Path
 import logging
 import sys

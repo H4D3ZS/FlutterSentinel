@@ -3,41 +3,17 @@ import { MissionControl } from '@/components/MissionControl';
 import { LiveFeed } from '@/components/LiveFeed';
 import { Terminal } from '@/components/Terminal';
 import { PricingTable } from '@/components/PricingTable';
-import { Login } from '@/components/Login';
 import { History } from '@/components/History';
-import { Settings } from '@/components/Settings';
-import { Cpu, Database, CloudRain, LogOut, LayoutDashboard, History as HistoryIcon, Settings as SettingsIcon, ShieldCheck, Zap } from 'lucide-react';
+import { Cpu, Database, CloudRain, LayoutDashboard, History as HistoryIcon, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 function FBHBotDashboard() {
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('fbh_token'));
+  const user = useAuthStore((state) => state.user);
   const [activeTab, setActiveTab] = useState<'command' | 'history' | 'settings'>('command');
-  const [userTier, setUserTier] = useState(localStorage.getItem('fbh_tier') || 'scout');
-
-  useEffect(() => {
-    // Background heartbeat or state sync could go here
-    setUserTier(localStorage.getItem('fbh_tier') || 'scout');
-  }, [isAuthenticated]);
-
-  const handleLogin = (token: string, tier: string) => {
-    localStorage.setItem('fbh_token', token);
-    localStorage.setItem('fbh_tier', tier);
-    setIsAuthenticated(true);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('fbh_token');
-    localStorage.removeItem('fbh_tier');
-    setIsAuthenticated(false);
-  };
-
-  if (!isAuthenticated) {
-    return <Login onLogin={handleLogin} />;
-  }
+  const userTier = user?.role || 'scout';
 
   return (
     <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
@@ -65,14 +41,6 @@ function FBHBotDashboard() {
           </div>
 
           <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              className="bg-slate-900/40 border-border/40 hover:border-red-500/30 text-slate-400 hover:text-red-400 text-[10px] gap-2 h-12 px-6 rounded-2xl transition-all uppercase font-black tracking-widest"
-              onClick={handleLogout}
-            >
-              <LogOut size={16} /> Terminate Session
-            </Button>
-
             <TabsList className="bg-slate-900/40 border border-border/20 p-1.5 h-12 rounded-2xl">
               <TabsTrigger
                 value="command"
@@ -137,8 +105,8 @@ function FBHBotDashboard() {
                 </div>
               </div>
 
-              {/* Arsenal Upgrade Section - Only shown for Scout/Basic tier */}
-              {userTier.toLowerCase() === 'scout' && (
+              {/* Arsenal Upgrade Section - Only shown for Scout/Basic tier or non-admin/non-vip */}
+              {['tier1', 'tier2', 'scout'].includes(userTier.toLowerCase()) && (
                 <div className="pt-16 pb-8 border-t border-border/20 clear-both">
                   <div className="text-center mb-12 space-y-2">
                     <h3 className="text-2xl font-black text-white tracking-tight uppercase">Upgrade Your Arsenal</h3>

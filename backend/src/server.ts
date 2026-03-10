@@ -41,7 +41,7 @@ app.use(cookieParser());
 // Rate limiting
 const limiter = rateLimit({
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'), // 15 minutes
-    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '1000'),
+    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '5000'),
     message: 'Too many requests from this IP, please try again later.',
 });
 app.use('/api/', limiter);
@@ -492,6 +492,37 @@ app.get('/api/targets', authMiddleware, async (req: Request, res: Response) => {
 });
 
 /**
+ * GET /api/targets/:hash
+ * Get a single target by mobsf_hash or id — fallback for Target Detail page
+ */
+app.get('/api/targets/:hash', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { hash } = req.params;
+        const result = await db.query(
+            `SELECT * FROM targets WHERE user_id = $1 AND (mobsf_hash = $2 OR id::text = $2)`,
+            [req.user!.userId, hash]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Target not found' });
+        }
+        const t = result.rows[0];
+        res.json({
+            name: t.name,
+            package: t.package,
+            platform: t.platform || 'mobile',
+            status: t.status || 'pending',
+            scan_progress: t.status === 'complete' ? 100 : 0,
+            mobsf_hash: t.mobsf_hash,
+            stats: t.stats ? (typeof t.stats === 'string' ? JSON.parse(t.stats) : t.stats) : { total_findings: 0, findings_by_severity: {} },
+            compliance: t.compliance ? (typeof t.compliance === 'string' ? JSON.parse(t.compliance) : t.compliance) : null,
+            findings: [],
+        });
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to get target' });
+    }
+});
+
+/**
  * GET /api/stats/global
  * Get aggregated global stats for the dashboard
  */
@@ -527,6 +558,34 @@ app.get('/api/missions', authMiddleware, async (req: Request, res: Response) => 
         res.json(missions); // natively { missions: [] }
     } catch (error: any) {
         res.status(500).json({ error: 'Failed to get missions' });
+    }
+});
+
+/**
+ * GET /api/fbhbot/missions — Alias for Admin Panel sync
+ */
+app.get('/api/fbhbot/missions', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const missions = await fbhbotService.getMissions();
+        res.json(missions);
+    } catch (error: any) {
+        // Return empty array instead of 500 to prevent cascading UI failures
+        console.error('FBHBot missions sync error:', error?.message);
+        res.json({ missions: [] });
+    }
+});
+
+/**
+ * POST /api/mission
+ * Trigger a new autonomous mission
+ */
+app.post('/api/mission', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { target, playbook_name, playbook_id, strategy } = req.body;
+        const result = await fbhbotService.triggerMission(target, playbook_name || 'Generic Audit', playbook_id, strategy);
+        res.json(result);
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to trigger mission' });
     }
 });
 
@@ -664,8 +723,9 @@ app.get('/api/admin/users', authMiddleware, adminMiddleware, async (req: Request
         const users = await dashboardService.getAdminUsers();
         res.json({ users });
     } catch (error: any) {
-        console.error('Admin users error:', error);
-        res.status(500).json({ error: 'Failed to get admin users' });
+        console.error('Admin users error:', error?.message || error);
+        // Return empty array instead of 500 to prevent cascading UI failures
+        res.json({ users: [] });
     }
 });
 
@@ -810,7 +870,7 @@ app.post('/api/settings', authMiddleware, async (req: Request, res: Response) =>
             const aiKeys = ['google_api_key', 'openai_api_key', 'anthropic_api_key', 'shodan_api_key', 'h1_token', 'bc_token'];
             if (aiKeys.includes(key)) {
                 console.log(`Syncing ${key} to FBHBot...`);
-                await fbhbotService.sendChat(`/settings set ${key} ${value}`);
+                await fbhbotService.updateSettings({ [key]: value });
             }
         } catch (syncErr) {
             console.error('FBHBot settings sync failed:', syncErr);
@@ -872,13 +932,27 @@ app.get('/api/apps/search', authMiddleware, async (req: Request, res: Response) 
 app.post('/api/apps/download', authMiddleware, async (req: Request, res: Response) => {
     try {
         const { appId, name, platform } = req.body;
+        const userId = (req as any).user?.userId;
+
         if (!appId || !name || !platform) return res.status(400).json({ error: 'appId, name, and platform required' }) as any;
+
+        // Initialize target in database
+        const now = Date.now();
+        await db.query(
+            `INSERT INTO targets (user_id, name, package, platform, status, scan_progress, created_at, updated_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+             ON CONFLICT (user_id, package) DO UPDATE SET
+             status = EXCLUDED.status,
+             updated_at = EXCLUDED.updated_at`,
+            [userId, name, appId, platform, 'downloading', 0, now, now]
+        );
 
         const downloadId = Date.now().toString() + Math.random().toString(36).substring(7);
         downloaderService.startDownload(appId, name, platform, downloadId);
 
         res.json({ success: true, downloadId });
     } catch (err: any) {
+        console.error('Download start error:', err);
         res.status(500).json({ error: err.message });
     }
 });

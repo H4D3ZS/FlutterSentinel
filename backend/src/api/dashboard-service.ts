@@ -134,13 +134,13 @@ export const dashboardService = {
     /** Live admin user list from PostgreSQL */
     getAdminUsers: async () => {
         const result = await db.query(
-            `SELECT id, email, name, avatar_url, role, created_at, last_login FROM users ORDER BY created_at ASC`
+            `SELECT id, email, name, role, created_at, last_login FROM users ORDER BY created_at ASC`
         );
         return result.rows.map((u: any) => ({
             id: u.id,
             email: u.email,
             name: u.name || u.email.split('@')[0],
-            avatar_url: u.avatar_url,
+            avatar_url: null,
             role: u.role,
             subscription: roleToSubscription(u.role),
             ip: '—',

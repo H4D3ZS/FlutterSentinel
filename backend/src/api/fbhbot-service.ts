@@ -118,6 +118,38 @@ export class FBHBotService {
         const response = await this.client.delete('/api/chat/history');
         return response.data;
     }
+
+    /**
+     * Push a tactical alert to the swarm feed
+     */
+    async pushAlert(alert: { type: string; message: string; severity: string; target_scope: string }): Promise<any> {
+        if (!this.token) await this.login();
+        const response = await this.client.post('/api/alerts', alert);
+        return response.data;
+    }
+
+    /**
+     * Update FBHBot settings
+     */
+    async updateSettings(settings: Record<string, string>): Promise<any> {
+        if (!this.token) await this.login();
+        const response = await this.client.post('/api/settings', { settings });
+        return response.data;
+    }
+
+    /**
+     * Trigger a mission
+     */
+    async triggerMission(target: string, type: string, playbookId?: string, strategy?: string): Promise<any> {
+        if (!this.token) await this.login();
+        const response = await this.client.post('/api/mission', {
+            target,
+            type,
+            playbookId,
+            strategy
+        });
+        return response.data;
+    }
 }
 
 export const fbhbotService = new FBHBotService();

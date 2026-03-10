@@ -52,9 +52,17 @@ const MobSF: React.FC = () => {
     const fetchScans = useCallback(async () => {
         try {
             const response = await nodeApi.get('/mobsf/scans') as any;
-            setScans(response.data?.results || response.data || []);
+            const data = response.data;
+            if (data && data.results && Array.isArray(data.results)) {
+                setScans(data.results);
+            } else if (Array.isArray(data)) {
+                setScans(data);
+            } else {
+                setScans([]);
+            }
         } catch (error) {
             console.error('Failed to fetch MobSF scans:', error);
+            setScans([]);
         } finally {
             setLoading(false);
         }
@@ -108,7 +116,7 @@ const MobSF: React.FC = () => {
         }
     };
 
-    const filteredScans = scans.filter(scan =>
+    const filteredScans = (Array.isArray(scans) ? scans : []).filter(scan =>
         scan.FILE_NAME?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         scan.PACKAGE_NAME?.toLowerCase().includes(searchQuery.toLowerCase())
     );

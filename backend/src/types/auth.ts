@@ -57,5 +57,6 @@ export interface AuthResponse {
     user: UserPublic;
     access_token: string;
     refresh_token: string;
+    mobsf_token?: string | null;
     expires_in: number;
 }

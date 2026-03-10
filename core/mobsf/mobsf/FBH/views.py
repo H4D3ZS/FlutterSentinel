@@ -105,7 +105,7 @@ def api_save_settings(request): return JsonResponse({'status': 'saved'})
 logger = logging.getLogger(__name__)
 
 # FBH Imports
-fbh_root = Path(__file__).parent.parent.parent.parent
+fbh_root = Path(__file__).parent.parent.parent.parent.parent
 
 try:
     from fbh.domain.entities.target import Target
@@ -1417,6 +1417,33 @@ def api_reflutter_blueprint(request, target_name):
         return JsonResponse(mock_blueprint)
 
 # Add missing API endpoints that frontend calls but backend doesn't have
+
+@csrf_exempt
+@api_view(['POST'])
+def api_bootstrap_jwt(request):
+    """
+    Bridge endpoint for Sentinel Backend to obtain a JWT for the FBH React UI.
+    Requires the main MobSF API Key for authentication.
+    """
+    api_key = request.headers.get('X-Mobsf-Api-Key')
+    if not api_key or api_key != settings.MOBSF_API_KEY:
+        return JsonResponse({'error': 'Unauthorized: Invalid MobSF API Key'}, status=401)
+
+    try:
+        from django.contrib.auth.models import User
+        # Use the admin user for the dashboard bootstrapping
+        user = User.objects.filter(is_superuser=True).first()
+        if not user:
+             return JsonResponse({'error': 'No admin user found for bootstrapping'}, status=500)
+             
+        refresh = RefreshToken.for_user(user)
+        return JsonResponse({
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+        })
+    except Exception as e:
+        logger.error(f"JWT Bootstrap error: {e}")
+        return JsonResponse({'error': str(e)}, status=500)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
