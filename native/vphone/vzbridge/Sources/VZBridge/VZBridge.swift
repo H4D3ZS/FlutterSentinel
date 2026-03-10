@@ -26,6 +26,7 @@ struct CLIArgs {
     var gdbPort: UInt32 = 8000
     var dryRun: Bool = false
     var verbose: Bool = false
+    var windowed: Bool = true // Default to true for "real phone" feel
 }
 
 func parseCLIArgs() -> CLIArgs {
@@ -51,6 +52,10 @@ func parseCLIArgs() -> CLIArgs {
             args.dryRun = true
         case "--verbose":
             args.verbose = true
+        case "--headless":
+            args.windowed = false
+        case "--windowed":
+            args.windowed = true
         default:
             break
         }
@@ -168,6 +173,17 @@ class VZBridgeSession: NSObject, VZVirtualMachineDelegate {
         let socketDevice = VZVirtioSocketDeviceConfiguration()
         config.socketDevices = [socketDevice]
 
+        // --- Graphics & Input (for Native UI) ---
+        if args.windowed {
+            let graphicsConfig = VZMacGraphicsDeviceConfiguration()
+            graphicsConfig.displays = [
+                VZMacGraphicsDisplayConfiguration(widthInPixels: 1170, heightInPixels: 2532, pixelsPerInch: 460) // iPhone 13 Pro resolution
+            ]
+            config.graphicsDevices = [graphicsConfig]
+            config.keyboards = [VZUSBKeyboardConfiguration()]
+            config.pointingDevices = [VZUSBScreenCoordinatePointingDeviceConfiguration()]
+        }
+
         return config
     }
 
@@ -250,8 +266,15 @@ class VZBridgeSession: NSObject, VZVirtualMachineDelegate {
             }
         }
 
-        // Wait for VM to terminate
-        sema.wait()
+        if args.windowed {
+            let app = NSApplication.shared
+            let delegate = VPhoneAppDelegate(virtualMachine: vm)
+            app.delegate = delegate
+            app.run()
+        } else {
+            // Headless mode: Wait for VM to terminate
+            sema.wait()
+        }
     }
 
     // MARK: - VZVirtualMachineDelegate
@@ -271,25 +294,26 @@ class VZBridgeSession: NSObject, VZVirtualMachineDelegate {
 
 // MARK: - Entrypoint
 
-func vzBridgeMain() throws {
-    guard #available(macOS 13.0, *) else {
-        fputs("error: vzbridge requires macOS 13.0 or later\n", stderr)
-        exit(1)
+@main
+struct VZBridge {
+    static func main() {
+        do {
+            guard #available(macOS 14.0, *) else {
+                fputs("error: vzbridge requires macOS 14.0 or later for graphics support\n", stderr)
+                exit(1)
+            }
+
+            let args = parseCLIArgs()
+            let workspace = PreparedWorkspace(preparedDirectory: args.preparedDirectory)
+
+            print("[vzbridge] Prepared directory: \(args.preparedDirectory.path)")
+            try workspace.validate()
+
+            let session = VZBridgeSession(workspace: workspace, args: args)
+            try session.run()
+        } catch {
+            fputs("error: \(error.localizedDescription)\n", stderr)
+            exit(1)
+        }
     }
-
-    let args = parseCLIArgs()
-    let workspace = PreparedWorkspace(preparedDirectory: args.preparedDirectory)
-
-    print("[vzbridge] Prepared directory: \(args.preparedDirectory.path)")
-    try workspace.validate()
-
-    let session = VZBridgeSession(workspace: workspace, args: args)
-    try session.run()
-}
-
-do {
-    try vzBridgeMain()
-} catch {
-    fputs("error: \(error.localizedDescription)\n", stderr)
-    exit(1)
 }

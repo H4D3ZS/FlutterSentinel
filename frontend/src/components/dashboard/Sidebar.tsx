@@ -17,7 +17,8 @@ import {
     Book,
     Smartphone,
     User,
-    Download
+    Download,
+    Unlock
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { motion } from 'framer-motion';
@@ -161,6 +162,9 @@ const Sidebar: React.FC<SidebarProps> = ({ className, isCollapsed, toggleCollaps
                     )}
                     {['vip', 'admin'].includes(user?.role || '') && (
                         <SidebarNavItem to="/ir" icon={Terminal} isCollapsed={isCollapsed} closeMobile={closeMobile}>Swarm Defense</SidebarNavItem>
+                    )}
+                    {['tier3', 'vip', 'admin'].includes(user?.role || '') && (
+                        <SidebarNavItem to="/subscription-bypass" icon={Unlock} isCollapsed={isCollapsed} badge="A01" closeMobile={closeMobile}>Sub Bypass</SidebarNavItem>
                     )}
                 </nav>
 

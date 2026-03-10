@@ -549,6 +549,28 @@ app.get('/api/playbooks', authMiddleware, async (req: Request, res: Response) =>
 });
 
 /**
+ * POST /api/fbhbot/subscription-bypass
+ * Proxy subscription bypass scan to FBHBot
+ */
+app.post('/api/fbhbot/subscription-bypass', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const response = await fetch('http://localhost:3001/api/subscription-bypass', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': req.headers.authorization || '',
+            },
+            body: JSON.stringify(req.body),
+        });
+        const data = await response.json();
+        res.json(data);
+    } catch (error: any) {
+        console.error('Subscription bypass proxy error:', error);
+        res.status(500).json({ error: 'Failed to proxy subscription bypass scan' });
+    }
+});
+
+/**
  * GET /api/missions
  * Get active missions
  */

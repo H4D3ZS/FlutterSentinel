@@ -49,6 +49,7 @@ struct LaunchRequest {
   std::string profileName = "balanced";
   bool captureSerialToFile = true;
   bool dryRun = false;
+  bool windowed = true; // Default to true
 };
 
 LaunchProfile buildLaunchProfile(const HostProfile &host,

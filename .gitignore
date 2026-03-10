@@ -144,3 +144,20 @@ tmp/
 temp/
 .cache/
 requirements.txt
+
+native/vphone/build/
+# FlutterSentinel specific
+native/vphone/build/
+native/vphone/vzbridge/.build/
+native/vphone/out/
+firmware/
+crashes/
+*.sqlitedb
+*.db
+*.o
+*.ips
+*.id0
+*.id1
+*.id2
+*.til
+

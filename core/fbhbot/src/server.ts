@@ -274,6 +274,55 @@ export function startServer(port: number, memory = defaultMemory, agent = defaul
                 return;
             }
 
+            // Subscription Bypass Scanner (OWASP A01:2021)
+            if (req.method === "POST" && req.url === "/api/subscription-bypass") {
+                let body = "";
+                req.on("data", chunk => body += chunk);
+                req.on("end", async () => {
+                    try {
+                        const { url: targetUrl, auth_token, cookies } = JSON.parse(body);
+                        if (!targetUrl) {
+                            res.writeHead(400, headers);
+                            res.end(JSON.stringify({ error: "URL is required" }));
+                            return;
+                        }
+
+                        const { scanSubscriptionBypass } = await import("./tools/subscription_bypass.js");
+                        const result = await scanSubscriptionBypass({
+                            url: targetUrl,
+                            auth_token,
+                            cookies,
+                            onProgress: (stage, detail) => {
+                                agentEvents.emit("agent_event", {
+                                    type: "status",
+                                    message: `[SUB_BYPASS/${stage}] ${detail}`,
+                                    missionId: "subscription-bypass",
+                                });
+                            },
+                        });
+
+                        // Store finding as tactical alert
+                        if (result.findings.length > 0) {
+                            await memory.broadcastAlert({
+                                id: crypto.randomUUID(),
+                                type: "SCAN_COMPLETE",
+                                message: `Subscription Bypass: ${result.findings.length} finding(s) on ${targetUrl}`,
+                                severity: result.findings.some(f => f.severity === "critical") ? "critical" : "high",
+                                target_scope: targetUrl,
+                            });
+                        }
+
+                        res.writeHead(200, headers);
+                        res.end(JSON.stringify(result));
+                    } catch (e: any) {
+                        log.error(`Subscription bypass scan error: ${e}`);
+                        res.writeHead(500, headers);
+                        res.end(JSON.stringify({ error: e.message || "Scan failed" }));
+                    }
+                });
+                return;
+            }
+
             // Mission History
             if (req.method === "GET" && req.url === "/api/missions") {
                 const missions = await memory.getUserMissions(user.id);

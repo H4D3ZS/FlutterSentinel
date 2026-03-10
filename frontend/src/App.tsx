@@ -23,6 +23,7 @@ import VPhone from './pages/VPhone';
 import ReportGenerator from './pages/ReportGenerator';
 import AppDownloader from './pages/AppDownloader';
 import ShadowScan from './pages/ShadowScan';
+import SubscriptionBypass from './pages/SubscriptionBypass';
 import { Search } from 'lucide-react';
 import { Toaster } from '@/components/ui/sonner';
 
@@ -106,6 +107,7 @@ const App = () => {
                     <Route path="/downloader" element={<AppDownloader />} />
                     <Route path="/targets" element={<ShadowScan />} />
                     <Route path="/reports" element={<ReportGenerator />} />
+                    <Route path="/subscription-bypass" element={<SubscriptionBypass />} />
                 </Route>
 
                 {/* Fallback */}

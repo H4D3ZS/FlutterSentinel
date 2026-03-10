@@ -2,10 +2,8 @@
 
 # ============================================================
 # SecuritySentinel — Unified Launcher
-# Starts: Backend (4000) · Frontend (5173) · FBHBot (3000) · MobSF (8000)
+# Starts: Backend (4000) · Frontend (5173) · FBHBot (3001) · MobSF (8000)
 # ============================================================
-
-set -e
 
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
@@ -23,6 +21,29 @@ cat << "EOF"
 ╚══════════════════════════════════════════════════════════╝
 EOF
 echo -e "${NC}"
+
+# ── Cleanup function — kills ALL child processes instantly ──
+cleanup() {
+    echo ""
+    echo -e "${RED}[!] Shutting down all services...${NC}"
+
+    # Kill the entire process group
+    kill -- -$$ 2>/dev/null
+
+    # Force kill anything on our ports
+    lsof -ti:3001,4000,5173,5174,8000,6969 | xargs kill -9 2>/dev/null || true
+
+    # Kill any lingering tsx/node/vite processes from this project
+    pkill -9 -f "tsx.*server" 2>/dev/null || true
+    pkill -9 -f "tsx.*index" 2>/dev/null || true
+    pkill -9 -f "vite.*5173" 2>/dev/null || true
+
+    echo -e "${GREEN}[✓] All services stopped.${NC}"
+    exit 0
+}
+
+# Trap SIGINT (Ctrl+C), SIGTERM, and EXIT
+trap cleanup SIGINT SIGTERM EXIT
 
 # ── 1. Verify FBH Python package ────────────────────────────
 echo -e "${BLUE}[*] Verifying FBH package...${NC}"
@@ -64,4 +85,5 @@ echo -e ""
 echo -e "${YELLOW}Press Ctrl+C to stop all services${NC}"
 echo -e ""
 
-DATABASE_URL="$DATABASE_URL" npm run dev:all
+DATABASE_URL="$DATABASE_URL" npm run dev:all &
+wait

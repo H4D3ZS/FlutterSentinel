@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(vphone_native_lib
+    src/Bypass.cpp
     src/HostProfile.cpp
     src/Im4p.cpp
     src/Inventory.cpp
@@ -15,11 +16,20 @@ add_library(vphone_native_lib
     src/Probe.cpp
     src/Prepare.cpp
     src/Runtime.cpp
+    src/vphone_runtime.cpp
 )
+
+find_package(SQLite3 REQUIRED)
 
 target_include_directories(vphone_native_lib
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${SQLite3_INCLUDE_DIRS}
+)
+
+target_link_libraries(vphone_native_lib
+    PUBLIC
+        ${SQLite3_LIBRARIES}
 )
 
 if(MSVC)

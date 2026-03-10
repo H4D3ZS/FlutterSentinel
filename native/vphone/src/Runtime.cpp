@@ -70,7 +70,8 @@ LaunchProfile buildLaunchProfile(const HostProfile &host,
   profile.kernelAppend =
       "rd=md0 nand-enable-reformat=1 -v debug=0x8 kextlog=0xfff "
       "cs_enforcement_disable=1 amfi_get_out_of_my_way=1 "
-      "PE_i_can_has_debugger=1 serial=3";
+      "PE_i_can_has_debugger=1 serial=3 earlycon=uart8250,mmio32,0x9000000 "
+      "console=ttyAMA0";
   profile.bootMode = "direct-kernel";
   profile.memory = "8G";
   profile.smp = "4,cores=4";
@@ -341,6 +342,7 @@ LaunchProfile buildLaunchProfile(const HostProfile &host,
         "This path provides real PV=3 semantics, Auxiliary Storage, and "
         "VirtioSocket — not available in generic QEMU.");
   } else if (profileName == "balanced") {
+    profile.enableGpu = true;
     profile.notes.emplace_back("Balanced profile keeps networking and display "
                                "support for service-oriented testing.");
   } else {
@@ -350,7 +352,7 @@ LaunchProfile buildLaunchProfile(const HostProfile &host,
   return profile;
 }
 
-std::vector<std::string> buildQemuCommand(const ArtifactInventory &,
+std::vector<std::string> buildQemuCommand(const ArtifactInventory &inventory,
                                           const LaunchRequest &request,
                                           const LaunchProfile &profile) {
   const fs::path prepared = request.preparedDirectory;
@@ -540,8 +542,13 @@ std::vector<std::string> buildQemuCommand(const ArtifactInventory &,
     command.push_back("-device");
     command.push_back("virtio-gpu-pci");
     command.push_back("-display");
-    command.push_back(profile.display);
-    if (profile.enableVnc) {
+    if (request.windowed) {
+      command.push_back(inventory.host.platform == "darwin" ? "cocoa" : "gtk");
+    } else {
+      command.push_back(profile.display);
+    }
+
+    if (profile.enableVnc && !request.windowed) {
       command.push_back("-vnc");
       command.push_back(":1");
     }
@@ -598,12 +605,18 @@ int launchVZBridge(const ArtifactInventory &, const LaunchRequest &request) {
     }
   }
 
-  const std::vector<std::string> command = {
+  std::vector<std::string> command = {
       vzBridgeBinary,       "--prepared",   prepared.string(), "--diagnostics",
       diagnostics.string(), "--ssh-port",   request.sshPort,   "--vnc-port",
       request.vncPort,      "--frida-port", request.fridaPort, "--gdb-port",
       request.gdbPort,
   };
+
+  if (request.windowed) {
+    command.push_back("--windowed");
+  } else {
+    command.push_back("--headless");
+  }
 
   if (request.dryRun) {
     throw std::runtime_error(renderCommandShell(command));
@@ -630,7 +643,7 @@ int launchQemu(const ArtifactInventory &inventory,
     if (request.dryRun) {
       const fs::path prepared = request.preparedDirectory;
       const std::string vzBridgeBinary = request.vzBridgeBinary;
-      const std::vector<std::string> command = {
+      std::vector<std::string> command = {
           vzBridgeBinary,
           "--prepared",
           prepared.string(),
@@ -647,6 +660,13 @@ int launchQemu(const ArtifactInventory &inventory,
           "--gdb-port",
           request.gdbPort,
       };
+
+      if (request.windowed) {
+        command.push_back("--windowed");
+      } else {
+        command.push_back("--headless");
+      }
+
       throw std::runtime_error(renderCommandShell(command));
     }
     return launchVZBridge(inventory, request);
