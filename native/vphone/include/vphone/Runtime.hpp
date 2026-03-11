@@ -50,6 +50,7 @@ struct LaunchRequest {
   bool captureSerialToFile = true;
   bool dryRun = false;
   bool windowed = true; // Default to true
+  bool dfu = false;     // Default to false
 };
 
 LaunchProfile buildLaunchProfile(const HostProfile &host,
@@ -60,5 +61,7 @@ std::vector<std::string> buildQemuCommand(const ArtifactInventory &inventory,
 std::string renderCommandShell(const std::vector<std::string> &command);
 int launchQemu(const ArtifactInventory &inventory,
                const LaunchRequest &request);
+int launchVZBridge(const ArtifactInventory &inventory,
+                   const LaunchRequest &request);
 
 } // namespace vphone

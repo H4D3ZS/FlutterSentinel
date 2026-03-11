@@ -37,6 +37,7 @@ typedef struct {
   bool enable_native_ui; // If true, use windowed mode (no VNC)
   bool enable_jailbreak; // Apply 26.1 jailbreak patches
   bool dry_run;          // If true, simulate launch only
+  bool dfu;              // If true, start VM in DFU mode
 } vphone_runtime_config_t;
 
 #ifdef __cplusplus

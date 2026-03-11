@@ -1,0 +1,31 @@
+{
+  "": {
+    "dependencies": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Dynamic.d",
+    "object": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Dynamic.o",
+    "swift-dependencies": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/master.swiftdeps"
+  },
+  "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/Dynamic.swift": {
+    "object": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Dynamic.swift.o",
+    "swiftmodule": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Dynamic~partial.swiftmodule",
+    "swift-dependencies": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Dynamic.swiftdeps",
+    "diagnostics": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Dynamic.dia"
+  },
+  "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/Invocation.swift": {
+    "object": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Invocation.swift.o",
+    "swiftmodule": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Invocation~partial.swiftmodule",
+    "swift-dependencies": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Invocation.swiftdeps",
+    "diagnostics": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Invocation.dia"
+  },
+  "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/Logger.swift": {
+    "object": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Logger.swift.o",
+    "swiftmodule": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Logger~partial.swiftmodule",
+    "swift-dependencies": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Logger.swiftdeps",
+    "diagnostics": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Logger.dia"
+  },
+  "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/TypeMapping.swift": {
+    "object": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/TypeMapping.swift.o",
+    "swiftmodule": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/TypeMapping~partial.swiftmodule",
+    "swift-dependencies": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/TypeMapping.swiftdeps",
+    "diagnostics": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/TypeMapping.dia"
+  }
+}

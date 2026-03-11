@@ -1,0 +1,19 @@
+{
+  "": {
+    "dependencies": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/vzbridge.d",
+    "object": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/vzbridge.o",
+    "swift-dependencies": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/master.swiftdeps"
+  },
+  "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/Sources/VZBridge/VPhoneUI.swift": {
+    "object": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/VPhoneUI.swift.o",
+    "swiftmodule": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/VPhoneUI~partial.swiftmodule",
+    "swift-dependencies": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/VPhoneUI.swiftdeps",
+    "diagnostics": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/VPhoneUI.dia"
+  },
+  "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/Sources/VZBridge/VZBridge.swift": {
+    "object": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/VZBridge.swift.o",
+    "swiftmodule": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/VZBridge~partial.swiftmodule",
+    "swift-dependencies": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/VZBridge.swiftdeps",
+    "diagnostics": "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/VZBridge.dia"
+  }
+}

@@ -1,0 +1,505 @@
+{
+  "builtTestProducts" : [
+
+  ],
+  "copyCommands" : {
+
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.Dynamic-arm64-apple-macosx26.0-release.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/sources",
+      "importPath" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/Dynamic.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/Invocation.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/Logger.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/TypeMapping.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "Dynamic",
+      "moduleOutputPath" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Modules/Dynamic.swiftmodule",
+      "objects" : [
+        "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Dynamic.swift.o",
+        "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Invocation.swift.o",
+        "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Logger.swift.o",
+        "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/TypeMapping.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx10.13",
+        "-whole-module-optimization",
+        "-num-threads",
+        "8",
+        "-serialize-diagnostics",
+        "-O",
+        "-j8",
+        "-DSWIFT_PACKAGE",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/include/Dynamic-Swift.h",
+        "-color-diagnostics",
+        "-swift-version",
+        "5",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-suppress-warnings"
+      ],
+      "outputFileMapPath" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Dynamic.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Invocation.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Logger.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/TypeMapping.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Modules/Dynamic.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/Dynamic.swift",
+        "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/Invocation.swift",
+        "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/Logger.swift",
+        "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/TypeMapping.swift"
+      ],
+      "tempsPath" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build",
+      "wholeModuleOptimization" : true
+    },
+    "C.vzbridge-arm64-apple-macosx26.0-release.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/sources",
+      "importPath" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/Sources/VZBridge/VPhoneUI.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/Sources/VZBridge/VZBridge.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Modules/Dynamic.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/sources"
+        }
+      ],
+      "isLibrary" : false,
+      "moduleName" : "vzbridge",
+      "moduleOutputPath" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Modules/vzbridge.swiftmodule",
+      "objects" : [
+        "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/VPhoneUI.swift.o",
+        "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/VZBridge.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-whole-module-optimization",
+        "-num-threads",
+        "8",
+        "-serialize-diagnostics",
+        "-O",
+        "-j8",
+        "-DSWIFT_PACKAGE",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/ModuleCache",
+        "-parseable-output",
+        "-Xfrontend",
+        "-entry-point-function-name",
+        "-Xfrontend",
+        "vzbridge_main",
+        "-color-diagnostics",
+        "-swift-version",
+        "5",
+        "-framework",
+        "Virtualization",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "vzbridge"
+      ],
+      "outputFileMapPath" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/VPhoneUI.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/VZBridge.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Modules/vzbridge.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/Sources/VZBridge/VPhoneUI.swift",
+        "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/Sources/VZBridge/VZBridge.swift"
+      ],
+      "tempsPath" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build",
+      "wholeModuleOptimization" : true
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "Dynamic" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "Dynamic",
+      "-c",
+      "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/Dynamic.swift",
+      "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/Invocation.swift",
+      "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/Logger.swift",
+      "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/TypeMapping.swift",
+      "-I",
+      "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Modules",
+      "-target",
+      "arm64-apple-macosx10.13",
+      "-whole-module-optimization",
+      "-num-threads",
+      "8",
+      "-serialize-diagnostics",
+      "-O",
+      "-j8",
+      "-DSWIFT_PACKAGE",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/include/Dynamic-Swift.h",
+      "-color-diagnostics",
+      "-swift-version",
+      "5",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-suppress-warnings",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "vzbridge" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "vzbridge",
+      "-package-name",
+      "vzbridge",
+      "-c",
+      "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/Sources/VZBridge/VPhoneUI.swift",
+      "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/Sources/VZBridge/VZBridge.swift",
+      "-I",
+      "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-whole-module-optimization",
+      "-num-threads",
+      "8",
+      "-serialize-diagnostics",
+      "-O",
+      "-j8",
+      "-DSWIFT_PACKAGE",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/ModuleCache",
+      "-parseable-output",
+      "-Xfrontend",
+      "-entry-point-function-name",
+      "-Xfrontend",
+      "vzbridge_main",
+      "-color-diagnostics",
+      "-swift-version",
+      "5",
+      "-framework",
+      "Virtualization",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "vzbridge",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "Dynamic" : [
+
+    ],
+    "vzbridge" : [
+      "Dynamic"
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+
+  },
+  "traitConfiguration" : {
+    "default" : {
+
+    }
+  },
+  "writeCommands" : {
+    "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/Dynamic.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/Invocation.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/Logger.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/checkouts/Dynamic/Sources/Dynamic/TypeMapping.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/sources"
+    },
+    "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/swift-version--58304C5D6DBC2206.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/swift-version--58304C5D6DBC2206.txt"
+    },
+    "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/Sources/VZBridge/VPhoneUI.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/Sources/VZBridge/VZBridge.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/sources"
+    },
+    "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.product/Objects.LinkFileList" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Dynamic.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Invocation.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/Logger.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/Dynamic.build/TypeMapping.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/VPhoneUI.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.build/VZBridge.swift.o"
+        }
+      ],
+      "outputFilePath" : "/Users/hades/Desktop/FlutterSentinel/native/vphone/vzbridge/.build/arm64-apple-macosx/release/vzbridge.product/Objects.LinkFileList"
+    }
+  }
+}
