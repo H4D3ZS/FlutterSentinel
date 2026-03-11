@@ -235,18 +235,18 @@ export class AuthService {
             console.log('📝 Creating default demo users (admin, vip, tiers)...');
 
             const defaultUsers = [
-                { email: 'admin@fbhbot.com', pass: 'admin123', name: 'Commander', role: 'admin' },
-                { email: 'vip@fbhbot.com', pass: 'vip123', name: 'VIP Operative', role: 'vip' },
-                { email: 'tier3@fbhbot.com', pass: 'client123', name: 'Tier 3 Client', role: 'tier3' },
-                { email: 'tier2@fbhbot.com', pass: 'client123', name: 'Tier 2 Client', role: 'tier2' },
-                { email: 'tier1@fbhbot.com', pass: 'client123', name: 'Tier 1 Client', role: 'tier1' },
+                { id: 'admin-0000-0000-0000-000000000001', email: 'admin@fbhbot.com', pass: 'admin123', name: 'Commander', role: 'admin' },
+                { id: 'vip-0000-0000-0000-000000000002', email: 'vip@fbhbot.com', pass: 'vip123', name: 'VIP Operative', role: 'vip' },
+                { id: 'tier3-0000-0000-0000-000000000003', email: 'tier3@fbhbot.com', pass: 'client123', name: 'Tier 3 Client', role: 'tier3' },
+                { id: 'tier2-0000-0000-0000-000000000004', email: 'tier2@fbhbot.com', pass: 'client123', name: 'Tier 2 Client', role: 'tier2' },
+                { id: 'tier1-0000-0000-0000-000000000005', email: 'tier1@fbhbot.com', pass: 'client123', name: 'Tier 1 Client', role: 'tier1' },
             ];
 
             const now = Date.now();
 
             for (const user of defaultUsers) {
                 const password_hash = await this.hashPassword(user.pass);
-                const userId = randomUUID();
+                const userId = user.id;
                 await db.query(`
                     INSERT INTO users (id, email, password_hash, name, role, created_at, updated_at)
                     VALUES ($1, $2, $3, $4, $5, $6, $7)

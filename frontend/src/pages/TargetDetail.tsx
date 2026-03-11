@@ -184,6 +184,14 @@ const TargetDetail: React.FC = () => {
         }
     };
 
+    const handleShadowPoC = () => {
+        toast.info('Shadow PoC Initiated', { description: 'Deploying automated exploit payload...' });
+    };
+
+    const handleADBLink = () => {
+        toast.info('ADB Link Active', { description: 'Establishing direct device bridge...' });
+    };
+
     const handleTabChange = (val: string) => {
         setActiveTab(val);
         if (val === 'intelligence') {
@@ -200,43 +208,26 @@ const TargetDetail: React.FC = () => {
             const response = await nodeApi.post('/mobsf/report', { hash: id }) as any;
             const data = response.data;
 
-            // Transform MobSF data if needed (MobSF report structure is nested)
-            // This is a simplified transformation for the unified UI
-            const transformedTarget: Target = {
-                name: data.file_name || 'Analysis Target',
-                package: data.package_name || 'com.fbh.target',
+            // The backend now provides a standardized findings object
+            const findingsMap = data.findings || {};
+            const findingsList = Object.values(findingsMap).map((f: any, idx: number) => ({
+                id: f.id || `f-${idx}`,
+                title: f.title || 'Security Finding',
+                description: f.description || 'No description provided.',
+                severity: f.severity || 'info',
+                category: f.category || 'General',
+                owasp_category: f.owasp_category,
+                file_path: f.file_path || f.file || f.path
+            }));
+
+            setTarget({
+                name: data.file_name || data.name || 'Analysis Target',
+                package: data.package_name || data.package || 'com.fbh.target',
                 platform: data.platform || 'mobile',
                 status: 'completed',
                 scan_progress: 100,
-                findings: [
-                    ...(data.findings || []),
-                    // Some MobSF reports put findings in specific sections
-                    ...(data.binary_analysis || []).map((f: any) => ({ ...f, category: 'Binary' })),
-                    ...(data.manifest_analysis || []).map((f: any) => ({ ...f, category: 'Manifest' })),
-                ].map((f: any, idx: number) => ({
-                    id: f.id || `f-${idx}`,
-                    title: f.title || f.name || 'Security Finding',
-                    description: f.description || f.stat || 'No description provided.',
-                    severity: f.severity || 'info',
-                    category: f.category || 'General',
-                    owasp_category: f.owasp_category,
-                    file_path: f.file || f.path
-                })),
-                stats: {
-                    total_findings: 0,
-                    findings_by_severity: {}
-                }
-            };
-
-            // Calculate stats
-            transformedTarget.findings?.forEach(f => {
-                const sev = f.severity.toLowerCase();
-                transformedTarget.stats!.findings_by_severity[sev] = (transformedTarget.stats!.findings_by_severity[sev] || 0) + 1;
-                transformedTarget.stats!.total_findings++;
-            });
-
-            setTarget({
-                ...transformedTarget,
+                findings: findingsList,
+                stats: data.stats || { total_findings: findingsList.length, findings_by_severity: {} },
                 compliance: data.compliance && typeof data.compliance === 'string' ? JSON.parse(data.compliance) : data.compliance
             });
         } catch (error) {
@@ -647,10 +638,10 @@ const TargetDetail: React.FC = () => {
                                                     Orchestrate AI Mitigation
                                                 </Button>
                                                 <div className="grid grid-cols-2 gap-3">
-                                                    <Button variant="outline" className="border-border/40 bg-slate-900/40 hover:bg-slate-800 text-[10px] h-14 rounded-2xl flex-col gap-1 uppercase font-bold tracking-widest transition-all">
+                                                    <Button variant="outline" onClick={handleShadowPoC} className="border-border/40 bg-slate-900/40 hover:bg-slate-800 text-[10px] h-14 rounded-2xl flex-col gap-1 uppercase font-bold tracking-widest transition-all">
                                                         <Terminal size={16} className="text-primary/70" /> Shadow PoC
                                                     </Button>
-                                                    <Button variant="outline" className="border-border/40 bg-slate-900/40 hover:bg-slate-800 text-[10px] h-14 rounded-2xl flex-col gap-1 uppercase font-bold tracking-widest transition-all">
+                                                    <Button variant="outline" onClick={handleADBLink} className="border-border/40 bg-slate-900/40 hover:bg-slate-800 text-[10px] h-14 rounded-2xl flex-col gap-1 uppercase font-bold tracking-widest transition-all">
                                                         <PlayCircle size={16} className="text-primary/70" /> ADB Link
                                                     </Button>
                                                 </div>

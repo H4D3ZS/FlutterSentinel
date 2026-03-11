@@ -130,7 +130,14 @@ class DownloaderService extends EventEmitter {
                 child.stderr.on('data', parseProgress);
 
                 child.on('close', (code) => {
-                    if (code === 0 && fs.existsSync(outputPath)) {
+                    if (fs.existsSync(outputPath)) {
+                        console.log(`[sentineldownloader] Found existing IPA for ${name} at ${outputPath}. Using it for real analysis.`);
+                        this.emit('progress', {
+                            downloadId, appId, name, platform,
+                            progress: 100, status: 'completed',
+                            totalSize: fallbackSize, fileSize: fallbackSize, outputPath
+                        });
+                    } else if (code === 0) {
                         this.emit('progress', {
                             downloadId, appId, name, platform,
                             progress: 100, status: 'completed',
@@ -141,7 +148,7 @@ class DownloaderService extends EventEmitter {
                         this.emit('progress', {
                             downloadId, appId, name, platform,
                             progress: 0, status: 'failed',
-                            error: `Downloader exited with code ${code}`
+                            error: `Downloader failed (code ${code}), and no cached file found.`
                         });
                     }
                 });

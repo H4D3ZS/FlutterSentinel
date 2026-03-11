@@ -12,6 +12,7 @@ import Settings from './pages/Settings';
 import IncidentResponse from './pages/IncidentResponse';
 import DashboardLayout from './layouts/DashboardLayout';
 import MobSF from './pages/MobSF';
+import MobSFAnalysis from './pages/MobSFAnalysis';
 import Profile from './pages/Profile';
 import Register from './pages/Register';
 import UnderConstruction from './pages/UnderConstruction';
@@ -97,6 +98,7 @@ const App = () => {
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/mobsf" element={<MobSF />} />
+                    <Route path="/mobsf/analysis/:hash" element={<MobSFAnalysis />} />
                     <Route path="/fbh-bot" element={<FBHBotDashboard />} />
                     <Route path="/ai-hunter" element={<AIHunterDashboard />} />
                     <Route path="/methodology" element={<Methodology />} />

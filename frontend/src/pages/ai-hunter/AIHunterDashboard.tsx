@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Send, Trash2, Plus, MessageSquare, User, Bot, Menu, X, Eye, Cpu, Copy, Check, Download, RefreshCw, Bug, Zap, FileCode, Search, ChevronDown, Shield, Activity, Square, Pencil, Fingerprint } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { Send, Trash2, Plus, MessageSquare, User, Bot, Menu, X, Eye, Cpu, Copy, Check, Download, RefreshCw, Bug, Zap, FileCode, Search, ChevronDown, Shield, Activity, Square, Pencil, Fingerprint, Crosshair, StopCircle, AlertTriangle, Terminal as TerminalIcon, TrendingUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -13,6 +14,19 @@ import { toast } from 'sonner';
 export type Message = { role: 'user' | 'assistant'; content: string; rawResults?: any[] };
 export type ChatSession = { id: string; title: string; messages: Message[]; timestamp: number };
 type ChatHistoryPayload = Pick<Message, 'role' | 'content'>;
+
+export type AgentStep = {
+  type: 'phase' | 'thought' | 'tool_call' | 'tool_result' | 'finding' | 'escalation' | 'error' | 'complete';
+  content: string;
+  meta?: {
+    tool?: string;
+    args?: any;
+    iteration?: number;
+    severity?: string;
+    cvss?: string;
+    cwe?: string;
+  };
+};
 
 // --- Components ---
 
@@ -327,6 +341,25 @@ function AIHunterDashboard() {
   const [showModelDropdown, setShowModelDropdown] = useState(false);
   const [showExploitDashboard, setShowExploitDashboard] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
+
+  // ─── Mission Mode (Autonomous Red Team Agent) ─────────────────────────
+  const [missionMode, setMissionMode] = useState(false);
+  const [missionId, setMissionId] = useState<string | null>(null);
+  const [missionSteps, setMissionSteps] = useState<AgentStep[]>([]);
+  const [missionRunning, setMissionRunning] = useState(false);
+  const [missionFindings, setMissionFindings] = useState<any[]>([]);
+  const missionEndRef = useRef<HTMLDivElement>(null);
+  const [searchParams] = useSearchParams();
+
+  // Handle mission objective from URL
+  useEffect(() => {
+    const objective = searchParams.get('objective');
+    if (objective) {
+      setMissionMode(true);
+      setInput(objective);
+      toast.info('Mission Objective Loaded from Intelligence Hub');
+    }
+  }, [searchParams]);
 
   const AVAILABLE_MODELS = [
     // OpenAI
@@ -661,6 +694,78 @@ function AIHunterDashboard() {
     }
   };
 
+  // ─── Mission Mode Handlers ───────────────────────────────────────────
+  const launchMission = async (objective: string) => {
+    if (!objective.trim()) return;
+    setMissionSteps([]);
+    setMissionFindings([]);
+    setMissionRunning(true);
+    setInput('');
+
+    try {
+      const res = await nodeApi.post<any>('/agent/mission', { objective });
+      const newMissionId = res.data.missionId;
+      setMissionId(newMissionId);
+      toast.success('Mission launched', { description: newMissionId });
+
+      // Connect to SSE stream
+      const token = localStorage.getItem('fbh_access_token');
+      const eventSource = new EventSource(`/api/agent/stream/${newMissionId}?token=${token}`);
+
+      eventSource.onmessage = (event) => {
+        try {
+          const step = JSON.parse(event.data);
+          setMissionSteps(prev => [...prev, step]);
+
+          if (step.type === 'finding') {
+            setMissionFindings(prev => [...prev, step.meta]);
+          }
+
+          if (step.type === 'complete' || step.type === 'error' || step.type === 'stream_end') {
+            setMissionRunning(false);
+            eventSource.close();
+            if (step.type === 'complete') {
+              toast.success('Mission completed', { description: `${step.meta?.findings?.length || 0} findings` });
+            }
+          }
+        } catch (e) {
+          console.error('SSE parse error:', e);
+        }
+      };
+
+      eventSource.onerror = () => {
+        setMissionRunning(false);
+        eventSource.close();
+      };
+    } catch (err: any) {
+      toast.error('Mission launch failed: ' + (err.response?.data?.error || err.message));
+      setMissionRunning(false);
+    }
+  };
+
+  const abortCurrentMission = async () => {
+    if (!missionId) return;
+    try {
+      await nodeApi.post(`/agent/abort/${missionId}`);
+      toast.info('Abort signal sent');
+    } catch (err) {
+      toast.error('Failed to abort');
+    }
+  };
+
+  const handleMissionSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (missionMode && input.trim()) {
+      launchMission(input);
+    } else {
+      handleSubmit(e);
+    }
+  };
+
+  useEffect(() => {
+    missionEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [missionSteps]);
+
   const quickActions = [
     { label: "Intelligence Hunt", icon: Search, prompt: "/apiradar scan" },
     { label: "Debug Code", icon: Bug, prompt: "Debug this code and explain the issues:" },
@@ -739,6 +844,18 @@ function AIHunterDashboard() {
               </div>
             )}
           </div>
+
+          {/* Mission Mode Toggle */}
+          <button
+            onClick={() => { setMissionMode(!missionMode); if (!missionMode) { setMissionSteps([]); setMissionFindings([]); } }}
+            className={cn(
+              "p-1.5 rounded-lg border transition-all flex items-center gap-2",
+              missionMode ? "bg-red-500/20 border-red-500/40 text-red-400 animate-pulse" : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
+            )}
+          >
+            <Crosshair size={14} />
+            <span className="text-[10px] font-mono uppercase tracking-widest hidden lg:inline">{missionMode ? 'MISSION MODE' : 'Agent'}</span>
+          </button>
 
           <button
             onClick={() => setShowExploitDashboard(!showExploitDashboard)}
@@ -1130,24 +1247,153 @@ function AIHunterDashboard() {
         )}
       </div>
 
+      {/* Neural Terminal — SENTINEL v2.0 Live Feed */}
+      {missionMode && missionSteps.length > 0 && (
+        <div className="flex-1 overflow-y-auto bg-[#050505] p-6 space-y-2 font-mono text-sm border-t border-red-500/30">
+          <div className="flex items-center gap-3 mb-4 pb-4 border-b border-red-500/20">
+            <div className="flex items-center gap-2">
+              <Crosshair size={16} className={cn("text-red-500", missionRunning && "animate-pulse")} />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-red-500">SENTINEL</span>
+              <span className="text-[8px] text-red-500/40 font-mono">v3.0</span>
+            </div>
+            <div className="h-3 w-px bg-red-500/20" />
+            <span className="text-[9px] text-slate-600 uppercase tracking-widest">Threat Actor Simulation</span>
+            {missionRunning && (
+              <button onClick={abortCurrentMission} className="ml-auto flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/20 transition-all">
+                <StopCircle size={12} /> ABORT
+              </button>
+            )}
+            {!missionRunning && missionFindings.length > 0 && (
+              <div className="ml-auto flex items-center gap-3">
+                <span className="text-[9px] font-bold uppercase tracking-widest text-red-400">{missionFindings.filter((f: any) => f.severity === 'critical').length} CRIT</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-orange-400">{missionFindings.filter((f: any) => f.severity === 'high').length} HIGH</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-yellow-400">{missionFindings.filter((f: any) => f.severity === 'medium').length} MED</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-matrix-green">{missionFindings.length} TOTAL</span>
+              </div>
+            )}
+          </div>
+          {missionSteps.map((step: any, i: number) => (
+            <div key={i} className={cn(
+              "flex gap-3 items-start p-3 rounded-lg border transition-all",
+              step.type === 'phase' && "bg-red-500/[0.07] border-red-500/20",
+              step.type === 'thought' && "bg-blue-500/5 border-blue-500/10",
+              step.type === 'tool_call' && "bg-amber-500/5 border-amber-500/10",
+              step.type === 'tool_result' && "bg-slate-900/60 border-white/5",
+              step.type === 'finding' && "bg-red-500/10 border-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.08)]",
+              step.type === 'escalation' && "bg-orange-500/15 border-orange-500/40 shadow-[0_0_20px_rgba(249,115,22,0.15)] animate-pulse",
+              step.type === 'error' && "bg-red-900/20 border-red-500/20",
+              step.type === 'complete' && "bg-matrix-green/10 border-matrix-green/30"
+            )}>
+              <div className="shrink-0 mt-0.5">
+                {step.type === 'phase' && <Crosshair size={14} className="text-red-500" />}
+                {step.type === 'thought' && <Cpu size={14} className="text-blue-400" />}
+                {step.type === 'tool_call' && <Zap size={14} className="text-amber-400" />}
+                {step.type === 'tool_result' && <TerminalIcon size={14} className="text-slate-500" />}
+                {step.type === 'finding' && <AlertTriangle size={14} className="text-red-500 animate-pulse" />}
+                {step.type === 'escalation' && <TrendingUp size={14} className="text-orange-500" />}
+                {step.type === 'error' && <X size={14} className="text-red-400" />}
+                {step.type === 'complete' && <Check size={14} className="text-matrix-green" />}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <span className={cn(
+                    "text-[9px] font-black uppercase tracking-widest",
+                    step.type === 'phase' && "text-red-500",
+                    step.type === 'thought' && "text-blue-400",
+                    step.type === 'tool_call' && "text-amber-400",
+                    step.type === 'tool_result' && "text-slate-500",
+                    step.type === 'finding' && "text-red-400",
+                    step.type === 'escalation' && "text-orange-400 font-black tracking-tighter",
+                    step.type === 'error' && "text-red-400",
+                    step.type === 'complete' && "text-matrix-green"
+                  )}>
+                    {step.type === 'phase' ? '═══ PHASE' :
+                      step.type === 'thought' ? 'SENTINEL THOUGHT' :
+                        step.type === 'tool_call' ? `▶ ${step.meta?.tool}` :
+                          step.type === 'tool_result' ? 'OUTPUT' :
+                            step.type === 'finding' ? '◉ VULN CONFIRMED' :
+                              step.type === 'escalation' ? '⚡ STRATEGIC ESCALATION' :
+                                step.type === 'error' ? 'ERROR' : '═══ MISSION COMPLETE'}
+                  </span>
+                  {step.meta?.iteration && <span className="text-[8px] text-slate-600 bg-white/5 px-1.5 py-0.5 rounded">#{step.meta.iteration}</span>}
+                  {step.type === 'finding' && step.meta?.severity && (
+                    <span className={cn("text-[8px] font-black px-1.5 py-0.5 rounded uppercase",
+                      step.meta.severity === 'critical' && "bg-red-500/20 text-red-400",
+                      step.meta.severity === 'high' && "bg-orange-500/20 text-orange-400",
+                      step.meta.severity === 'medium' && "bg-yellow-500/20 text-yellow-400",
+                      step.meta.severity === 'low' && "bg-blue-500/20 text-blue-400",
+                      step.meta.severity === 'info' && "bg-slate-500/20 text-slate-400"
+                    )}>{step.meta.severity}</span>
+                  )}
+                  {step.type === 'finding' && step.meta?.cvss && <span className="text-[8px] font-mono text-red-400/60 bg-red-500/10 px-1.5 py-0.5 rounded">CVSS:{step.meta.cvss}</span>}
+                  {step.type === 'finding' && step.meta?.cwe && <span className="text-[8px] font-mono text-slate-500 bg-white/5 px-1.5 py-0.5 rounded">{step.meta.cwe}</span>}
+                </div>
+                <div className={cn(
+                  "text-xs whitespace-pre-wrap break-all leading-relaxed",
+                  step.type === 'phase' ? "text-red-400/80 font-bold" :
+                    step.type === 'tool_result' ? "text-slate-400 max-h-60 overflow-y-auto bg-black/60 p-3 rounded-lg border border-white/5" :
+                      step.type === 'complete' ? "text-matrix-green/90" : "text-slate-300"
+                )}>{step.content}</div>
+                {step.type === 'tool_call' && step.meta?.args && (
+                  <div className="mt-2 p-2 bg-black/60 rounded-lg border border-amber-500/10">
+                    <pre className="text-[10px] text-amber-400/60 whitespace-pre-wrap break-all">{JSON.stringify(step.meta.args, null, 2)}</pre>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+          {missionRunning && (
+            <div className="flex items-center gap-2 text-red-400 animate-pulse py-2">
+              <Cpu size={14} className="animate-spin" />
+              <span className="text-[10px] font-bold uppercase tracking-widest">SENTINEL processing...</span>
+              <div className="flex gap-1 ml-2">
+                <div className="w-1 h-1 rounded-full bg-red-500/60 animate-bounce [animation-delay:0ms]" />
+                <div className="w-1 h-1 rounded-full bg-red-500/60 animate-bounce [animation-delay:100ms]" />
+                <div className="w-1 h-1 rounded-full bg-red-500/60 animate-bounce [animation-delay:200ms]" />
+              </div>
+            </div>
+          )}
+          <div ref={missionEndRef} />
+        </div>
+      )}
+
+
       <div className="shrink-0 pb-0 pt-0 border-t border-white/5 bg-black/80 backdrop-blur-2xl relative z-20">
         <form
-          onSubmit={handleSubmit}
-          className="max-w-full mx-auto flex items-center gap-4 p-4 bg-transparent focus-within:bg-matrix-green/[0.02] transition-all w-full min-h-[70px]"
+          onSubmit={handleMissionSubmit}
+          className={cn(
+            "max-w-full mx-auto flex items-center gap-4 p-4 transition-all w-full min-h-[70px]",
+            missionMode ? "bg-red-500/[0.03] focus-within:bg-red-500/[0.05]" : "bg-transparent focus-within:bg-matrix-green/[0.02]"
+          )}
         >
-          <div className="pl-2 text-matrix-green drop-shadow-[0_0_10px_rgba(0,255,65,0.4)]">
-            <Zap size={24} />
+          <div className={cn("pl-2", missionMode ? "text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.4)]" : "text-matrix-green drop-shadow-[0_0_10px_rgba(0,255,65,0.4)]")}>
+            {missionMode ? <Crosshair size={24} /> : <Zap size={24} />}
           </div>
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={isLoading ? "Neural synthesis in progress..." : "OPERATOR COMMAND INPUT_"}
-            className="flex-1 bg-transparent border-none outline-none text-white placeholder-white/20 text-2xl font-mono tracking-tight py-1"
+            placeholder={missionMode
+              ? (missionRunning ? "Agent is running autonomously..." : "Enter mission objective (e.g., 'Deep probe target.com for auth bypass')")
+              : (isLoading ? "Neural synthesis in progress..." : "OPERATOR COMMAND INPUT_")}
+            className={cn(
+              "flex-1 bg-transparent border-none outline-none text-2xl font-mono tracking-tight py-1",
+              missionMode ? "text-red-100 placeholder-red-500/30" : "text-white placeholder-white/20"
+            )}
+            disabled={missionMode && missionRunning}
           />
 
           <div className="flex gap-3 pr-2">
-            {isLoading ? (
+            {missionMode && missionRunning ? (
+              <button
+                type="button"
+                onClick={abortCurrentMission}
+                className="w-12 h-12 flex items-center justify-center rounded-xl bg-red-600/90 text-white hover:bg-red-500 transition-all shadow-[0_0_20px_rgba(239,68,68,0.3)] animate-pulse"
+                title="Abort mission"
+              >
+                <StopCircle size={20} />
+              </button>
+            ) : isLoading ? (
               <button
                 type="button"
                 onClick={handleStopLoading}
@@ -1162,10 +1408,12 @@ function AIHunterDashboard() {
                 disabled={!input.trim()}
                 className={cn(
                   "w-12 h-12 flex items-center justify-center rounded-xl transition-all shadow-xl",
-                  !input.trim() ? "opacity-10 bg-white/5 text-slate-500" : "bg-matrix-green text-black hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(0,255,65,0.4)]"
+                  !input.trim() ? "opacity-10 bg-white/5 text-slate-500" :
+                    missionMode ? "bg-red-500 text-white hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(239,68,68,0.4)]" :
+                      "bg-matrix-green text-black hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(0,255,65,0.4)]"
                 )}
               >
-                <Send size={20} />
+                {missionMode ? <Crosshair size={20} /> : <Send size={20} />}
               </button>
             )}
           </div>

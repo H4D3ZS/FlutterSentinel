@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import {
     Upload,
     File as FileIcon,
@@ -53,7 +54,9 @@ const MobSF: React.FC = () => {
         try {
             const response = await nodeApi.get('/mobsf/scans') as any;
             const data = response.data;
-            if (data && data.results && Array.isArray(data.results)) {
+            if (data && data.content && Array.isArray(data.content)) {
+                setScans(data.content);
+            } else if (data && data.results && Array.isArray(data.results)) {
                 setScans(data.results);
             } else if (Array.isArray(data)) {
                 setScans(data);
@@ -286,9 +289,9 @@ const MobSF: React.FC = () => {
 
                                 <CardFooter className="p-5 border-t border-white/5 bg-black/60 backdrop-blur-md flex gap-3 relative z-10">
                                     <Button variant="outline" size="sm" className="flex-1 h-11 text-[10px] font-black uppercase tracking-[0.15em] gap-2 border-primary/20 bg-slate-900/40 hover:bg-primary hover:text-white transition-all rounded-xl" asChild>
-                                        <a href={`http://localhost:8000/static_analyzer/${scan.MD5}/`} target="_blank" rel="noopener noreferrer">
+                                        <Link to={`/mobsf/analysis/${scan.MD5}`}>
                                             <ArrowUpRight size={14} /> View Report
-                                        </a>
+                                        </Link>
                                     </Button>
                                     <Button variant="outline" size="icon" className="h-11 w-11 text-slate-500 hover:text-red-500 hover:bg-red-500/10 border-white/5 hover:border-red-500/30 transition-all rounded-xl" onClick={() => deleteScan(scan.MD5)}>
                                         <Trash2 size={16} />

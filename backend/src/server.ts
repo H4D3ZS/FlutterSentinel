@@ -16,8 +16,10 @@ import { dashboardService } from './api/dashboard-service.js';
 import { vphoneService } from './api/vphone-service.js';
 import { downloaderService } from './api/downloader-service.js';
 import { initializeScannerAutomation } from './api/scanner-automation.js';
-import { initializeDatabase } from './db/database.js';
-import { db } from './db/database.js';
+import { fbhbotService } from './api/fbhbot-service.js';
+import { AppleAuthService } from './api/apple-auth-service.js';
+import { initializeDatabase, db } from './db/database.js';
+import { executeExploit } from './api/exploit-engine.js';
 import { mapFindingToOWASP } from './utils/owasp-mapper.js';
 import type { LoginRequest, RegisterRequest } from './types/auth.js';
 
@@ -309,11 +311,18 @@ app.post('/api/mobsf/report', authMiddleware, async (req: Request, res: Response
                 }))
             };
 
+            // This ALTER TABLE statement is typically run as part of a database migration or initialization script,
+            // not within an API route handler. Placing it here as per user instruction, but it's not ideal.
+            // It will attempt to add columns on every report request if they don't exist, which is inefficient.
+            await db.query(`
+            ALTER TABLE targets ADD COLUMN IF NOT EXISTS mobsf_hash TEXT;
+            ALTER TABLE targets ADD COLUMN IF NOT EXISTS findings JSONB DEFAULT '{}'::jsonb;
+        `);
             await db.query(
                 `UPDATE targets 
-                 SET stats = $1, compliance = $2, status = $3, updated_at = $4 
+                 SET stats = $1, compliance = $2, status = $3, updated_at = $4, findings = $7, mobsf_hash = $8
                  WHERE user_id = $5 AND (package = $6 OR id = $6)`,
-                [JSON.stringify(stats), JSON.stringify(compliance), 'complete', Date.now(), req.user!.userId, hash]
+                [JSON.stringify(stats), JSON.stringify(compliance), 'complete', Date.now(), req.user!.userId, hash, JSON.stringify(findings), hash]
             );
         }
 
@@ -362,7 +371,6 @@ app.post('/api/mobsf/delete', authMiddleware, async (req: Request, res: Response
 // FBHBOT AI AGENT ROUTES
 // ============================================================================
 
-import { fbhbotService } from './api/fbhbot-service.js';
 import http from 'http';
 
 /**
@@ -904,6 +912,85 @@ app.post('/api/settings', authMiddleware, async (req: Request, res: Response) =>
     }
 });
 
+// ============================================================================
+// NEURAL INTELLIGENCE ENGINE
+// ============================================================================
+
+/**
+ * POST /api/intel/explore
+ * Process findings to generate semantic relationship map and clusters
+ */
+app.post('/api/intel/explore', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { target, mode } = req.body;
+
+        // Fetch findings for the target from DB
+        const result = await db.query(
+            `SELECT findings, stats FROM targets WHERE user_id = $1 AND (package = $2 OR name = $2 OR id::text = $2) LIMIT 1`,
+            [req.user!.userId, target]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Intelligence target not located in the vault.' });
+        }
+
+        const row = result.rows[0];
+        const findingsMap = typeof row.findings === 'string' ? JSON.parse(row.findings) : (row.findings || {});
+        const findingsList = Object.values(findingsMap);
+
+        if (mode === 'cluster') {
+            // Simple clustering by OWASP category or general category
+            const categories: Record<string, any[]> = {};
+            findingsList.forEach((f: any) => {
+                const cat = f.owasp_category || f.category || 'General';
+                if (!categories[cat]) categories[cat] = [];
+                categories[cat].push(f);
+            });
+
+            const clusters = Object.entries(categories).map(([cat, fs]) => ({
+                category: cat,
+                findings: fs,
+                summary: `AI core identified ${fs.length} distinct vectors within the ${cat} tactical domain.`,
+                total_impact: fs.some((f: any) => f.severity === 'critical' || f.severity === 'high') ? 'CRITICAL' : 'ELEVATED'
+            }));
+
+            return res.json({ data: clusters });
+        } else {
+            // mode === 'map' - Relationship Graph
+            const nodes = findingsList.map((f: any, idx: number) => ({
+                id: idx,
+                title: f.title,
+                severity: f.severity
+            }));
+
+            const edges: any[] = [];
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const f1 = findingsList[i] as any;
+                    const f2 = findingsList[j] as any;
+
+                    let strength = 0;
+                    // Connect if same file
+                    if (f1.file_path && f2.file_path && f1.file_path === f2.file_path) strength += 0.5;
+                    // Connect if same category
+                    if (f1.category === f2.category) strength += 0.3;
+                    // Connect if both high/critical
+                    if (['high', 'critical'].includes(f1.severity) && ['high', 'critical'].includes(f2.severity)) strength += 0.2;
+
+                    if (strength > 0) {
+                        edges.push({ source: i, target: j, strength });
+                    }
+                }
+            }
+
+            return res.json({ data: { nodes, edges } });
+        }
+    } catch (error: any) {
+        console.error('Intelligence Hub Error:', error);
+        res.status(500).json({ error: 'Neural Relationship Engine internal fault.' });
+    }
+});
+
 // Removed error handling from here as it shadowed downstream routes
 // START SERVER
 // ============================================================================
@@ -979,6 +1066,41 @@ app.post('/api/apps/download', authMiddleware, async (req: Request, res: Respons
     }
 });
 
+// ============================================================================
+// APPLE ID / IPA DOWNLOADER AUTH
+// ============================================================================
+
+app.get('/api/apple/status', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const status = await AppleAuthService.getStatus();
+        res.json(status);
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/apple/login', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { email, password, authCode } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email and password are required' });
+        }
+        const result = await AppleAuthService.login(email, password, authCode);
+        res.json(result);
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/apple/logout', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const result = await AppleAuthService.logout();
+        res.json(result);
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.get('/api/apps/download-stream', authMiddleware, (req: Request, res: Response) => {
     res.writeHead(200, {
         'Content-Type': 'text/event-stream',
@@ -995,6 +1117,119 @@ app.get('/api/apps/download-stream', authMiddleware, (req: Request, res: Respons
     req.on('close', () => {
         downloaderService.removeListener('progress', onProgress);
     });
+});
+
+// ============================================================================
+// DEEPTECH ARSENAL: WEAPONIZATION & REMEDIATION
+// ============================================================================
+
+app.post('/api/exploit/execute', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { command } = req.body;
+        if (!command) return res.status(400).json({ error: 'Command required' }) as any;
+
+        console.log(`[ARSENAL] Executing PoC: ${command}`);
+        const result = await executeExploit(command);
+
+        res.json(result);
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/intel/remediate', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { finding } = req.body;
+        if (!finding) return res.status(400).json({ error: 'Finding context required' }) as any;
+
+        const prompt = `As an elite offensive security AI, provide the exact Remediation Code (Swift, Kotlin, or configuration change) to patch the following vulnerability. Return ONLY the Markdown formatted code block containing the fix. Do not give any other conversational output.\n\nTitle: ${finding.title}\nSeverity: ${finding.severity || finding.stat}\nDescription: ${finding.desc || finding.description}\nContext: ${finding.secret || finding.file || JSON.stringify(finding)}`;
+
+        const response = await fbhbotService.sendChat(prompt);
+        res.json({ patch: response });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============================================================================
+// AUTONOMOUS RED TEAM AGENT
+// ============================================================================
+
+import { startMission, getMission, getMissionEmitter, abortMission, getAllMissions } from './api/red-team-agent.js';
+
+app.post('/api/agent/mission', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { objective } = req.body;
+        if (!objective) return res.status(400).json({ error: 'Mission objective required' }) as any;
+
+        const missionId = `mission_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+
+        // Start the mission asynchronously — don't await it
+        startMission(missionId, objective).catch(err => {
+            console.error(`[AGENT] Mission ${missionId} crashed:`, err);
+        });
+
+        console.log(`[AGENT] Mission launched: ${missionId} — "${objective}"`);
+        res.json({ missionId, status: 'running' });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/agent/stream/:missionId', authMiddleware, (req: Request, res: Response) => {
+    const { missionId } = req.params;
+    const mission = getMission(missionId);
+    const emitter = getMissionEmitter(missionId);
+
+    if (!mission) {
+        return res.status(404).json({ error: 'Mission not found' }) as any;
+    }
+
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    });
+
+    // Send all existing steps first (replay)
+    for (const step of mission.steps) {
+        res.write(`data: ${JSON.stringify(step)}\n\n`);
+    }
+
+    // If mission is already complete, close connection
+    if (mission.status !== 'running') {
+        res.write(`data: ${JSON.stringify({ type: 'stream_end', content: 'Mission already finished', timestamp: Date.now() })}\n\n`);
+        return res.end();
+    }
+
+    // Stream live steps
+    if (emitter) {
+        const onStep = (step: any) => {
+            res.write(`data: ${JSON.stringify(step)}\n\n`);
+            if (step.type === 'complete' || step.type === 'error') {
+                res.end();
+            }
+        };
+        emitter.on('step', onStep);
+        req.on('close', () => {
+            emitter.removeListener('step', onStep);
+        });
+    }
+});
+
+app.post('/api/agent/abort/:missionId', authMiddleware, (req: Request, res: Response) => {
+    const { missionId } = req.params;
+    const aborted = abortMission(missionId);
+    if (aborted) {
+        console.log(`[AGENT] Mission ${missionId} abort signal sent.`);
+        res.json({ success: true, message: 'Abort signal sent' });
+    } else {
+        res.status(404).json({ error: 'Mission not found or already completed' });
+    }
+});
+
+app.get('/api/agent/missions', authMiddleware, (_req: Request, res: Response) => {
+    res.json({ missions: getAllMissions() });
 });
 
 // ============================================================================
