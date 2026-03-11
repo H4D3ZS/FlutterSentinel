@@ -55,6 +55,7 @@ async function runTests() {
     assert.ok(escalationPrompt.includes('NO CRITICAL VULNERABILITY FOUND YET'), 'Should suggest escalation if no critical');
     assert.ok(escalationPrompt.includes('0-DAY RESEARCH'), 'Should suggest advanced techniques');
     assert.ok(escalationPrompt.includes('WEB-GROUNDED OSINT'), 'Should suggest perplexity research');
+    assert.ok(escalationPrompt.includes('BUG BOUNTY AUTOMATION'), 'Should suggest HackerOne integration');
     console.log('✅ Passed');
 
     // --- Test 4: System Prompt (Context & Brain) ---

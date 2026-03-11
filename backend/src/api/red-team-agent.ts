@@ -6,6 +6,7 @@ import path from 'path';
 import http from 'http';
 import https from 'https';
 import { perplexityService } from './perplexity-service.js';
+import { hackerOneService } from './hackerone-service.js';
 
 // ============================================================================
 //  ███████╗███████╗███╗   ██╗████████╗██╗███╗   ██╗███████╗██╗
@@ -256,6 +257,32 @@ Update it whenever you complete a recon phase, discover new attack surface, or n
         }
     },
 
+    // ═══════════ BUG BOUNTY AUTOMATION (HACKERONE) ═══════════
+    {
+        name: 'h1_fetch_scope',
+        category: 'BOUNTY AUTOMATION',
+        description: `Fetch the structured scope (in-scope assets) for a HackerOne program.
+Use this at the start of a bounty hunt to identify allowed domains, APIs, and CIDRs.`,
+        parameters: {
+            program_handle: { type: 'string', description: 'The HackerOne program handle (e.g., "meesho", "viator")', required: true }
+        }
+    },
+    {
+        name: 'h1_report_vulnerability',
+        category: 'BOUNTY AUTOMATION',
+        description: `Draft and submit a vulnerability report to HackerOne.
+CRITICAL: Only call this when you have a CONFIRMED finding with proof.`,
+        parameters: {
+            program_handle: { type: 'string', description: 'Program handle', required: true },
+            title: { type: 'string', description: 'Report title', required: true },
+            vulnerability_types: { type: 'array', description: 'Array of vuln types (e.g., ["cross_site_scripting_xss"])', required: true },
+            impact: { type: 'string', description: 'Business and technical impact', required: true },
+            severity_rating: { type: 'string', description: 'none, low, medium, high, critical', required: true },
+            structured_scope_id: { type: 'string', description: 'The ID of the in-scope asset from h1_fetch_scope', required: true },
+            content: { type: 'string', description: 'Full Markdown report description and proof', required: true }
+        }
+    },
+
     // ═══════════ MISSION CONTROL ═══════════
     {
         name: 'mission_complete',
@@ -353,6 +380,29 @@ async function executeTool(toolCall: ToolCall, mission: Mission): Promise<string
                 out += `\n\nSOURCES:\n${res.citations.map((c, i) => `[${i + 1}] ${c}`).join('\n')}`;
             }
             return out;
+        }
+
+        case 'h1_fetch_scope': {
+            const scope = await hackerOneService.fetchScope(toolCall.args.program_handle);
+            let out = `═══ HACKERONE SCOPE: ${toolCall.args.program_handle.toUpperCase()} ═══\n\n`;
+            if (scope.length === 0) {
+                out += `No structured scope found or access denied.`;
+            } else {
+                out += scope.map(s => `[ID: ${s.id}] ${s.type}: ${s.identifier} (${s.instruction || 'No instruction'})`).join('\n');
+            }
+            return out;
+        }
+
+        case 'h1_report_vulnerability': {
+            const report = await hackerOneService.reportVulnerability(toolCall.args.program_handle, {
+                title: toolCall.args.title,
+                vulnerability_types: toolCall.args.vulnerability_types,
+                impact: toolCall.args.impact,
+                severity_rating: toolCall.args.severity_rating,
+                structured_scope_id: toolCall.args.structured_scope_id,
+                content: toolCall.args.content
+            });
+            return `✅ HACKERONE REPORT SUBMITTED\n\nID: ${report.id}\nStatus: ${report.attributes?.state || 'draft'}\nURL: https://hackerone.com/reports/${report.id}\n\nStrategic mission impact achieved.`;
         }
 
         case 'update_brain': {
@@ -502,6 +552,12 @@ ESCALATION STRATEGIES — TRY THESE NOW:
    - Use 'research_web' to find subdomains, leaked docs, or infrastructure intel.
    - Use 'hunt_poc' to find the latest 2024/2025 exploit scripts for detected software.
    - Perplexity AI bypasses your knowledge cutoff. Use it for modern targets.
+
+7. BUG BOUNTY AUTOMATION (HACKERONE):
+   - If starting a mission on a program handle, call 'h1_fetch_scope' FIRST.
+   - Once a CRITICAL/HIGH vulnerability is confirmed and chain is complete, 
+     use 'h1_report_vulnerability' to submit the final report.
+   - Professional reporting = Faster triage and higher rewards.
 `;
     }
 
