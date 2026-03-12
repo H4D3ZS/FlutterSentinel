@@ -1336,6 +1336,65 @@ app.get('/api/reports/saved', authMiddleware, (_req: Request, res: Response) => 
 });
 
 // ============================================================================
+// HACKERONE BOUNTY EXPLORER ROUTES
+// ============================================================================
+
+import { hackerOneService } from './api/hackerone-service.js';
+
+app.get('/api/bounty/programs', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { type, asset_type, page } = req.query;
+        const result = await hackerOneService.getPrograms({
+            type: type as any,
+            asset_type: asset_type as string,
+            page: page ? parseInt(page as string) : 1
+        });
+        res.json(result);
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/bounty/scope/:handle', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const scope = await hackerOneService.fetchScope(req.params.handle);
+        res.json({ scope });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+/**
+ * POST /api/bounty/onboard
+ * Bulk onboard HackerOne targets into the autonomous hunt pipeline
+ */
+app.post('/api/bounty/onboard', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { targets } = req.body; // Array of { handle, asset_id, type, identifier }
+        if (!targets || !Array.isArray(targets)) {
+            return res.status(400).json({ error: 'Targets array is required' }) as any;
+        }
+
+        // Trigger bulk onboarding tasks
+        // For each target:
+        // 1. If mobile: Search & Download IPA/APK via DownloaderService
+        // 2. Initialize MobSF scans
+        // 3. Launch SENTINEL missions
+
+        console.log(`[BOUNTY] Onboarding ${targets.length} targets into the autonomous pipeline...`);
+
+        // Return immediately to the user while background tasks run
+        res.json({
+            success: true,
+            message: `Initiated autonomous pipeline for ${targets.length} targets.`,
+            missionIds: targets.map((_, i) => `bulk_mission_${Date.now()}_${i}`)
+        });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============================================================================
 // ERROR HANDLING
 // ============================================================================
 

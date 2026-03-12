@@ -18,6 +18,7 @@ import Register from './pages/Register';
 import UnderConstruction from './pages/UnderConstruction';
 import FBHBotDashboard from './pages/fbh-bot/FBHBotDashboard';
 import AIHunterDashboard from './pages/ai-hunter/AIHunterDashboard';
+import BountyExplorer from './pages/ai-hunter/BountyExplorer';
 import Methodology from './pages/Methodology';
 import AdminDashboardTicketManagement from './pages/AdminDashboardTicketManagement';
 import VPhone from './pages/VPhone';
@@ -100,8 +101,9 @@ const App = () => {
                     <Route path="/mobsf" element={<MobSF />} />
                     <Route path="/mobsf/analysis/:hash" element={<MobSFAnalysis />} />
                     <Route path="/fbh-bot" element={<FBHBotDashboard />} />
-                    <Route path="/ai-hunter" element={<AIHunterDashboard />} />
                     <Route path="/methodology" element={<Methodology />} />
+                    <Route path="/ai-hunter" element={<AIHunterDashboard />} />
+                    <Route path="/ai-hunter/explorer" element={<BountyExplorer />} />
                     <Route path="/admin-tickets" element={<AdminDashboardTicketManagement />} />
                     <Route path="/vphone" element={<VPhone />} />
 

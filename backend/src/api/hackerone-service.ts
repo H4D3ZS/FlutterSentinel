@@ -30,6 +30,64 @@ class HackerOneService {
         return { 'Authorization': `Basic ${auth}`, 'Accept': 'application/json' };
     }
 
+    async getPrograms(filters: {
+        type?: 'BBP' | 'VDP' | 'Private';
+        asset_type?: string;
+        page?: number;
+    } = {}): Promise<{ programs: H1Program[], total: number }> {
+        if (!this.isConfigured()) {
+            console.warn('⚠️ HackerOne API credentials not configured. Returning dummy programs.');
+            return {
+                programs: [
+                    { id: '1', handle: 'meesho', name: 'Meesho' },
+                    { id: '2', handle: 'viator', name: 'Viator' },
+                    { id: '3', handle: 'airbnb', name: 'Airbnb' },
+                    { id: '4', handle: 'paypal', name: 'PayPal' },
+                    { id: '5', handle: 'spotify', name: 'Spotify' },
+                    { id: '6', handle: 'tiktok', name: 'TikTok' },
+                    { id: '7', handle: 'uber', name: 'Uber' },
+                    { id: '8', handle: 'grab', name: 'Grab' },
+                    { id: '9', handle: 'lazada', name: 'Lazada' },
+                    { id: '10', handle: 'shopee', name: 'Shopee' }
+                ],
+                total: 10
+            };
+        }
+
+        try {
+            const params: any = {
+                'page[number]': filters.page || 1,
+                'page[size]': 50
+            };
+
+            // Program Type Filter
+            if (filters.type === 'BBP') params['filter[offers_bounties]'] = true;
+            if (filters.type === 'VDP') params['filter[offers_bounties]'] = false;
+            // Note: Private programs are identified by attributes.state or membership if using /me/programs
+
+            const response = await axios.get(`${API_URL}/hackers/programs`, {
+                headers: this.getAuthHeader(),
+                params
+            });
+
+            const programs = response.data.data.map((p: any) => ({
+                id: p.id,
+                handle: p.attributes.handle,
+                name: p.attributes.name,
+                offers_bounties: p.attributes.offers_bounties,
+                state: p.attributes.state
+            }));
+
+            return {
+                programs,
+                total: response.data.links?.last?.meta?.total_count || programs.length
+            };
+        } catch (error: any) {
+            console.error('HackerOne Get Programs Error:', error.response?.data || error.message);
+            throw new Error(`Failed to fetch programs: ${error.response?.data?.errors?.[0]?.detail || error.message}`);
+        }
+    }
+
     async fetchScope(programHandle: string): Promise<H1Asset[]> {
         if (!this.isConfigured()) {
             console.warn('⚠️ HackerOne API credentials not configured. Returning dummy scope.');

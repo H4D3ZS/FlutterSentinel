@@ -7,6 +7,7 @@ import http from 'http';
 import https from 'https';
 import { perplexityService } from './perplexity-service.js';
 import { hackerOneService } from './hackerone-service.js';
+import { pinchTabService } from './pinchtab-service.js';
 
 // ============================================================================
 //  ███████╗███████╗███╗   ██╗████████╗██╗███╗   ██╗███████╗██╗
@@ -76,6 +77,8 @@ export interface AttackBrain {
     current_phase: string;
     pivot_count: number;
     escalation_attempts: number;
+    browser_instance_id?: string;
+    browser_tab_id?: string;
 }
 
 export interface Mission {
@@ -283,6 +286,53 @@ CRITICAL: Only call this when you have a CONFIRMED finding with proof.`,
         }
     },
 
+    // ═══════════ NEURAL LENS / BROWSER CONTROL (PINCHTAB) ═══════════
+    {
+        name: 'browser_navigate',
+        category: 'BROWSER CONTROL',
+        description: `Launch/use a browser instance to navigate to a URL. 
+Use this to bypass WAFs, Cloudflare, or to interact with complex JavaScript-heavy SPAs.
+Automatically creates a persistent instance if none exists.`,
+        parameters: {
+            url: { type: 'string', description: 'Target URL', required: true },
+            new_tab: { type: 'boolean', description: 'Open in new tab', required: false },
+            mode: { type: 'string', description: 'headless (default) or headed (for manual oversight)', required: false }
+        }
+    },
+    {
+        name: 'browser_snapshot',
+        category: 'BROWSER CONTROL',
+        description: `Fetch a high-density, token-efficient snapshot of the page (accessibility tree).
+Use this to "see" the interactive elements (buttons, inputs, links) and their references (e.g., "e1", "e5").
+References from this snapshot MUST be used in browser_interact.`,
+        parameters: {
+            filter: { type: 'string', description: 'interactive (default) or all', required: false },
+            format: { type: 'string', description: 'compact (default), json, text', required: false }
+        }
+    },
+    {
+        name: 'browser_interact',
+        category: 'BROWSER CONTROL',
+        description: `Interact with page elements using references from the latest snapshot.
+Perform: click, type, fill, press (Enter/Tab), hover, scroll.`,
+        parameters: {
+            kind: { type: 'string', description: 'click, type, fill, press, hover, scroll', required: true },
+            ref: { type: 'string', description: 'Element reference from snapshot (e.g., "e5")', required: false },
+            text: { type: 'string', description: 'Text to type/fill', required: false },
+            key: { type: 'string', description: 'Key to press (Enter, Escape, Tab)', required: false },
+            wait_nav: { type: 'boolean', description: 'Wait for navigation after action', required: false }
+        }
+    },
+    {
+        name: 'browser_extract',
+        category: 'BROWSER CONTROL',
+        description: `Extract all meaningful text from the page in readability mode.
+Bypasses clutter, ads, and navbars. Perfect for exfiltrating data or reading long documentation.`,
+        parameters: {
+            mode: { type: 'string', description: 'readability (default) or raw', required: false }
+        }
+    },
+
     // ═══════════ MISSION CONTROL ═══════════
     {
         name: 'mission_complete',
@@ -403,6 +453,55 @@ async function executeTool(toolCall: ToolCall, mission: Mission): Promise<string
                 content: toolCall.args.content
             });
             return `✅ HACKERONE REPORT SUBMITTED\n\nID: ${report.id}\nStatus: ${report.attributes?.state || 'draft'}\nURL: https://hackerone.com/reports/${report.id}\n\nStrategic mission impact achieved.`;
+        }
+
+        case 'browser_navigate': {
+            let instanceId = mission.brain.browser_instance_id;
+            if (!instanceId) {
+                const inst = await pinchTabService.launchInstance({ mode: (toolCall.args.mode as any) || 'headless' });
+                instanceId = inst.id;
+                mission.brain.browser_instance_id = instanceId;
+            }
+            const res = await pinchTabService.navigate(instanceId as string, {
+                url: toolCall.args.url,
+                newTab: toolCall.args.new_tab
+            });
+            mission.brain.browser_tab_id = res.tabId;
+            return `✓ Browser navigated to: ${toolCall.args.url}\nInstance: ${instanceId}\nTab: ${res.tabId}`;
+        }
+
+        case 'browser_snapshot': {
+            const instanceId = mission.brain.browser_instance_id;
+            if (!instanceId) return 'Error: No active browser instance. Call browser_navigate first.';
+            const snap = await pinchTabService.snapshot(instanceId, {
+                tabId: mission.brain.browser_tab_id as string || undefined,
+                filter: toolCall.args.filter as any,
+                format: toolCall.args.format as any
+            });
+            return `═══ BROWSER SNAPSHOT ═══\n\n${snap.data.compact || snap.data.text || JSON.stringify(snap.data.tree, null, 2)}`;
+        }
+
+        case 'browser_interact': {
+            const instanceId = mission.brain.browser_instance_id;
+            if (!instanceId) return 'Error: No active browser instance.';
+            const res = await pinchTabService.interact(instanceId, {
+                kind: toolCall.args.kind,
+                ref: toolCall.args.ref,
+                text: toolCall.args.text,
+                key: toolCall.args.key,
+                waitNav: toolCall.args.wait_nav
+            });
+            return `✓ Browser Action (${toolCall.args.kind}) executed.\nResult: ${JSON.stringify(res)}`;
+        }
+
+        case 'browser_extract': {
+            const instanceId = mission.brain.browser_instance_id;
+            if (!instanceId) return 'Error: No active browser instance.';
+            const res = await pinchTabService.extractText(instanceId, {
+                tabId: mission.brain.browser_tab_id as string || undefined,
+                mode: toolCall.args.mode as any
+            });
+            return `═══ EXTRACTED TEXT (READABILITY) ═══\n\n${res.data.text || res.data}`;
         }
 
         case 'update_brain': {

@@ -344,10 +344,13 @@ function AIHunterDashboard() {
 
   // ─── Mission Mode (Autonomous Red Team Agent) ─────────────────────────
   const [missionMode, setMissionMode] = useState(false);
+  const [bountyMode, setBountyMode] = useState(false);
   const [missionId, setMissionId] = useState<string | null>(null);
   const [missionSteps, setMissionSteps] = useState<AgentStep[]>([]);
   const [missionRunning, setMissionRunning] = useState(false);
   const [missionFindings, setMissionFindings] = useState<any[]>([]);
+  const [browserActive, setBrowserActive] = useState(false);
+  const [activeInstanceId, setActiveInstanceId] = useState<string | null>(null);
   const missionEndRef = useRef<HTMLDivElement>(null);
   const [searchParams] = useSearchParams();
 
@@ -721,8 +724,18 @@ function AIHunterDashboard() {
             setMissionFindings(prev => [...prev, step.meta]);
           }
 
+          if (step.type === 'tool_call' && step.meta?.tool?.startsWith('browser_')) {
+            setBrowserActive(true);
+          }
+          if (step.meta?.tool === 'browser_navigate' && step.content.includes('Instance:')) {
+            const match = step.content.match(/Instance:\s*([a-z0-9-]+)/i);
+            if (match) setActiveInstanceId(match[1]);
+          }
+
           if (step.type === 'complete' || step.type === 'error' || step.type === 'stream_end') {
             setMissionRunning(false);
+            setBrowserActive(false);
+            setActiveInstanceId(null);
             eventSource.close();
             if (step.type === 'complete') {
               toast.success('Mission completed', { description: `${step.meta?.findings?.length || 0} findings` });
@@ -799,6 +812,15 @@ function AIHunterDashboard() {
             <span className="hidden sm:inline">New</span>
           </button>
 
+          <a
+            href="/ai-hunter/explorer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-blue-500/20 bg-blue-500/5 text-xs font-mono text-blue-400 hover:bg-blue-500/10 hover:border-blue-500/40 transition-all"
+          >
+            <Shield size={14} />
+            <span className="hidden sm:inline">H1 Explorer</span>
+            <Badge className="bg-blue-500/20 text-blue-400 border-none text-[8px] h-4">NEW</Badge>
+          </a>
+
           {/* Status */}
           <div className="flex items-center gap-2">
             <div className={cn("w-2 h-2 rounded-full", isLoading ? "bg-matrix-green animate-pulse shadow-[0_0_8px_rgba(0,255,65,0.6)]" : "bg-matrix-green/40")} />
@@ -845,16 +867,38 @@ function AIHunterDashboard() {
             )}
           </div>
 
-          {/* Mission Mode Toggle */}
+          {/* Bounty Mode Toggle */}
           <button
-            onClick={() => { setMissionMode(!missionMode); if (!missionMode) { setMissionSteps([]); setMissionFindings([]); } }}
+            onClick={() => {
+              const newBounty = !bountyMode;
+              setBountyMode(newBounty);
+              if (newBounty) setMissionMode(true);
+            }}
             className={cn(
               "p-1.5 rounded-lg border transition-all flex items-center gap-2",
-              missionMode ? "bg-red-500/20 border-red-500/40 text-red-400 animate-pulse" : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
+              bountyMode ? "bg-amber-500/20 border-amber-500/40 text-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.2)]" : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
+            )}
+          >
+            <Zap size={14} className={cn(bountyMode && "animate-pulse")} />
+            <span className="text-[10px] font-mono uppercase tracking-widest hidden lg:inline">Bounty Mode</span>
+          </button>
+
+          {/* Mission Mode Toggle */}
+          <button
+            onClick={() => {
+              setMissionMode(!missionMode);
+              if (!missionMode) { setMissionSteps([]); setMissionFindings([]); }
+              if (missionMode) setBountyMode(false);
+            }}
+            className={cn(
+              "p-1.5 rounded-lg border transition-all flex items-center gap-2",
+              missionMode ? (bountyMode ? "bg-amber-500/20 border-amber-500/40 text-amber-500" : "bg-red-500/20 border-red-500/40 text-red-400 animate-pulse") : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
             )}
           >
             <Crosshair size={14} />
-            <span className="text-[10px] font-mono uppercase tracking-widest hidden lg:inline">{missionMode ? 'MISSION MODE' : 'Agent'}</span>
+            <span className="text-[10px] font-mono uppercase tracking-widest hidden lg:inline">
+              {missionMode ? (bountyMode ? 'BOUNTY_HUNTER_v3' : 'MISSION MODE') : 'Agent'}
+            </span>
           </button>
 
           <button
@@ -1369,6 +1413,22 @@ function AIHunterDashboard() {
           <div className={cn("pl-2", missionMode ? "text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.4)]" : "text-matrix-green drop-shadow-[0_0_10px_rgba(0,255,65,0.4)]")}>
             {missionMode ? <Crosshair size={24} /> : <Zap size={24} />}
           </div>
+
+          {browserActive && (
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-500/30 animate-pulse mr-2">
+              <Eye size={14} className="text-blue-400" />
+              <span className="text-[10px] font-bold text-blue-400 tracking-widest uppercase">Lens Active</span>
+              <a
+                href="http://localhost:9867"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-1 text-[10px] text-blue-400/60 hover:text-blue-400 underline decoration-blue-500/30"
+              >
+                Sight
+              </a>
+            </div>
+          )}
+
           <input
             type="text"
             value={input}
