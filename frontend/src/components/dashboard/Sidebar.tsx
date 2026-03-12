@@ -18,7 +18,8 @@ import {
     Smartphone,
     User,
     Download,
-    Unlock
+    Unlock,
+    Target
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { motion } from 'framer-motion';
@@ -159,6 +160,9 @@ const Sidebar: React.FC<SidebarProps> = ({ className, isCollapsed, toggleCollaps
                     )}
                     {['tier3', 'vip', 'admin'].includes(user?.role || '') && (
                         <SidebarNavItem to="/ai-hunter" icon={Search} isCollapsed={isCollapsed} closeMobile={closeMobile}>AI Hunter</SidebarNavItem>
+                    )}
+                    {['tier3', 'vip', 'admin'].includes(user?.role || '') && (
+                        <SidebarNavItem to="/ai-hunter/explorer" icon={Target} isCollapsed={isCollapsed} badge="BBP" closeMobile={closeMobile}>Bounty Explorer</SidebarNavItem>
                     )}
                     {['vip', 'admin'].includes(user?.role || '') && (
                         <SidebarNavItem to="/ir" icon={Terminal} isCollapsed={isCollapsed} closeMobile={closeMobile}>Swarm Defense</SidebarNavItem>
