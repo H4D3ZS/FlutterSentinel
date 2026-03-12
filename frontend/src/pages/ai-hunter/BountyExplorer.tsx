@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { nodeApi } from '@/services/api';
+import { toast } from 'sonner';
 import {
     Search,
     Target,
@@ -56,7 +57,7 @@ const BountyExplorer: React.FC = () => {
             const typeParam = selectedType !== 'All programs' ? selectedType : undefined;
             const assetParam = selectedAsset !== 'All assets' ? selectedAsset : undefined;
 
-            const response = await axios.get<{ programs: Program[] }>('/api/bounty/programs', {
+            const response = await nodeApi.get<{ programs: Program[] }>('/bounty/programs', {
                 params: { type: typeParam, asset_type: assetParam }
             });
             setPrograms(response.data.programs);
@@ -81,11 +82,11 @@ const BountyExplorer: React.FC = () => {
                 const p = programs.find(p => p.id === id);
                 return { handle: p?.handle, id };
             });
-            await axios.post('/api/bounty/onboard', { targets });
-            alert(`Successfully initiated autonomous pipeline for ${selectedPrograms.length} targets.`);
+            await nodeApi.post('/bounty/onboard', { targets });
+            toast.success(`Successfully initiated autonomous pipeline for ${selectedPrograms.length} targets.`);
             setSelectedPrograms([]);
         } catch (err) {
-            alert('Failed to initiate bulk onboarding.');
+            toast.error('Failed to initiate bulk onboarding.');
         } finally {
             setOnboarding(false);
         }
