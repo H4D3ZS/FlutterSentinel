@@ -3,7 +3,6 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const H1_API_IDENTIFIER = process.env.H1_API_IDENTIFIER;
 const H1_API_TOKEN = process.env.H1_API_TOKEN;
 const API_URL = 'https://api.hackerone.com/v1';
 
@@ -22,12 +21,11 @@ export interface H1Asset {
 
 class HackerOneService {
     private isConfigured(): boolean {
-        return !!H1_API_IDENTIFIER && !!H1_API_TOKEN;
+        return !!H1_API_TOKEN;
     }
 
     private getAuthHeader() {
-        const auth = Buffer.from(`${H1_API_IDENTIFIER}:${H1_API_TOKEN}`).toString('base64');
-        return { 'Authorization': `Basic ${auth}`, 'Accept': 'application/json' };
+        return { 'Authorization': `Bearer ${H1_API_TOKEN}`, 'Accept': 'application/json' };
     }
 
     async getPrograms(filters: {
