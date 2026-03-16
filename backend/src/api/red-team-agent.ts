@@ -286,6 +286,16 @@ CRITICAL: Only call this when you have a CONFIRMED finding with proof.`,
         }
     },
 
+    {
+        name: 'h1_browser_attach',
+        category: 'BOUNTY AUTOMATION',
+        description: `Connect SENTINEL to an existing Brave/Chrome browser specifically for HackerOne.
+Use this to bypass Cloudflare using your own active session. 
+REQUIRED: Brave must be running with --remote-debugging-port=9222.`,
+        parameters: {
+            cdp_url: { type: 'string', description: 'CDP URL (default: http://localhost:9222)', required: false }
+        }
+    },
     // ═══════════ NEURAL LENS / BROWSER CONTROL (PINCHTAB) ═══════════
     {
         name: 'browser_navigate',
@@ -455,6 +465,13 @@ async function executeTool(toolCall: ToolCall, mission: Mission): Promise<string
             return `✅ HACKERONE REPORT SUBMITTED\n\nID: ${report.id}\nStatus: ${report.attributes?.state || 'draft'}\nURL: https://hackerone.com/reports/${report.id}\n\nStrategic mission impact achieved.`;
         }
 
+        case 'h1_browser_attach': {
+            const res = await hackerOneService.attachToBrave(toolCall.args.cdp_url);
+            mission.brain.browser_instance_id = res.instanceId;
+            mission.brain.browser_tab_id = res.tabId;
+            return `✓ Persistent connection established to Brave.\nInstance: ${res.instanceId}\nTab: ${res.tabId}\nSENTINEL is now using your active session.`;
+        }
+
         case 'browser_navigate': {
             let instanceId = mission.brain.browser_instance_id;
             if (!instanceId) {
@@ -473,8 +490,8 @@ async function executeTool(toolCall: ToolCall, mission: Mission): Promise<string
         case 'browser_snapshot': {
             const instanceId = mission.brain.browser_instance_id;
             if (!instanceId) return 'Error: No active browser instance. Call browser_navigate first.';
-            const snap = await pinchTabService.snapshot(instanceId, {
-                tabId: mission.brain.browser_tab_id as string || undefined,
+            const snap = await pinchTabService.snapshot({
+                tabId: mission.brain.browser_tab_id as string,
                 filter: toolCall.args.filter as any,
                 format: toolCall.args.format as any
             });
@@ -482,9 +499,9 @@ async function executeTool(toolCall: ToolCall, mission: Mission): Promise<string
         }
 
         case 'browser_interact': {
-            const instanceId = mission.brain.browser_instance_id;
-            if (!instanceId) return 'Error: No active browser instance.';
-            const res = await pinchTabService.interact(instanceId, {
+            const tabId = mission.brain.browser_tab_id;
+            if (!tabId) return 'Error: No active browser tab.';
+            const res = await pinchTabService.interact(tabId, {
                 kind: toolCall.args.kind,
                 ref: toolCall.args.ref,
                 text: toolCall.args.text,
@@ -495,10 +512,9 @@ async function executeTool(toolCall: ToolCall, mission: Mission): Promise<string
         }
 
         case 'browser_extract': {
-            const instanceId = mission.brain.browser_instance_id;
-            if (!instanceId) return 'Error: No active browser instance.';
-            const res = await pinchTabService.extractText(instanceId, {
-                tabId: mission.brain.browser_tab_id as string || undefined,
+            const tabId = mission.brain.browser_tab_id;
+            if (!tabId) return 'Error: No active browser tab.';
+            const res = await pinchTabService.extractText(tabId, {
                 mode: toolCall.args.mode as any
             });
             return `═══ EXTRACTED TEXT (READABILITY) ═══\n\n${res.data.text || res.data}`;

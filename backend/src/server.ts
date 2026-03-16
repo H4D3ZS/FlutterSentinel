@@ -1394,6 +1394,35 @@ app.post('/api/bounty/onboard', authMiddleware, async (req: Request, res: Respon
     }
 });
 
+/**
+ * POST /api/bounty/discovery/start
+ * Launch a browser for HackerOne discovery
+ */
+app.post('/api/bounty/discovery/start', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const result = await hackerOneService.startAuthenticatedDiscovery();
+        res.json(result);
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+/**
+ * POST /api/bounty/discovery/sync
+ * Sync programs from an active browser session
+ */
+app.post('/api/bounty/discovery/sync', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { instanceId } = req.body;
+        if (!instanceId) return res.status(400).json({ error: 'instanceId is required' }) as any;
+        
+        const programs = await hackerOneService.syncProgramsFromBrowser(instanceId);
+        res.json({ success: true, count: programs.length, programs });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ============================================================================
 // ERROR HANDLING
 // ============================================================================

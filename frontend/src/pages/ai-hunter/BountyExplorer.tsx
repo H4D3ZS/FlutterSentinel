@@ -46,6 +46,8 @@ const BountyExplorer: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [selectedPrograms, setSelectedPrograms] = useState<string[]>([]);
     const [onboarding, setOnboarding] = useState(false);
+    const [browserInstanceId, setBrowserInstanceId] = useState<string | null>(null);
+    const [isSyncing, setIsSyncing] = useState(false);
 
     useEffect(() => {
         fetchPrograms();
@@ -92,6 +94,35 @@ const BountyExplorer: React.FC = () => {
         }
     };
 
+    const handleBrowserDiscovery = async () => {
+        setLoading(true);
+        try {
+            const response = await nodeApi.post<{ instanceId: string }>('/bounty/discovery/start');
+            setBrowserInstanceId(response.data.instanceId);
+            toast.info('HackerOne Login required. Please use the PinchTab browser window.');
+        } catch (err) {
+            toast.error('Failed to launch browser discovery.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleBrowserSync = async () => {
+        if (!browserInstanceId) return;
+        setIsSyncing(true);
+        try {
+            const response = await nodeApi.post<{ count: number }>('/bounty/discovery/sync', { 
+                instanceId: browserInstanceId 
+            });
+            toast.success(`Synced ${response.data.count} programs from your HackerOne account.`);
+            fetchPrograms();
+        } catch (err) {
+            toast.error('Sync failed. Ensure you are logged into HackerOne in the browser.');
+        } finally {
+            setIsSyncing(false);
+        }
+    };
+
     return (
         <div className="flex flex-col h-full bg-[#0a0a0b] text-[#e0e0e0] font-['Inter']">
             {/* Header & Controls */}
@@ -105,16 +136,36 @@ const BountyExplorer: React.FC = () => {
                         <p className="text-[#a0a0a0]">Neural interface for HackerOne program discovery and bulk-onboarding.</p>
                     </div>
                     <div className="flex gap-4">
+                        {!browserInstanceId ? (
+                             <button
+                                onClick={handleBrowserDiscovery}
+                                className="flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-all bg-[#ffffff05] border border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
+                            >
+                                <Globe className="w-5 h-5" />
+                                CONNECT VIA BROWSER
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handleBrowserSync}
+                                disabled={isSyncing}
+                                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-all ${
+                                    isSyncing ? 'bg-[#ffffff05] text-[#505050]' : 'bg-green-600/20 border border-green-500/30 text-green-400 hover:bg-green-500/40'
+                                }`}
+                            >
+                                <Zap className={`w-5 h-5 ${isSyncing ? 'animate-spin' : ''}`} />
+                                {isSyncing ? 'SYNCING...' : 'SYNC FROM ACCOUNT'}
+                            </button>
+                        )}
                         <button
                             onClick={handleBulkOnboard}
                             disabled={selectedPrograms.length === 0 || onboarding}
                             className={`flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-all ${selectedPrograms.length > 0
-                                ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.3)] animate-pulse'
-                                : 'bg-[#ffffff05] text-[#505050] cursor-not-allowed'
+                                ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.3)]'
+                                : 'bg-[#ffffff05] text-[#505050] cursor-not-allowed border border-[#ffffff10]'
                                 }`}
                         >
-                            <Zap className="w-5 h-5" />
-                            {onboarding ? 'INITIALIZING PIELINE...' : `BULK ONBOARD (${selectedPrograms.length})`}
+                            <Target className="w-5 h-5" />
+                            {onboarding ? 'INITIALIZING...' : `BULK ONBOARD (${selectedPrograms.length})`}
                         </button>
                     </div>
                 </div>

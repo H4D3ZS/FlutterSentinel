@@ -31,8 +31,11 @@ export class PinchTabService {
     private token?: string;
 
     constructor() {
-        this.baseUrl = process.env.PINCHTAB_URL?.replace(/\/$/, '') || 'http://localhost:9867';
+        // Defensive: Strip quotes if dotenv didn't handle them
+        const rawUrl = process.env.PINCHTAB_URL || 'http://localhost:9867';
+        this.baseUrl = rawUrl.replace(/['"]/g, '').trim().replace(/\/$/, '');
         this.token = process.env.PINCHTAB_TOKEN;
+        console.log(`📡 PinchTab: Initialized with base URL: ${this.baseUrl}`);
     }
 
     private getHeaders() {
@@ -57,16 +60,49 @@ export class PinchTabService {
         }
     }
 
-    async launchInstance(options: { profileId?: string; mode?: 'headless' | 'headed'; port?: number } = {}) {
+    async launchInstance(options: { profileId?: string; mode?: 'headless' | 'headed'; port?: number; name?: string } = {}) {
         try {
             const response = await axios.post(`${this.baseUrl}/instances/start`, {
                 profileId: options.profileId,
                 mode: options.mode || 'headless',
-                port: options.port ? String(options.port) : undefined
+                port: options.port ? String(options.port) : undefined,
+                name: options.name
             }, { headers: this.getHeaders() });
-            return response.data;
+            
+            const instance = response.data;
+            console.log(`🚀 PinchTab: Instance ${instance.id} launched. Waiting for readiness...`);
+
+            // Wait for instance to be "running" (ready to accept commands)
+            let ready = false;
+            let attempts = 0;
+            while (!ready && attempts < 20) {
+                await new Promise(r => setTimeout(r, 500));
+                try {
+                    const statusRes = await axios.get(`${this.baseUrl}/instances/${instance.id}`, { headers: this.getHeaders() });
+                    if (statusRes.data.status === 'running') {
+                        ready = true;
+                        console.log(`✅ PinchTab: Instance ${instance.id} is ready.`);
+                    }
+                } catch (e) {}
+                attempts++;
+            }
+            return instance;
         } catch (error: any) {
-            console.error('PinchTab Launch Instance Failed:', error.response?.data || error.message);
+            throw error;
+        }
+    }
+    async attachInstance(options: { cdpUrl: string; name?: string }) {
+        try {
+            const response = await axios.post(`${this.baseUrl}/instances/attach`, {
+                cdpUrl: options.cdpUrl,
+                name: options.name
+            }, { headers: this.getHeaders() });
+            
+            const instance = response.data;
+            console.log(`🔗 PinchTab: Instance ${instance.id} attached to ${options.cdpUrl}`);
+            return instance;
+        } catch (error: any) {
+            console.error('PinchTab Attach Instance Failed:', error.response?.data || error.message);
             throw error;
         }
     }
@@ -91,14 +127,26 @@ export class PinchTabService {
         }
     }
 
-    async navigate(instanceId: string | null, options: { url: string; timeout?: number; blockImages?: boolean; newTab?: boolean }) {
+    async navigate(instanceId: string | null, options: { url: string; timeout?: number; blockImages?: boolean; newTab?: boolean; tabId?: string }) {
         try {
-            const prefix = instanceId ? `/instances/${instanceId}` : '';
-            const response = await axios.post(`${this.baseUrl}${prefix}/navigate`, {
+            // If tabId is provided, navigate that specific tab
+            if (options.tabId) {
+                const response = await axios.post(`${this.baseUrl}/tabs/${options.tabId}/navigate`, {
+                    url: options.url,
+                    timeout: options.timeout,
+                    blockImages: options.blockImages
+                }, { headers: this.getHeaders() });
+                return response.data;
+            }
+
+            // Otherwise, use global navigate (creates new tab in default or specified instance)
+            const response = await axios.post(`${this.baseUrl}/navigate`, {
                 url: options.url,
                 timeout: options.timeout,
                 blockImages: options.blockImages,
-                newTab: options.newTab
+                newTab: options.newTab,
+                // Some orchestrators support instanceId in the body for global routes
+                instanceId: instanceId 
             }, { headers: this.getHeaders() });
             return response.data;
         } catch (error: any) {
@@ -107,13 +155,23 @@ export class PinchTabService {
         }
     }
 
-    async snapshot(instanceId: string | null, options: { tabId?: string; filter?: 'interactive' | 'all'; format?: 'json' | 'text' | 'compact' | 'yaml'; selector?: string; maxTokens?: number } = {}) {
+    async openTab(instanceId: string, url?: string) {
         try {
-            const prefix = instanceId ? `/instances/${instanceId}` : '';
-            const response = await axios.get(`${this.baseUrl}${prefix}/snapshot`, {
+            const response = await axios.post(`${this.baseUrl}/instances/${instanceId}/tabs/open`, {
+                url: url || 'about:blank'
+            }, { headers: this.getHeaders() });
+            return response.data; // { tabId, url, title }
+        } catch (error: any) {
+            console.error('PinchTab Open Tab Failed:', error.response?.data || error.message);
+            throw error;
+        }
+    }
+
+    async snapshot(options: { tabId: string; filter?: 'interactive' | 'all'; format?: 'json' | 'text' | 'compact' | 'yaml'; selector?: string; maxTokens?: number }) {
+        try {
+            const response = await axios.get(`${this.baseUrl}/tabs/${options.tabId}/snapshot`, {
                 headers: this.getHeaders(),
                 params: {
-                    tabId: options.tabId,
                     filter: options.filter || 'interactive',
                     format: options.format || 'compact',
                     selector: options.selector,
@@ -127,10 +185,9 @@ export class PinchTabService {
         }
     }
 
-    async interact(instanceId: string | null, action: { kind: string; ref?: string; text?: string; key?: string; value?: string; selector?: string; scrollY?: number; waitNav?: boolean }) {
+    async interact(tabId: string, action: { kind: string; ref?: string; text?: string; key?: string; value?: string; selector?: string; scrollY?: number; waitNav?: boolean }) {
         try {
-            const prefix = instanceId ? `/instances/${instanceId}` : '';
-            const response = await axios.post(`${this.baseUrl}${prefix}/action`, action, { headers: this.getHeaders() });
+            const response = await axios.post(`${this.baseUrl}/tabs/${tabId}/action`, action, { headers: this.getHeaders() });
             return response.data;
         } catch (error: any) {
             console.error('PinchTab Action Failed:', error.response?.data || error.message);
@@ -138,13 +195,11 @@ export class PinchTabService {
         }
     }
 
-    async extractText(instanceId: string | null, options: { tabId?: string; mode?: 'readability' | 'raw' } = {}) {
+    async extractText(tabId: string, options: { mode?: 'readability' | 'raw' } = {}) {
         try {
-            const prefix = instanceId ? `/instances/${instanceId}` : '';
-            const response = await axios.get(`${this.baseUrl}${prefix}/text`, {
+            const response = await axios.get(`${this.baseUrl}/tabs/${tabId}/text`, {
                 headers: this.getHeaders(),
                 params: {
-                    tabId: options.tabId,
                     mode: options.mode || 'readability'
                 }
             });
